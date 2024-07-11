@@ -38,11 +38,12 @@ namespace TheOtherRoles
 
         public static float growingUpDuration = 400f;
         public DateTime timeOfGrowthStart = DateTime.UtcNow;
+        //public DateTime? timeOfGrowthStart1 = DateTime.UtcNow;
         public static bool triggerMiniLose = false;
 
         public float growingProgress()
         {
-            if (timeOfGrowthStart == null) return 0f;
+            //if (timeOfGrowthStart1 == null) return 0f;
 
             float timeSinceStart = (float)(DateTime.UtcNow - timeOfGrowthStart).TotalMilliseconds;
             return Mathf.Clamp(timeSinceStart / (growingUpDuration * 1000), 0f, 1f);

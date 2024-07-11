@@ -1,12 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
-using UnhollowerBaseLib;
 using UnityEngine;
-#if Steam
 using AmongUs.Data;
 using AmongUs.Data.Legacy;
-#endif
 
 namespace TheOtherRoles.Modules
 {
@@ -264,7 +261,6 @@ namespace TheOtherRoles.Modules
                 }
             }
 
-#if Steam
             [HarmonyPatch(typeof(LegacySaveManager), nameof(LegacySaveManager.LoadPlayerPrefs))]
             private static class LoadPlayerPrefsPatch
             { // Fix Potential issues with broken colors
@@ -281,7 +277,7 @@ namespace TheOtherRoles.Modules
                     needsPatch = false;
                 }
             }
-#endif
+
             [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckColor))]
             private static class PlayerControlCheckColorPatch
             {

@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using HarmonyLib;
 using Hazel;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using BepInEx.IL2CPP.Utils.Collections;
 using static TheOtherRoles.TheOtherRoles;
 
 namespace TheOtherRoles.Patches
@@ -172,7 +172,7 @@ namespace TheOtherRoles.Patches
             private static List<byte> blockLovers = new();
             public static int blockedAssignments = 0;
             public static int maxBlocks = 10;
-            private static List<Tuple<byte, byte>> playerRoleMap = new List<Tuple<byte, byte>>();
+            private static List<Tuple<byte, byte>> playerRoleMap = new();
 
             public static void assignRoles()
             {

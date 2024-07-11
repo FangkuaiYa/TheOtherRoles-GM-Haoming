@@ -1,17 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+global using Il2CppInterop.Runtime;
+global using Il2CppInterop.Runtime.Attributes;
+global using Il2CppInterop.Runtime.InteropTypes;
+global using Il2CppInterop.Runtime.InteropTypes.Arrays;
+global using Il2CppInterop.Runtime.Injection;
+
 using BepInEx;
 using BepInEx.Configuration;
-using BepInEx.IL2CPP;
+using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Hazel;
-using TheOtherRoles.Modules;
-using TheOtherRoles.Objects;
-using TheOtherRoles.Patches;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using UnityEngine;
-using UnhollowerRuntimeLib;
+using TheOtherRoles.Modules;
+using TheOtherRoles.Patches;
+using System.Reflection;
+using TheOtherRoles.Objects;
 
 
 namespace TheOtherRoles
@@ -23,7 +28,7 @@ namespace TheOtherRoles
     {
         public const string Id = "me.eisbison.theotherroles";
 
-        public const string VersionString = "999.999.999";
+        public const string VersionString = "2.4.0";
 
         public static System.Version Version = System.Version.Parse(VersionString);
         internal static BepInEx.Logging.ManualLogSource Logger;
@@ -141,7 +146,7 @@ namespace TheOtherRoles
 
             // オレオレオブジェクト有効化
             ClassInjector.RegisterTypeInIl2Cpp(typeof(FoxTask));
-            ClassInjector.RegisterTypeInIl2Cpp(typeof(HaomingMenu));
+            //ClassInjector.RegisterTypeInIl2Cpp(typeof(HaomingMenu));
         }
 
         public static Sprite GetModStamp()
@@ -227,7 +232,7 @@ namespace TheOtherRoles
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 var obj = new GameObject("HaomingMenu");
-                obj.AddComponent<HaomingMenu>();
+                //obj.AddComponent<HaomingMenu>();
                 obj.SetActive(true);
             }
 
