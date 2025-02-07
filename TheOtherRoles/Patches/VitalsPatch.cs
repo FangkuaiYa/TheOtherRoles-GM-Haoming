@@ -1,150 +1,150 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using HarmonyLib;
 using Hazel;
+using TMPro;
 using UnityEngine;
 using static TheOtherRoles.GameHistory;
 using static TheOtherRoles.TheOtherRoles;
+using Object = UnityEngine.Object;
 
-namespace TheOtherRoles.Patches
+namespace TheOtherRoles.Patches;
+
+[Harmony]
+public class VitalsPatch
 {
-    [Harmony]
-    public class VitalsPatch
+    private static float vitalsTimer;
+    private static TextMeshPro TimeRemaining;
+    private static List<TextMeshPro> hackerTexts = new();
+
+    public static void ResetData()
     {
-        static float vitalsTimer = 0f;
-        static TMPro.TextMeshPro TimeRemaining;
-        private static List<TMPro.TextMeshPro> hackerTexts = new();
-
-        public static void ResetData()
+        vitalsTimer = 0f;
+        if (TimeRemaining != null)
         {
-            vitalsTimer = 0f;
-            if (TimeRemaining != null)
-            {
-                UnityEngine.Object.Destroy(TimeRemaining);
-                TimeRemaining = null;
-            }
+            Object.Destroy(TimeRemaining);
+            TimeRemaining = null;
+        }
+    }
+
+    private static void UseVitalsTime()
+    {
+        // Don't waste network traffic if we're out of time.
+        if (TORMapOptions.restrictDevices > 0 && TORMapOptions.restrictVitals && TORMapOptions.restrictVitalsTime > 0f &&
+            PlayerControl.LocalPlayer.isAlive())
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UseVitalsTime, SendOption.Reliable, -1);
+            writer.Write(vitalsTimer);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCProcedure.useVitalsTime(vitalsTimer);
         }
 
-        static void UseVitalsTime()
+        vitalsTimer = 0f;
+    }
+
+    [HarmonyPatch(typeof(VitalsMinigame), nameof(VitalsMinigame.Begin))]
+    private class VitalsMinigameStartPatch
+    {
+        private static void Postfix(VitalsMinigame __instance)
         {
-            // Don't waste network traffic if we're out of time.
-            if (MapOptions.restrictDevices > 0 && MapOptions.restrictVitals && MapOptions.restrictVitalsTime > 0f && CachedPlayer.LocalPlayer.PlayerControl.isAlive())
-            {
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.UseVitalsTime, Hazel.SendOption.Reliable, -1);
-                writer.Write(vitalsTimer);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
-                RPCProcedure.useVitalsTime(vitalsTimer);
-            }
             vitalsTimer = 0f;
-        }
 
-        [HarmonyPatch(typeof(VitalsMinigame), nameof(VitalsMinigame.Begin))]
-        class VitalsMinigameStartPatch
-        {
-            static void Postfix(VitalsMinigame __instance)
+            if (Hacker.hacker != null && PlayerControl.LocalPlayer == Hacker.hacker)
             {
-                vitalsTimer = 0f;
-
-                if (Hacker.hacker != null && CachedPlayer.LocalPlayer.PlayerControl == Hacker.hacker)
+                hackerTexts = new List<TextMeshPro>();
+                foreach (VitalsPanel panel in __instance.vitals)
                 {
-                    hackerTexts = new List<TMPro.TextMeshPro>();
-                    foreach (VitalsPanel panel in __instance.vitals)
-                    {
-                        TMPro.TextMeshPro text = UnityEngine.Object.Instantiate(__instance.SabText, panel.transform);
-                        hackerTexts.Add(text);
-                        UnityEngine.Object.DestroyImmediate(text.GetComponent<AlphaBlink>());
-                        text.gameObject.SetActive(false);
-                        text.transform.localScale = Vector3.one * 0.75f;
-                        text.transform.localPosition = new Vector3(-0.75f, -0.23f, 0f);
-
-                    }
+                    TextMeshPro text = Object.Instantiate(__instance.SabText, panel.transform);
+                    hackerTexts.Add(text);
+                    Object.DestroyImmediate(text.GetComponent<AlphaBlink>());
+                    text.gameObject.SetActive(false);
+                    text.transform.localScale = Vector3.one * 0.75f;
+                    text.transform.localPosition = new Vector3(-0.75f, -0.23f, 0f);
                 }
             }
         }
+    }
 
-        [HarmonyPatch(typeof(VitalsMinigame), nameof(VitalsMinigame.Update))]
-        class VitalsMinigameUpdatePatch
+    [HarmonyPatch(typeof(VitalsMinigame), nameof(VitalsMinigame.Update))]
+    private class VitalsMinigameUpdatePatch
+    {
+        private static bool Prefix(VitalsMinigame __instance)
         {
-            static bool Prefix(VitalsMinigame __instance)
+            vitalsTimer += Time.deltaTime;
+            if (vitalsTimer > 0.05f)
+                UseVitalsTime();
+
+            if (TORMapOptions.restrictDevices > 0 && TORMapOptions.restrictVitals)
             {
-                vitalsTimer += Time.deltaTime;
-                if (vitalsTimer > 0.05f)
-                    UseVitalsTime();
-
-                if (MapOptions.restrictDevices > 0 && MapOptions.restrictVitals)
+                if (TimeRemaining == null)
                 {
-                    if (TimeRemaining == null)
-                    {
-                        TimeRemaining = UnityEngine.Object.Instantiate(FastDestroyableSingleton<HudManager>.Instance.TaskText, __instance.transform);
-                        TimeRemaining.alignment = TMPro.TextAlignmentOptions.BottomRight;
-                        TimeRemaining.transform.position = Vector3.zero;
-                        TimeRemaining.transform.localPosition = new Vector3(1.7f, 4.45f);
-                        TimeRemaining.transform.localScale *= 1.8f;
-                        TimeRemaining.color = Palette.White;
-                    }
-
-                    if (MapOptions.restrictVitalsTime <= 0f)
-                    {
-                        __instance.Close();
-                        return false;
-                    }
-
-                    string timeString = TimeSpan.FromSeconds(MapOptions.restrictVitalsTime).ToString(@"mm\:ss\.ff");
-                    TimeRemaining.text = String.Format(ModTranslation.getString("timeRemaining"), timeString);
-                    TimeRemaining.gameObject.SetActive(true);
+                    TimeRemaining = Object.Instantiate(FastDestroyableSingleton<HudManager>.Instance.TaskPanel.taskText,
+                        __instance.transform);
+                    TimeRemaining.alignment = TextAlignmentOptions.BottomRight;
+                    TimeRemaining.transform.position = Vector3.zero;
+                    TimeRemaining.transform.localPosition = new Vector3(1.7f, 4.45f);
+                    TimeRemaining.transform.localScale *= 1.8f;
+                    TimeRemaining.color = Palette.White;
                 }
 
-                return true;
+                if (TORMapOptions.restrictVitalsTime <= 0f)
+                {
+                    __instance.Close();
+                    return false;
+                }
+
+                string timeString = TimeSpan.FromSeconds(TORMapOptions.restrictVitalsTime).ToString(@"mm\:ss\.ff");
+                TimeRemaining.text = string.Format(ModTranslation.getString("timeRemaining"), timeString);
+                TimeRemaining.gameObject.SetActive(true);
             }
 
-            static void Postfix(VitalsMinigame __instance)
-            {
+            return true;
+        }
 
-                // Hacker show time since death
-                if (Hacker.hacker != null && Hacker.hacker == CachedPlayer.LocalPlayer.PlayerControl && Hacker.hackerTimer > 0)
+        private static void Postfix(VitalsMinigame __instance)
+        {
+            // Hacker show time since death
+            if (Hacker.hacker != null && Hacker.hacker == PlayerControl.LocalPlayer &&
+                Hacker.hackerTimer > 0)
+                for (int k = 0; k < __instance.vitals.Length; k++)
                 {
-                    for (int k = 0; k < __instance.vitals.Length; k++)
-                    {
-                        VitalsPanel vitalsPanel = __instance.vitals[k];
-                        GameData.PlayerInfo player = GameData.Instance.AllPlayers[k];
+                    VitalsPanel vitalsPanel = __instance.vitals[k];
+                    NetworkedPlayerInfo player = GameData.Instance.AllPlayers[k];
 
-                        // Hacker update
-                        if (vitalsPanel.IsDead)
+                    // Hacker update
+                    if (vitalsPanel.IsDead)
+                    {
+                        DeadPlayer deadPlayer = deadPlayers?.Where(x => x.player?.PlayerId == player?.PlayerId)
+                            ?.FirstOrDefault();
+                        if (deadPlayer != null && k < hackerTexts.Count && hackerTexts[k] != null)
                         {
-                            DeadPlayer deadPlayer = deadPlayers?.Where(x => x.player?.PlayerId == player?.PlayerId)?.FirstOrDefault();
-                            if (deadPlayer != null && deadPlayer.timeOfDeath != null && k < hackerTexts.Count && hackerTexts[k] != null)
-                            {
-                                float timeSinceDeath = (float)(DateTime.UtcNow - deadPlayer.timeOfDeath).TotalMilliseconds;
-                                hackerTexts[k].gameObject.SetActive(true);
-                                hackerTexts[k].text = Math.Round(timeSinceDeath / 1000) + "s";
-                            }
+                            float timeSinceDeath = (float)(DateTime.UtcNow - deadPlayer.timeOfDeath).TotalMilliseconds;
+                            hackerTexts[k].gameObject.SetActive(true);
+                            hackerTexts[k].text = Math.Round(timeSinceDeath / 1000) + "s";
                         }
                     }
                 }
-                else
-                {
-                    foreach (TMPro.TextMeshPro text in hackerTexts)
-                        if (text != null && text.gameObject != null)
-                            text.gameObject.SetActive(false);
-                }
-            }
+            else
+                foreach (TextMeshPro text in hackerTexts)
+                    if (text != null && text.gameObject != null)
+                        text.gameObject.SetActive(false);
         }
-
-        // [HarmonyPatch]
-        // class VitalsMinigameClosePatch
-        // {
-        //     private static IEnumerable<MethodBase> TargetMethods()
-        //     {
-        //         return typeof(Minigame).GetMethods().Where(x => x.Name == "Close");
-        //     }
-
-        //     static void Prefix(Minigame __instance)
-        //     {
-        //         if (__instance is VitalsMinigame)
-        //             UseVitalsTime();
-        //     }
-        // }
     }
+
+    // [HarmonyPatch]
+    // class VitalsMinigameClosePatch
+    // {
+    //     private static IEnumerable<MethodBase> TargetMethods()
+    //     {
+    //         return typeof(Minigame).GetMethods().Where(x => x.Name == "Close");
+    //     }
+
+    //     static void Prefix(Minigame __instance)
+    //     {
+    //         if (__instance is VitalsMinigame)
+    //             UseVitalsTime();
+    //     }
+    // }
 }

@@ -1,99 +1,59 @@
 using HarmonyLib;
+using InnerNet;
+using TMPro;
 using UnityEngine;
 
-namespace TheOtherRoles.Patches
+namespace TheOtherRoles.Patches;
+
+[HarmonyPatch]
+public static class CredentialsPatch
 {
-    [HarmonyPatch]
-    public static class CredentialsPatch
+    public static string baseCredentials =
+        $@"<size=130%><color=#ff351f>TheOtherRoles GM H</color></size> v{TheOtherRolesPlugin.Version}";
+
+    [HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
+    private static class PingTrackerPatch
     {
-
-        public static string baseCredentials = $@"<size=130%><color=#ff351f>TheOtherRoles GM H</color></size> v{TheOtherRolesPlugin.Version}";
-
-
-        public static string contributorsCredentials = "<size=80%>GitHub Contributors: Alex2911, amsyarasyiq, gendelo3</size>";
-
-        [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
-        private static class VersionShowerPatch
+        private static void Postfix(PingTracker __instance)
         {
-            static void Postfix(VersionShower __instance)
+            var position = __instance.GetComponent<AspectPosition>();
+            if (AmongUsClient.Instance.GameState == InnerNetClient.GameStates.Started)
             {
-                var amongUsLogo = GameObject.Find("bannerLogo_AmongUs");
-                if (amongUsLogo == null) return;
-
-                var credentials = UnityEngine.Object.Instantiate<TMPro.TextMeshPro>(__instance.text);
-                credentials.transform.position = new Vector3(0, 0.15f, 0);
-                credentials.SetText(ModTranslation.getString("creditsMain"));
-                credentials.alignment = TMPro.TextAlignmentOptions.Center;
-                credentials.fontSize *= 0.75f;
-
-                var version = UnityEngine.Object.Instantiate<TMPro.TextMeshPro>(credentials);
-                version.transform.position = new Vector3(0, -0.25f, 0);
-                version.SetText(string.Format(ModTranslation.getString("creditsVersion"), TheOtherRolesPlugin.Version.ToString()));
-
-                credentials.transform.SetParent(amongUsLogo.transform);
-                version.transform.SetParent(amongUsLogo.transform);
+                __instance.text.alignment = TextAlignmentOptions.Top;
+                position.Alignment = AspectPosition.EdgeAlignments.Top;
+                __instance.text.text = $"{baseCredentials}\n{__instance.text.text}";
+                position.DistanceFromEdge = new Vector3(1.5f, 0.11f, 0);
+            }
+            else
+            {
+                position.Alignment = AspectPosition.EdgeAlignments.LeftTop;
+                __instance.text.alignment = TextAlignmentOptions.TopLeft;
+                __instance.text.text =
+                    $"{baseCredentials}\n{ModTranslation.getString("creditsFull")}\n{__instance.text.text}\nfangkuai.fun";
+                position.DistanceFromEdge = new Vector3(0.5f, 0.11f);
             }
         }
+    }
 
-        [HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
-        private static class PingTrackerPatch
-        {
-            static void Postfix(PingTracker __instance)
-            {
-                __instance.text.alignment = TMPro.TextAlignmentOptions.TopRight;
-                if (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
-                {
-                    __instance.text.text = $"{baseCredentials}\n{__instance.text.text}";
-                    if (CachedPlayer.LocalPlayer.PlayerControl.Data.IsDead || (!(CachedPlayer.LocalPlayer.PlayerControl == null) && CachedPlayer.LocalPlayer.PlayerControl.isLovers()))
-                    {
-                        // __instance.transform.localPosition = new Vector3(3.45f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);
-                        __instance.gameObject.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(1.2f, 0.8f, 0f);
-                    }
-                    else
-                    {
-                        // __instance.transform.localPosition = new Vector3(4.2f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);
-                        __instance.gameObject.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(2.0f, 0.1f, 0f);
-                    }
-                }
-                else
-                {
-                    __instance.text.text = $"{baseCredentials}\n{ModTranslation.getString("creditsFull")}\n{__instance.text.text}";
-                    // __instance.transform.localPosition = new Vector3(3.5f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);
-                    __instance.gameObject.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(2.7f, 0.0f, 0f);
-                }
-            }
-        }
+    [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
+    public static class LogoPatch
+    {
+        static void Postfix(PingTracker __instance) {
+            var torLogo = new GameObject("bannerLogo_TOR");
+            torLogo.transform.SetParent(GameObject.Find("RightPanel").transform, false);
+            torLogo.transform.localPosition = new Vector3(-0.4f, 1f, 5f);
+            torLogo.AddComponent<SpriteRenderer>().sprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.Banner.png", 300f);
 
-        [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
-        private static class LogoPatch
-        {
-            static void Prefix(MainMenuManager __instance)
-            {
-                var name = AmongUs.Data.DataManager.Player.Customization.name;
-                // 様子を見て外部サーバーでリストを管理する仕組みに変更する
-                if (name == "なかのっち" || name == "ズズ")
-                {
-                    UnityEngine.Diagnostics.Utils.ForceCrash(UnityEngine.Diagnostics.ForcedCrashCategory.Abort);
-                }
-            }
+            var credentialObject = new GameObject("credentialsTOR");
+            var credentials = credentialObject.AddComponent<TextMeshPro>();
+            var versionText = string.Format(ModTranslation.getString("creditsVersion"),
+                TheOtherRolesPlugin.Version.ToString());
+            credentials.SetText($"<size=80%>{versionText}\n{ModTranslation.getString("creditsMain")}\n{ModTranslation.getString("newUpdateCredentials")}\n{ModTranslation.getString("contributorsCredentials")}");
+            credentials.alignment = TMPro.TextAlignmentOptions.Center;
+            credentials.fontSize *= 0.05f;
 
-            static void Postfix(MainMenuManager __instance)
-            {
-                FastDestroyableSingleton<ModManager>.Instance.ShowModStamp();
-
-                var amongUsLogo = GameObject.Find("bannerLogo_AmongUs");
-                if (amongUsLogo != null)
-                {
-                    amongUsLogo.transform.localScale *= 0.6f;
-                    amongUsLogo.transform.position += Vector3.up * 0.25f;
-                }
-
-                var torLogo = new GameObject("bannerLogo_TOR");
-                torLogo.transform.position = Vector3.up;
-                var renderer = torLogo.AddComponent<SpriteRenderer>();
-                renderer.sprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.Banner.png", 300f);
-
-            }
+            credentials.transform.SetParent(torLogo.transform);
+            credentials.transform.localPosition = Vector3.down + new Vector3(0f, -0.6f, 0f);
         }
     }
 }

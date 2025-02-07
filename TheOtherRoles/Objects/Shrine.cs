@@ -2,11 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using UnityEngine;
-using TMPro;
-using TheOtherRoles.Modules;
 using TheOtherRoles;
-using static TheOtherRoles.TheOtherRoles;
-using static TheOtherRoles.TheOtherRolesGM;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 
 namespace TheOtherRoles.Objects
@@ -80,6 +77,20 @@ namespace TheOtherRoles.Objects
             new Tuple<SystemTypes, Vector3>(SystemTypes.Admin, new Vector3(22.0768f, -25.1466f, -0.0251f)),
             new Tuple<SystemTypes, Vector3>(SystemTypes.Comms, new Vector3(12.422f, -17.2601f, -0.1f)),
         };
+        public static List<Tuple<SystemTypes, Vector3>> fungleLocations = new()
+        {
+            new Tuple<SystemTypes, Vector3>(SystemTypes.Storage, new Vector3(1.0139f, 4.3129f, 0.0135f)),
+            new Tuple<SystemTypes, Vector3>(SystemTypes.Jungle, new Vector3(-9.4981f, -13.4451f, -0.0134f)),
+            new Tuple<SystemTypes, Vector3>(SystemTypes.MiningPit, new Vector3(13.0518f, 9.8709f, 0.0135f)),
+            new Tuple<SystemTypes, Vector3>(SystemTypes.Lookout, new Vector3(7.733f, 4.2049f, 0.0135f)),
+            new Tuple<SystemTypes, Vector3>(SystemTypes.Greenhouse, new Vector3(8.8821f, -10.03f, -0.1f)),
+            new Tuple<SystemTypes, Vector3>(SystemTypes.Reactor, new Vector3(21.4631f, -7.4165f, -0.1f)),
+            new Tuple<SystemTypes, Vector3>(SystemTypes.Laboratory, new Vector3(-5.075f, -9.4086f, -0.1f)),
+            new Tuple<SystemTypes, Vector3>(SystemTypes.RecRoom, new Vector3(-18.7677f, -0.3175f, -0.1f)),
+            new Tuple<SystemTypes, Vector3>(SystemTypes.Dropship, new Vector3(-7.5892f, 9.5704f, 0.0096f)),
+            new Tuple<SystemTypes, Vector3>(SystemTypes.UpperEngine, new Vector3(21.8108f, 3.1205f, 0.0031f)),
+            new Tuple<SystemTypes, Vector3>(SystemTypes.Jungle, new Vector3(-0.6718f, -5.8665f, -0.1f))
+        };
 
         public Shrine(SystemTypes room, Vector3 pos)
         {
@@ -91,7 +102,7 @@ namespace TheOtherRoles.Objects
             var taskList = new TaskTypes[0].ToList();
             taskList.Add(TaskTypes.None);
             console.TaskTypes = taskList.ToArray();
-            console.ValidTasks = new UnhollowerBaseLib.Il2CppReferenceArray<TaskSet>(0);
+            console.ValidTasks = new Il2CppReferenceArray<TaskSet>(0);
             console.Image = shrine.AddComponent<SpriteRenderer>();
             console.Image.sprite = sprite;
             console.Image.material = new Material(ShipStatus.Instance.AllConsoles[0].Image.material);
@@ -109,7 +120,7 @@ namespace TheOtherRoles.Objects
             button.OnClick.AddListener((UnityEngine.Events.UnityAction)Use);
             var consoleList = ShipStatus.Instance.AllConsoles.ToList();
             consoleList.Add(console);
-            ShipStatus.Instance.AllConsoles = new UnhollowerBaseLib.Il2CppReferenceArray<Console>(consoleList.ToArray());
+            ShipStatus.Instance.AllConsoles = new Il2CppReferenceArray<Console>(consoleList.ToArray());
             allShrine.Add(this);
             counter += 1;
         }
@@ -140,6 +151,9 @@ namespace TheOtherRoles.Objects
                     break;
                 case 4:
                     locations = airshipLocations;
+                    break;
+                case 5:
+                    locations = fungleLocations;
                     break;
                 default:
                     locations = skeldLocations;

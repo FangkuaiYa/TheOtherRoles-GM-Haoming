@@ -1,23 +1,28 @@
 {
     "nmk": {
         "0": "NMK",
-        "11": "NMK"
+        "11": "NMK",
+        "13": "NMK"
     },
     "numNMK": {
         "0": "number of NMK button",
-        "11": "\u306a\u3081\u3053\u3092\u4f5c\u308c\u308b\u6570"
+        "11": "\u306a\u3081\u3053\u3092\u4f5c\u308c\u308b\u6570",
+        "13": "NMK\u6309\u94ae\u6570\u91cf"
     },
     "nmkShortDesc": {
         "0": "NMK! NMK!",
-        "11": "NMK! NMK!"
+        "11": "NMK! NMK!",
+        "13": "NMK! NMK!"
     },
     "nmkIntroDesc": {
         "0": "NMK! NMK!",
-        "11": "NMK! NMK!"
+        "11": "NMK! NMK!",
+        "13": "NMK! NMK!"
     },
     "nmkFullDesc": {
         "0": "NMK! NMK!",
-        "11": "NMK! NMK!"
+        "11": "NMK! NMK!",
+        "13": "NMK! NMK!"
     },
     "foxCanFixSabotageWhileStealth": {
         "0": "Fox can fix sabotage in stealth",
@@ -72,7 +77,7 @@
     "schrodingersCatRandom": {
         "0": "Random",
         "11": "\u30e9\u30f3\u30c0\u30e0",
-        "13": "\u968f\u673a"
+        "13": "\u8239\u5458"
     },
     "schrodingersCatJustDieOnKilledByCrew": {
         "0": "Just die if killed by crewmate",
@@ -81,23 +86,28 @@
     },
     "schrodingersCatHideRole": {
         "0": "Hide Role",
-        "11": "\u5f79\u8077\u3092\u96a0\u3059"
+        "11": "\u5f79\u8077\u3092\u96a0\u3059",
+        "13": "\u9690\u85cf\u804c\u4e1a"
     },
     "schrodingersCatCanWinAsCrewmate": {
         "0": "Can win as crewmate",
-        "11": "\u30af\u30eb\u30fc\u3068\u3057\u3066\u52dd\u5229\u3059\u308b"
+        "11": "\u30af\u30eb\u30fc\u3068\u3057\u3066\u52dd\u5229\u3059\u308b",
+        "13": "\u80fd\u4ee5\u8239\u5458\u9635\u8425\u83b7\u80dc"
     },
     "schrodingersCatImpostor": {
         "0": "Impostor ",
-        "11": "\u30a4\u30f3\u30dd\u30b9\u30bf\u30fc"
+        "11": "\u30a4\u30f3\u30dd\u30b9\u30bf\u30fc",
+        "13": "\u5185\u9b3c"
     },
     "schrodingersCatCanChooseTeam": {
         "0": "Can choose team when complete tasks",
-        "11": "\u30bf\u30b9\u30af\u5b8c\u4e86\u6642\u306b\u30c1\u30fc\u30e0\u3092\u9078\u629e\u3067\u304d\u308b"
+        "11": "\u30bf\u30b9\u30af\u5b8c\u4e86\u6642\u306b\u30c1\u30fc\u30e0\u3092\u9078\u629e\u3067\u304d\u308b",
+        "13": "\u4efb\u52a1\u5b8c\u6210\u540e\u53ef\u9009\u62e9\u9635\u8425"
     },
     "schrodingersCatSwitchTeamButton": {
         "0": "Choose Team",
-        "11": "\u30c1\u30fc\u30e0\u9078\u629e"
+        "11": "\u30c1\u30fc\u30e0\u9078\u629e",
+        "13": "\u9009\u62e9\u9635\u8425"
     },
     "schrodingersCatShortDesc": {
         "0": "Get killed and join killer team",
@@ -397,7 +407,8 @@
     },
     "evilTrackerCanSetTargetOnMeeting": {
         "0": "Evil Tracker can set target on meeting",
-        "11": "\u30df\u30fc\u30c6\u30a3\u30f3\u30b0\u4e2d\u306b\u30bf\u30fc\u30b2\u30c3\u30c8\u3092\u9078\u629e\u3067\u304d\u308b"
+        "11": "\u30df\u30fc\u30c6\u30a3\u30f3\u30b0\u4e2d\u306b\u30bf\u30fc\u30b2\u30c3\u30c8\u3092\u9078\u629e\u3067\u304d\u308b",
+        "13": "\u53ef\u4ee5\u5728\u4f1a\u8bae\u9009\u62e9\u76ee\u6807"
     },
     "evilTrackerShortDesc": {
         "0": "track players",
@@ -586,52 +597,52 @@
     "additionalVents": {
         "0": "Additional vents(Polus)",
         "11": "\u8ffd\u52a0\u30d9\u30f3\u30c8(\u30dd\u30fc\u30e9\u30b9)",
-        "13": "\u6ce2\u9c81\u65af\uff1a\u589e\u52a0\u989d\u5916\u7ba1\u9053\uff08\u8d77\u70b9-\u4f1a\u8bae\u5ba4-\u6837\u672c\u5ba4\uff09"
+        "13": "\u589e\u52a0\u989d\u5916\u7ba1\u9053\uff08\u8d77\u70b9-\u4f1a\u8bae\u5ba4-\u6837\u672c\u5ba4\uff09"
     },
     "specimenVital": {
         "0": "Move vital to specimen(Polus)",
         "11": "\u30d0\u30a4\u30bf\u30eb\u3092\u6a19\u672c\u5ba4\u306b\u79fb\u52d5\u3059\u308b(\u30dd\u30fc\u30e9\u30b9)",
-        "13": "\u6ce2\u9c81\u65af\uff1a\u5c06\u751f\u547d\u76d1\u6d4b\u88c5\u7f6e\u79fb\u52a8\u81f3\u6837\u672c\u5ba4"
+        "13": "\u5c06\u751f\u547d\u76d1\u6d4b\u88c5\u7f6e\u79fb\u52a8\u81f3\u6837\u672c\u5ba4"
     },
     "polusRandomSpawn": {
         "0": "Random spawn(Polus)",
         "11": "\u30e9\u30f3\u30c0\u30e0\u30b9\u30dd\u30fc\u30f3(\u30dd\u30fc\u30e9\u30b9)",
-        "13": "\u6ce2\u9c81\u65af\uff1a\u968f\u673a\u5b89\u6392\u51fa\u751f\u70b9"
+        "13": "\u968f\u673a\u5b89\u6392\u51fa\u751f\u70b9"
     },
     "airshipOptimizeMap": {
         "0": "Optimize map(Airship)",
         "11": "\u30de\u30c3\u30d7\u6700\u9069\u5316(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u4f18\u5316\u5730\u56fe"
+        "13": "\u4f18\u5316\u5730\u56fe"
     },
     "airshipEnableWallCheck": {
         "0": "Enable wall check on tasks(Airship)",
         "11": "\u30bf\u30b9\u30af\u306e\u58c1\u5224\u5b9a\u3092\u6709\u52b9\u5316\u3059\u308b(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u65b0\u589e\u4efb\u52a1\u201c\u68c0\u67e5\u5899\u58c1\u201d"
+        "13": "\u65b0\u589e\u4efb\u52a1\u201c\u68c0\u67e5\u5899\u58c1\u201d"
     },
     "airshipReactorDuration": {
         "0": "Reactor duration(Airship)",
         "11": "\u30ea\u30a2\u30af\u30bf\u30fc\u6642\u9593(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u53cd\u5e94\u5806\u6301\u7eed\u65f6\u95f4"
+        "13": "\u53cd\u5e94\u5806\u6301\u7eed\u65f6\u95f4"
     },
     "airshipRandomSpawn": {
         "0": "Random spawn(Airship)",
         "11": "\u30e9\u30f3\u30c0\u30e0\u30b9\u30dd\u30fc\u30f3(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u968f\u673a\u5b89\u6392\u51fa\u751f\u70b9"
+        "13": "\u968f\u673a\u5b89\u6392\u51fa\u751f\u70b9"
     },
     "airshipAdditionalSpawn": {
         "0": "Additional spawn(Airship)",
         "11": "\u8ffd\u52a0\u30b9\u30dd\u30fc\u30f3\u4f4d\u7f6e(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u8ffd\u52a0\u51fa\u751f\u70b9"
+        "13": "\u8ffd\u52a0\u51fa\u751f\u70b9"
     },
     "airshipSynchronizedSpawning": {
         "0": "Synchronized spawn(Airship)",
         "11": "\u540c\u671f\u30b9\u30dd\u30fc\u30f3(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u51fa\u751f\u65f6\u95f4\u540c\u6b65"
+        "13": "\u51fa\u751f\u65f6\u95f4\u540c\u6b65"
     },
     "airshipSetOriginalCooldown": {
         "0": "Set original cooldown on first spawn(Airship)",
         "11": "\u521d\u671f\u30b9\u30dd\u30fc\u30f3\u6642\u306b\u30aa\u30ea\u30b8\u30ca\u30eb\u30af\u30fc\u30eb\u30c0\u30a6\u30f3\u3092\u30bb\u30c3\u30c8(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u5c06\u521d\u59cb\u768410s\u51fb\u6740\u51b7\u5374\u53d8\u4e3a\u9ed8\u8ba4\u51b7\u5374\u65f6\u95f4"
+        "13": "\u5c06\u521d\u59cb\u768410s\u51fb\u6740\u51b7\u5374\u53d8\u4e3a\u9ed8\u8ba4\u51b7\u5374\u65f6\u95f4"
     },
     "airshipWait": {
         "0": "Waiting Other Players",
@@ -641,46 +652,47 @@
     "airshipInitialDoorCooldown": {
         "0": "Initial door sabotage cooldown(Airship)",
         "11": "\u521d\u671f\u30c9\u30a2\u30b5\u30dc\u30bf\u30fc\u30b8\u30e5\u30af\u30fc\u30eb\u30c0\u30a6\u30f3(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u6e38\u620f\u5f00\u59cb\u65f6\u5185\u9b3c\u9635\u8425\u5173\u95e8\u51b7\u5374"
+        "13": "\u6e38\u620f\u5f00\u59cb\u65f6\u5185\u9b3c\u9635\u8425\u5173\u95e8\u51b7\u5374"
     },
     "airshipInitialSabotageCooldown": {
         "0": "Initial sabotage cooldown(AIrship)",
         "11": "\u521d\u671f\u30b5\u30dc\u30bf\u30fc\u30b8\u30e5\u30af\u30fc\u30eb\u30c0\u30a6\u30f3(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u6e38\u620f\u5f00\u59cb\u65f6\u5185\u9b3c\u9635\u8425\u7d27\u6025\u7834\u574f\u51b7\u5374"
+        "13": "\u6e38\u620f\u5f00\u59cb\u65f6\u5185\u9b3c\u9635\u8425\u7d27\u6025\u7834\u574f\u51b7\u5374"
     },
     "airshipOldAdmin": {
         "0": "Old Admin (Airship)",
         "11": "\u65e7\u30a2\u30c9\u30df\u30f3(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u542f\u7528\u8001\u7248\u7ba1\u7406\u5ba4\u5730\u56fe"
+        "13": "\u542f\u7528\u8001\u7248\u7ba1\u7406\u5ba4\u5730\u56fe"
     },
     "airshipRestrictedAdmin": {
         "0": "Restrict Admin Area(Airship)",
         "11": "\u30a2\u30c9\u30df\u30f3\u8868\u793a\u7bc4\u56f2\u5236\u9650(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u9650\u5236\u7ba1\u7406\u5ba4\u5730\u56fe\u7684\u6db5\u76d6\u8303\u56f4"
+        "13": "\u9650\u5236\u7ba1\u7406\u5ba4\u5730\u56fe\u7684\u6db5\u76d6\u8303\u56f4"
     },
     "airshipDisableGapSwitchBoard": {
         "0": "Disable Gap SwitchBoard(Airship)",
         "11": "\u6607\u964d\u6a5f\u914d\u96fb\u76e4\u7121\u52b9\u5316(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u7981\u7528\u95f4\u9699\u5ba4\u7167\u660e\u4fee\u590d\u70b9"
+        "13": "\u7981\u7528\u95f4\u9699\u5ba4\u7167\u660e\u4fee\u590d\u70b9"
     },
     "airshipDisableMovingPlatform": {
         "0": "Disable Moving Platform(Airship)",
         "11": "\u306c\uff5e\u3093\u7121\u52b9\u5316(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u7981\u7528\u95f4\u9699\u5ba4\u79fb\u52a8\u5e73\u53f0"
+        "13": "\u7981\u7528\u95f4\u9699\u5ba4\u79fb\u52a8\u5e73\u53f0"
     },
     "airshipAdditionalLadder": {
         "0": "Additional Ladder(Airship)",
         "11": "\u6607\u964d\u6a5f\u53f3\u8ffd\u52a0\u68af\u5b50(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u5728\u95f4\u9699\u5ba4\u53f3\u4fa7\u8ffd\u52a0\u901a\u5f80\u4f1a\u8bae\u5ba4\u7684\u68af\u5b50"
+        "13": "\u5728\u95f4\u9699\u5ba4\u53f3\u4fa7\u8ffd\u52a0\u901a\u5f80\u4f1a\u8bae\u5ba4\u7684\u68af\u5b50"
     },
     "airshipOneWayLadder": {
         "0": "Gap One Way Ladder(Airship)",
         "11": "\u6607\u964d\u6a5f\u5de6\u4e00\u65b9\u901a\u884c\u68af\u5b50(\u30a8\u30a2\u30b7\u30c3\u30d7)",
-        "13": "\u98de\u8247\uff1a\u5c06\u95f4\u9699\u5ba4\u68af\u5b50\u53d8\u4e3a\u5355\u5411\u68af"
+        "13": "\u5c06\u95f4\u9699\u5ba4\u68af\u5b50\u53d8\u4e3a\u5355\u5411\u68af"
     },
     "airshipReplaceSafeTask": {
         "0": "Replace safe task to another task(Airship)",
-        "11": "\u91d1\u5eab\u30bf\u30b9\u30af\u3092\u5225\u306e\u30bf\u30b9\u30af\u306b\u5909\u66f4(\u30a8\u30a2\u30b7\u30c3\u30d7)"
+        "11": "\u91d1\u5eab\u30bf\u30b9\u30af\u3092\u5225\u306e\u30bf\u30b9\u30af\u306b\u5909\u66f4(\u30a8\u30a2\u30b7\u30c3\u30d7)",
+        "13": "\u4fdd\u9669\u7bb1\u4efb\u52a1\u53d8\u4e3a\u5176\u4ed6\u4efb\u52a1"
     },
     "delayBeforeMeeting": {
         "0": "Delay time before meeting",
@@ -1017,6 +1029,10 @@
         "11": "\u900f\u904e\u30de\u30c3\u30d7",
         "13": "\u5730\u56fe\u900f\u660e\u5316"
     },
+    "showChatNotifications": {
+        "0": "Show Chat Notifications",
+        "13": "\u663e\u793a\u804a\u5929\u901a\u77e5"
+    },
     "moriarty": {
         "0": "Moriarty",
         "11": "\u30e2\u30ea\u30a2\u30fc\u30c6\u30a3",
@@ -1109,11 +1125,13 @@
     },
     "sherlockInvestigateMessage1": {
         "0": "{0} is killed by {1}",
-        "11": "{0}\u306f{1}\u306b\u6bba\u3055\u308c\u305f"
+        "11": "{0}\u306f{1}\u306b\u6bba\u3055\u308c\u305f",
+        "13": "{0}\u88ab{1}\u51fb\u6740"
     },
     "sherlockInvestigateMessage2": {
         "0": "No incident was happened",
-        "11": "\u4f55\u3082\u4e8b\u4ef6\u306f\u8d77\u304d\u3066\u3044\u306a\u3044"
+        "11": "\u4f55\u3082\u4e8b\u4ef6\u306f\u8d77\u304d\u3066\u3044\u306a\u3044",
+        "13": "\u6ca1\u6709\u7ebf\u7d22"
     },
     "sherlockShortDesc": {
         "0": "Find out Moriarty",
@@ -1132,35 +1150,43 @@
     },
     "foxTaskStay": {
         "0": "Shrine visit",
-        "11": "\u304a\u53c2\u308a"
+        "11": "\u304a\u53c2\u308a",
+        "13": "\u89c2\u5bdf"
     },
     "foxTaskParallel": {
         "0": "Parallel",
-        "11": "\u4e26\u5217"
+        "11": "\u4e26\u5217",
+        "13": "\u5e76\u5217"
     },
     "foxTaskSerial": {
         "0": "Serial",
-        "11": "\u9023\u7d9a"
+        "11": "\u9023\u7d9a",
+        "13": "\u8fde\u7eed"
     },
     "foxTaskPray": {
         "0": "Praying",
-        "11": "\u304a\u53c2\u308a\u4e2d"
+        "11": "\u304a\u53c2\u308a\u4e2d",
+        "13": "\u8003\u5bdf\u4e2d"
     },
     "foxNumTasks": {
         "0": "Number of tasks",
-        "11": "\u30bf\u30b9\u30af\u6570"
+        "11": "\u30bf\u30b9\u30af\u6570",
+        "13": "\u4efb\u52a1\u6570"
     },
     "foxStayTime": {
         "0": "Stay time for task",
-        "11": "\u6ede\u5728\u6642\u9593"
+        "11": "\u6ede\u5728\u6642\u9593",
+        "13": "\u505c\u6ede\u65f6\u95f4"
     },
     "foxTaskType": {
         "0": "Task Type",
-        "11": "\u30bf\u30b9\u30af\u30bf\u30a4\u30d7"
+        "11": "\u30bf\u30b9\u30af\u30bf\u30a4\u30d7",
+        "13": "\u4efb\u52a1\u7c7b\u578b"
     },
     "cupid": {
         "0": "Cupid",
-        "11": "\u30ad\u30e5\u30fc\u30d4\u30c3\u30c9"
+        "11": "\u30ad\u30e5\u30fc\u30d4\u30c3\u30c9",
+        "13": "\u4e18\u6bd4\u7279"
     },
     "cupidTimeLimit": {
         "0": "Time Limit",
@@ -1169,27 +1195,75 @@
     },
     "cupidArrow": {
         "0": "Arrow",
-        "11": "\u30a2\u30ed\u30fc"
+        "11": "\u30a2\u30ed\u30fc",
+        "13": "\u7bad\u5934"
     },
     "cupidShield": {
         "0": "activate Shield",
-        "11": "\u30b7\u30fc\u30eb\u30c9\u3092\u6709\u52b9\u5316"
+        "11": "\u30b7\u30fc\u30eb\u30c9\u3092\u6709\u52b9\u5316",
+        "13": "\u65e0\u6cd5\u8fde\u7ebf\u6709\u76fe\u73a9\u5bb6"
     },
     "cupidShortDesc": {
         "0": "Keep the couple alive",
-        "11": "\u604b\u306e\u30ad\u30e5\u30fc\u30d4\u30c3\u30c9"
+        "11": "\u604b\u306e\u30ad\u30e5\u30fc\u30d4\u30c3\u30c9",
+        "13": "\u604b\u7231\u4e4b\u795e\u4e18\u6bd4\u7279\u7ed9\u6709\u7f18\u4eba\u7275\u7ea2\u7ebf"
     },
     "cupidIntroDesc": {
         "0": "Keep the couple alive",
-        "11": "\u604b\u306e\u30ad\u30e5\u30fc\u30d4\u30c3\u30c9"
+        "11": "\u604b\u306e\u30ad\u30e5\u30fc\u30d4\u30c3\u30c9",
+        "13": "\u604b\u7231\u4e4b\u795e\u4e18\u6bd4\u7279\u7ed9\u6709\u7f18\u4eba\u7275\u7ea2\u7ebf"
     },
     "cupidFullDesc": {
-        "11": "\u604b\u306e\u30ad\u30e5\u30fc\u30d4\u30c3\u30c9\n- \u4efb\u610f\u306e\u4e8c\u4eba\u3092Lovers\u306b\u3059\u308b\u3053\u3068\u304c\u3067\u304d\u308b(\u30bf\u30b9\u30af\u30d5\u30a7\u30a4\u30ba\u3067\u9078\u629e\u3001\u4f1a\u8b70\u5f8c\u306b\u6709\u52b9\u5316\uff09\n- \u81ea\u8eab\u304c\u9078\u3093\u3060Lovers\u304c\u6700\u5f8c\u307e\u3067\u751f\u5b58\u3059\u308b\u3068\u52dd\u5229\n- \u4e00\u5b9a\u6642\u9593\u4ee5\u5185\u306b\u9078\u5b9a\u3057\u306a\u3044\u3068\u81ea\u6bba\n- \u81ea\u8eab\u304c\u9078\u3093\u3060\u5bfe\u8c61\u306e\u3069\u3061\u3089\u304b\u304c\u6b7b\u4ea1\u3057\u305f\u5834\u5408\u306b\u5f8c\u8ffd\u3044\u81ea\u6bba\n- \u30ad\u30e5\u30fc\u30d4\u30c3\u30c9\u306f\uff08\u901a\u5e38\u306e\uff09Lovers\u306b\u9078\u51fa\u3055\u308c\u306a\u3044\n- \uff08\u901a\u5e38\u306e\uff09Lovers\u306e\u7247\u65b9\u3092Cupid\u306eLovers\u306b\u9078\u629e\u3057\u305f\u5834\u5408\u6b8b\u3055\u308c\u305f\u4e00\u4eba\u306f\u4f1a\u8b70\u7d42\u4e86\u5f8c\u306b\u6b7b\u4ea1\u3059\u308b\uff08\u6b7b\u4f53\u306f\u3067\u306a\u3044\uff09\n- \u30ad\u30e5\u30fc\u30d4\u30c3\u30c9\u306f\u4efb\u610f\u306e\u5bfe\u8c61\u306b\u30b7\u30fc\u30eb\u30c9\u3092\u4ed8\u4e0e\u3059\u308b\u3053\u3068\u304c\u3067\u304d\u308b\n- \u30b7\u30fc\u30eb\u30c9\u3092\u4ed8\u4e0e\u3057\u305f\u5bfe\u8c61\u304c\u30ad\u30eb\u3055\u308c\u308b\u3068\u4ee3\u308f\u308a\u306b\u30ad\u30e5\u30fc\u30d4\u30c3\u30c9\u304c\u6b7b\u4ea1\u3059\u308b\n- \u30b7\u30fc\u30eb\u30c9\u3092\u4ed8\u4e0e\u3055\u308c\u305f\u5bfe\u8c61\u306f\u30ad\u30eb\u3055\u308c\u305f\u3053\u3068\u3092\u8a8d\u8b58\u3059\u308b\u3053\u3068\u304c\u3067\u304d\u306a\u3044"
+        "11": "\u604b\u306e\u30ad\u30e5\u30fc\u30d4\u30c3\u30c9\n- \u4efb\u610f\u306e\u4e8c\u4eba\u3092Lovers\u306b\u3059\u308b\u3053\u3068\u304c\u3067\u304d\u308b(\u30bf\u30b9\u30af\u30d5\u30a7\u30a4\u30ba\u3067\u9078\u629e\u3001\u4f1a\u8b70\u5f8c\u306b\u6709\u52b9\u5316\uff09\n- \u81ea\u8eab\u304c\u9078\u3093\u3060Lovers\u304c\u6700\u5f8c\u307e\u3067\u751f\u5b58\u3059\u308b\u3068\u52dd\u5229\n- \u4e00\u5b9a\u6642\u9593\u4ee5\u5185\u306b\u9078\u5b9a\u3057\u306a\u3044\u3068\u81ea\u6bba\n- \u81ea\u8eab\u304c\u9078\u3093\u3060\u5bfe\u8c61\u306e\u3069\u3061\u3089\u304b\u304c\u6b7b\u4ea1\u3057\u305f\u5834\u5408\u306b\u5f8c\u8ffd\u3044\u81ea\u6bba\n- \u30ad\u30e5\u30fc\u30d4\u30c3\u30c9\u306f\uff08\u901a\u5e38\u306e\uff09Lovers\u306b\u9078\u51fa\u3055\u308c\u306a\u3044\n- \uff08\u901a\u5e38\u306e\uff09Lovers\u306e\u7247\u65b9\u3092Cupid\u306eLovers\u306b\u9078\u629e\u3057\u305f\u5834\u5408\u6b8b\u3055\u308c\u305f\u4e00\u4eba\u306f\u4f1a\u8b70\u7d42\u4e86\u5f8c\u306b\u6b7b\u4ea1\u3059\u308b\uff08\u6b7b\u4f53\u306f\u3067\u306a\u3044\uff09\n- \u30ad\u30e5\u30fc\u30d4\u30c3\u30c9\u306f\u4efb\u610f\u306e\u5bfe\u8c61\u306b\u30b7\u30fc\u30eb\u30c9\u3092\u4ed8\u4e0e\u3059\u308b\u3053\u3068\u304c\u3067\u304d\u308b\n- \u30b7\u30fc\u30eb\u30c9\u3092\u4ed8\u4e0e\u3057\u305f\u5bfe\u8c61\u304c\u30ad\u30eb\u3055\u308c\u308b\u3068\u4ee3\u308f\u308a\u306b\u30ad\u30e5\u30fc\u30d4\u30c3\u30c9\u304c\u6b7b\u4ea1\u3059\u308b\n- \u30b7\u30fc\u30eb\u30c9\u3092\u4ed8\u4e0e\u3055\u308c\u305f\u5bfe\u8c61\u306f\u30ad\u30eb\u3055\u308c\u305f\u3053\u3068\u3092\u8a8d\u8b58\u3059\u308b\u3053\u3068\u304c\u3067\u304d\u306a\u3044",
+        "13": "\u604b\u7231\u7684\u4e18\u6bd4\u7279\n-\u53ef\u4ee5\u8ba9\u4efb\u610f\u7684\u4e24\u4eba\u6210\u4e3a\u604b\u4eba(\u5728\u4efb\u52a1\u9636\u6bb5\u9009\u62e9\uff0c\u4f1a\u8bae\u540e\u751f\u6548)\n-\u81ea\u5df1\u9009\u62e9\u7684\u604b\u4eba\u751f\u5b58\u5230\u6700\u540e\u5c31\u80dc\u5229\n-\u4e00\u5b9a\u65f6\u95f4\u5185\u4e0d\u9009\u62e9\u5c31\u81ea\u6740\u5728\u81ea\u5df1\u9009\u62e9\u7684\u5bf9\u8c61\u4e2d\u6709\u4e00\u4e2a\u6b7b\u4ea1\u7684\u60c5\u51b5\u4e0b\u5c3e\u968f\u81ea\u6740\n-\u4e18\u6bd4\u7279\u4e0d\u4f1a\u88ab\u9009\u4e3a(\u666e\u901a\u7684)\u604b\u4eba\n-\u5982\u679c\u9009\u62e9(\u666e\u901a\u7684)\u604b\u4eba\u7684\u4e00\u4e2a\u4f5c\u4e3a\u4e18\u6bd4\u7279\u7684\u604b\u4eba\uff0c\u5269\u4e0b\u7684\u4e00\u4e2a\u4eba\u4f1a\u5728\u4f1a\u8bae\u7ed3\u675f\u540e\u6b7b\u4ea1(\u5c38\u4f53\u9664\u5916)\n-\u4e18\u6bd4\u7279\u53ef\u4ee5\u7ed9\u4efb\u4f55\u5bf9\u8c61\u52a0\u62a4\u76fe\n-\u5982\u679c\u88ab\u8d4b\u4e88\u62a4\u76fe\u7684\u5bf9\u8c61\u88ab\u65a9\u6740\uff0c\u4e18\u6bd4\u7279\u5c31\u4f1a\u6b7b\u4ea1\u3002\u88ab\u8d4b\u4e88\u62a4\u76fe\u7684\u5bf9\u8c61\u4e0d\u80fd\u610f\u8bc6\u5230\u81ea\u5df1\u88ab\u65a9\u6740\u3002"
+    },
+    "next": {
+        "0": "Next",
+        "13": "\u4e0b\u4e00\u9875"
+    },
+    "previous": {
+        "0": "Previous",
+        "13": "\u4e0a\u4e00\u9875"
+    },
+    "impostorDisconnect": {
+        "0": "Last Crewmate Disconnected",
+        "13": "\u6700\u540e\u4e00\u540d\u8239\u5458\u65ad\u8fde"
+    },
+    "impostorByKill": {
+        "0": "Impostors Win - By Kill",
+        "13": "\u5185\u9b3c\u9635\u8425\u80dc\u5229 - \u901a\u8fc7\u51fb\u6740"
+    },
+    "impostorBySabotage": {
+        "0": "Impostors Win - By Sabotage",
+        "13": "\u5185\u9b3c\u9635\u8425\u80dc\u5229 - \u7834\u574f\u80dc\u5229"
+    },
+    "impostorByVote": {
+        "0": "Impostors Win - By Vote, Guess or DC",
+        "13": "\u5185\u9b3c\u9635\u8425\u80dc\u5229 - \u901a\u8fc7\u9a71\u9010\u8239\u5458,\u8d4c\u6740\u6216\u8239\u5458\u65ad\u8fde"
+    },
+    "humansByTask": {
+        "0": "Crew Wins - Task Win",
+        "13": "\u8239\u5458\u9635\u8425\u80dc\u5229 - \u4efb\u52a1\u83b7\u80dc"
+    },
+    "humansDisconnect": {
+        "0": "Crew Wins - No Evil Killers Left",
+        "13": "\u8239\u5458\u9635\u8425\u80dc\u5229 - \u6700\u540e\u90aa\u6076\u804c\u4e1a\u65ad\u8fde"
+    },
+    "humansByVote": {
+        "0": "Crew Wins - No Evil Killers Left",
+        "13": "\u8239\u5458\u9635\u8425\u80dc\u5229 - \u6700\u540e\u90aa\u6076\u804c\u4e1a\u88ab\u9a71\u9010"
+    },
+    "lobbyJoinBindText1": {
+        "0": "Prev Lobby:",
+        "13": "\u8fd4\u56de\u4e0a\u4e00\u4e2a\u5927\u5385:"
+    },
+    "lobbyJoinBindText2": {
+        "0": "Prev Lobby:",
+        "13": "\n\u7c98\u8d34\u677f:"
     },
     "torSettings": {
-        "0": "The Other Roles Settings",
-        "11": "The Other Roles\u306e\u8a2d\u5b9a",
-        "13": "\u8d85\u591a\u804c\u4e1a\u6a21\u7ec4\u8bbe\u5b9a"
+        "0": "TORGMH Settings",
+        "13": "TORGMH\u8bbe\u7f6e"
     },
     "preset1": {
         "0": "Preset 1",
@@ -1201,20 +1275,25 @@
         "11": "\u30d7\u30ea\u30bb\u30c3\u30c8\uff12",
         "13": "\u9884\u8bbe2"
     },
-    "preset3": {
-        "0": "Preset 3",
-        "11": "\u30d7\u30ea\u30bb\u30c3\u30c8\uff13",
-        "13": "\u9884\u8bbe3"
+    "randomPresetSkeld": {
+        "0": "Random Preset Skeld",
+        "13": "\u968f\u673a\u9ab7\u9ac5\u8230\u9884\u8bbe"
     },
-    "preset4": {
-        "0": "Preset 4",
-        "11": "\u30d7\u30ea\u30bb\u30c3\u30c8\uff14",
-        "13": "\u9884\u8bbe4"
+    "randomPresetMair": {
+        "0": "Random Preset Mira HQ",
+        "13": "\u968f\u673a\u7c73\u62c9\u603b\u90e8\u9884\u8bbe"
     },
-    "preset5": {
-        "0": "Preset 5",
-        "11": "\u30d7\u30ea\u30bb\u30c3\u30c8\uff15",
-        "13": "\u9884\u8bbe5"
+    "randomPresetPolus": {
+        "0": "Random Preset Polus",
+        "13": "\u968f\u673a\u6ce2\u9c81\u65af\u9884\u8bbe"
+    },
+    "randomPresetAir": {
+        "0": "Random Preset Airship",
+        "13": "\u968f\u673a\u9ad8\u5e3d\u5e2e\u98de\u8239\u9884\u8bbe"
+    },
+    "randomPresetSub": {
+        "0": "Random Preset Submerged",
+        "13": "\u968f\u673a\u6f5c\u8247\u5730\u56fe\u9884\u8bbe"
     },
     "presetSelection": {
         "0": "Preset",
@@ -3661,10 +3740,34 @@
         "11": "\u30e9\u30f3\u30c0\u30e0\u306bAirship\u304c\u542b\u307e\u308c\u308b",
         "13": "\u53ef\u968f\u673a\u6e38\u73a9\u9ad8\u5e3d\u5e2e\u98de\u8239"
     },
+    "dynamicMapEnableFungle": {
+        "0": "Enable Fungle Rotation",
+        "13": "\u53ef\u968f\u673a\u6e38\u73a9\u8611\u83c7\u5c9b"
+    },
     "dynamicMapEnableDleks": {
         "0": "Enable dlekS Rotation",
         "11": "\u30e9\u30f3\u30c0\u30e0\u306bdlekS\u304c\u542b\u307e\u308c\u308b",
         "13": "\u53ef\u968f\u673a\u6e38\u73a9\u955c\u50cf\u9ab7\u9ac5\u8230"
+    },
+    "dynamicMapEnableSubmerged": {
+        "0": "Enable Submerged Rotation",
+        "13": "\u53ef\u968f\u673a\u6e38\u73a9\u6f5c\u8247\u5730\u56fe"
+    },
+    "dynamicMapSeparateSettings": {
+        "0": "Use Random Map Setting Presets",
+        "13": "\u4f7f\u7528\u968f\u673a\u5730\u56fe\u9884\u8bbe"
+    },
+    "rolesCountHeading": {
+        "0": "Min/Max Roles",
+        "13": "\u6700\u5927/\u5c0f\u804c\u4e1a\u6570\u91cf\u8bbe\u7f6e"
+    },
+    "gameplaySettings": {
+        "0": "Gameplay Settings",
+        "13": "\u57fa\u672c\u6e38\u620f\u8bbe\u7f6e"
+    },
+    "lastImpostorSettings": {
+        "0": "Last Impostor Settings",
+        "13": "\u7edd\u5883\u8005\u8bbe\u7f6e"
     },
     "roleNumAssigned": {
         "0": "Role Count",
@@ -3696,6 +3799,18 @@
         "11": "\u30b7\u30e7\u30fc\u30c8\u30bf\u30b9\u30af",
         "13": "\u77ed\u4efb\u52a1"
     },
+    "addKillDistanceVeryLong": {
+        "0": "Very Short"
+    },
+    "addKillDistanceShort": {
+        "0": "Very Short"
+    },
+    "addKillDistanceMedium": {
+        "0": "Medium"
+    },
+    "addKillDistanceLong": {
+        "0": "Long"
+    },
     "optionOn": {
         "0": "On",
         "11": "\u30aa\u30f3",
@@ -3708,23 +3823,81 @@
     },
     "crewmateRoles": {
         "0": "Crewmate Roles",
-        "11": "\u30af\u30eb\u30fc\u30ed\u30fc\u30eb",
-        "13": "\u8239\u5458\u804c\u4e1a\u6570"
+        "11": "\u30af\u30eb\u30fc\u30e1\u30a4\u30c8\u5f79\u8077",
+        "13": "\u8239\u5458\u804c\u4e1a"
     },
     "neutralRoles": {
         "0": "Neutral Roles",
-        "11": "\u305d\u306e\u4ed6\u9663\u55b6\u30ed\u30fc\u30eb",
-        "13": "\u72ec\u7acb\u804c\u4e1a\u6570"
+        "11": "\u30cb\u30e5\u30fc\u30c8\u30e9\u30eb\u5f79\u8077",
+        "13": "\u4e2d\u7acb\u804c\u4e1a"
     },
     "impostorRoles": {
         "0": "Impostor Roles",
-        "11": "\u30a4\u30f3\u30dd\u30b9\u30bf\u30fc\u30ed\u30fc\u30eb",
-        "13": "\u5185\u9b3c\u804c\u4e1a\u6570"
+        "11": "\u30a4\u30f3\u30dd\u30b9\u30bf\u30fc\u5f79\u8077",
+        "13": "\u5185\u9b3c\u804c\u4e1a"
+    },
+    "modifiers": {
+        "0": "Modifiers",
+        "11": "\u5c5e\u6027",
+        "13": "\u9644\u52a0\u804c\u4e1a"
+    },
+    "roleOverview": {
+        "0": "Role Overview",
+        "11": "\u5f79\u8077\u306e\u6982\u8981",
+        "13": "\u89d2\u8272\u603b\u89c8"
     },
     "pressTabForMore": {
         "0": "Press tab for more...",
         "11": "Tab\u30ad\u30fc\u3067\u6b21\u306e\u30da\u30fc\u30b8\u3078\u2026",
         "13": "\u6309Tab\u67e5\u770b\u66f4\u591a\u4fe1\u606f"
+    },
+    "page1": {
+        "0": "Page 1: Vanilla Settings \n\n",
+        "11": "Page 1: \u30d0\u30cb\u30e9\u8a2d\u5b9a \n\n",
+        "13": "\u7b2c\u4e00\u9875\uff1a\u539f\u7248\u8bbe\u7f6e \n\n"
+    },
+    "page2": {
+        "0": "Page 2: The Other Roles Settings \n",
+        "11": "Page 2: TOR\u8a2d\u5b9a \n",
+        "13": "\u7b2c\u4e8c\u9875\uff1a\u8d85\u591a\u804c\u4e1a\u8bbe\u7f6e \n"
+    },
+    "page3": {
+        "0": "Page 3: Role and Modifier Rates \n",
+        "11": "Page 3: \u5f79\u8077\u3068\u5c5e\u6027\u306e\u6570 \n",
+        "13": "\u7b2c\u4e09\u9875\uff1a\u804c\u4e1a\u4e0e\u526f\u804c\u4e1a\u6982\u7387 \n"
+    },
+    "page4": {
+        "0": "Page 4: Impostor Role Settings \n",
+        "11": "Page 4: \u30a4\u30f3\u30dd\u30b9\u30bf\u30fc\u5f79\u8077\u8a2d\u5b9a \n",
+        "13": "\u7b2c\u56db\u9875\uff1a\u5185\u9b3c\u804c\u4e1a\u8bbe\u7f6e \n"
+    },
+    "page5": {
+        "0": "Page 5: Neutral Role Settings \n",
+        "11": "Page 5: \u30cb\u30e5\u30fc\u30c8\u30e9\u30eb\u5f79\u8077\u8a2d\u5b9a \n",
+        "13": "\u7b2c\u4e94\u9875\uff1a\u4e2d\u7acb\u804c\u4e1a\u8bbe\u7f6e \n"
+    },
+    "page6": {
+        "0": "Page 6: Crewmate Role Settings \n",
+        "11": "Page 6: \u30af\u30eb\u30fc\u30e1\u30a4\u30c8\u5f79\u8077\u8a2d\u5b9a \n",
+        "13": "\u7b2c\u516d\u9875\uff1a\u8239\u5458\u804c\u4e1a\u8bbe\u7f6e \n"
+    },
+    "page7": {
+        "0": "Page 7: Modifier Settings \n",
+        "11": "Page 7: \u5c5e\u6027\u8a2d\u5b9a \n",
+        "13": "\u7b2c\u4e03\u9875\uff1a\u9644\u52a0\u804c\u4e1a\u8bbe\u7f6e \n"
+    },
+    "useScrollWheel": {
+        "0": "(Use scroll wheel if necessary)",
+        "11": "(\u30b9\u30af\u30ed\u30fc\u30eb\u30db\u30a4\u30fc\u30eb\u3092\u4f7f\u7528\u3057\u3066\u304f\u3060\u3055\u3044)",
+        "13": "(\u5982\u6709\u5fc5\u8981\u8bf7\u4f7f\u7528\u6eda\u8f6e)"
+    },
+    "spawnChance": {
+        "0": "Spawn Chance",
+        "13": "\u4ea7\u751f\u6982\u7387"
+    },
+    "buildModifierExtras": {
+        "0": "Evil:",
+        "13": "\u90aa\u6076\u6982\u7387"
     },
     "roleNoSettings": {
         "0": "No Settings For Role",
@@ -3993,7 +4166,8 @@
     },
     "roleSummaryScapegoat": {
         "0": "Scapegoat",
-        "11": "\u8eab\u4ee3\u308f\u308a"
+        "11": "\u8eab\u4ee3\u308f\u308a",
+        "13": "\u66ff\u8eab"
     },
     "playerInfoDC": {
         "0": "Disconnected",
@@ -4118,40 +4292,50 @@
     "creditsMain": {
         "0": "Modded by <color=#FCCE03FF>Eisbison</color>, <color=#FCCE03FF>Thunderstorm584</color>, <color=#FCCE03FF>EndOfFile</color> & <color=#FCCE03FF>Mall\u00f6ris</color>\nDesign by <color=#FCCE03FF>Bavari</color>, Customization by <color=#c1a9ff>Virtual_Dusk</color> & Haoming",
         "11": "MOD <color=#FCCE03FF>Eisbison</color>\u3001<color=#FCCE03FF>Thunderstorm584</color>\u3001<color=#FCCE03FF>EndOfFile</color>\u3001<color=#FCCE03FF>Mall\u00f6ris</color>\n\u30c7\u30b6\u30a4\u30f3 <color=#FCCE03FF>Bavari</color>\u3001\u30ab\u30b9\u30bf\u30de\u30a4\u30ba\u30fb\u65e5\u672c\u8a9e\u8a33 <color=#c1a9ff>Virtual_Dusk</color>\u3001\u306f\u304a\u307f\u3093",
-        "13": "\u6a21\u7ec4\u4f5c\u8005\uff1a<color=#FCCE03FF>Eisbison</color>, <color=#FCCE03FF>Thunderstorm584</color>, <color=#FCCE03FF>EndOfFile</color> & <color=#FCCE03FF>Mall\u00f6ris</color>\n\u827a\u672f\u8bbe\u8ba1\uff1a<color=#FCCE03FF>Bavari</color>,\u6a21\u7ec4\u5b9a\u5236\uff1a<color=#c1a9ff>Virtual_Dusk</color>\n\u4e2d\u6587\u7ffb\u8bd1\uff1a<color=#FC0000FF>123\uff0c\u6c22\u6c27\u5219\u540d\uff0c\u4e71\u7ebfNamdam_096</color>"
+        "13": "\u6a21\u7ec4\u4f5c\u8005\uff1a<color=#FCCE03FF>Eisbison</color>, <color=#FCCE03FF>Thunderstorm584</color>, <color=#FCCE03FF>EndOfFile</color> & <color=#FCCE03FF>Mall\u00f6ris</color>\n\u827a\u672f\u8bbe\u8ba1\uff1a<color=#FCCE03FF>Bavari</color>,\u6a21\u7ec4\u5b9a\u5236\uff1a<color=#c1a9ff>Virtual_Dusk</color> & Haoming\n\u4e2d\u6587\u7ffb\u8bd1\uff1a<color=#FC0000FF>\u6c22\u6c27\u5219\u540d\uff0c\u4e71\u7ebfNamdam_096</color>"
     },
     "creditsFull": {
         "0": "<size=80%>Modded by <color=#FCCE03FF>Eisbison</color>, <color=#FCCE03FF>EndOfFile</color>\n<color=#FCCE03FF>Thunderstorm584</color> & <color=#FCCE03FF>Mall\u00f6ris</color>\nButton design by <color=#FCCE03FF>Bavari</color>\nCustomization by <color=#c1a9ff>Virtual_Dusk</color> & Haoming</size>",
         "11": "<size=80%>MOD <color=#FCCE03FF>Eisbison</color>\u3001<color=#FCCE03FF>EndOfFile</color>\n<color=#FCCE03FF>Thunderstorm584</color>\u3001<color=#FCCE03FF>Mall\u00f6ris</color>\n\u30dc\u30bf\u30f3\u30c7\u30b6\u30a4\u30f3 <color=#FCCE03FF>Bavari</color>\n\u30ab\u30b9\u30bf\u30de\u30a4\u30ba\u30fb\u65e5\u672c\u8a9e\u8a33 <color=#c1a9ff>Virtual_Dusk</color>\u3001\u306f\u304a\u307f\u3093</size>\u3000",
-        "13": "<size=80%>\u6a21\u7ec4\u4f5c\u8005\uff1a<color=#FCCE03FF>Eisbison</color>, <color=#FCCE03FF>EndOfFile</color>\n<color=#FCCE03FF>Thunderstorm584</color> & <color=#FCCE03FF>Mall\u00f6ris</color>\n\u6309\u952e\u8bbe\u8ba1\uff1a <color=#FCCE03FF>Bavari</color>\n\u6a21\u7ec4\u5b9a\u5236\uff1a<color=#c1a9ff>Virtual_Dusk</color> & Haoming\u4e2d\u6587\u7ffb\u8bd1\uff1a<color=#FC0000FF>123\uff0c\u6c22\u6c27\u5219\u540d\uff0c\u4e71\u7ebfNamdam_096</color></size>"
+        "13": "<size=80%>\u6a21\u7ec4\u4f5c\u8005\uff1a<color=#FCCE03FF>Eisbison</color>, <color=#FCCE03FF>EndOfFile</color>\n<color=#FCCE03FF>Thunderstorm584</color> & <color=#FCCE03FF>Mall\u00f6ris</color>\n\u6309\u952e\u8bbe\u8ba1\uff1a <color=#FCCE03FF>Bavari</color>\n\u6a21\u7ec4\u5b9a\u5236\uff1a<color=#c1a9ff>Virtual_Dusk</color> & Haoming\n\u4e2d\u6587\u7ffb\u8bd1\uff1a<color=#FC0000FF>\u6c22\u6c27\u5219\u540d\uff0c\u4e71\u7ebfNamdam_096</color></size>"
+    },
+    "contributorsCredentials": {
+        "0": "<size=70%>Other Contributors: \u51b0\u6668, <color=#ff44ff>TAIKongguo</color></size>",
+        "13": "<size=70%>\u5176\u4ed6\u8d21\u732e\u8005: \u51b0\u6668, <color=#ff44ff>TAIKongguo</color></size>"
+    },
+    "newUpdateCredentials": {
+        "0": "New Update Contributors: <color=#00FFFF>FangKuai</color>, <color=#FCCE03FF>JieGeLovesDengDuaLang</color>, <color=#FCCE03FF>Imp11</color>",
+        "13": "\u7eed\u66f4\u8d21\u732e\u8005: <color=#00FFFF>FangKuai</color>, <color=#FCCE03FF>\u6770\u54e5</color>, <color=#FCCE03FF>Imp11</color>"
+    },
+    "contributorsText": {
+        "0": "Contributors",
+        "13": "\u8d21\u732e\u8005"
     },
     "creditsVersion": {
         "0": "GM-Haoming Edition v{0}",
         "11": "GM-Haoming\u30a8\u30c7\u30a3\u30b7\u30e7\u30f3 v{0}",
-        "13": "GM-Haoming-rebuild\u91cd\u5236\u7248v{0}"
+        "13": "GM-Haoming-rebuild\u91cd\u5236\u7248 v{0}"
     },
     "updateButton": {
-        "0": "Update\nThe Other Roles GM",
+        "0": "Update GMH",
         "11": "TOR GM-Haoming\u3092\n\u30a2\u30c3\u30d7\u30c7\u30fc\u30c8",
-        "13": "\u66f4\u65b0GM-haoming\nThe Other Roles GM-rebuild"
+        "13": "\u66f4\u65b0GM-haoming"
     },
     "updatePleaseWait": {
-        "0": "Updating The Other Roles GM\nPlease wait...",
+        "0": "Updating The Other Roles GM H\nPlease wait...",
         "11": "\u30a2\u30c3\u30d7\u30c7\u30fc\u30c8\u4e2d\n\u5c11\u3005\u304a\u5f85\u3061\u304f\u3060\u3055\u3044\u2026",
         "13": "\u6b63\u5728\u66f4\u65b0\u8d85\u591a\u804c\u4e1aGMrebuid\n\u8bf7\u7a0d\u540e..."
     },
-    "updateManually": {
-        "0": "Unable to auto-update.\nPlease update manually.",
-        "11": "\u81ea\u52d5\u30a2\u30c3\u30d7\u30c7\u30fc\u30c8\u304c\n\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\n\u624b\u52d5\u3067\u66f4\u65b0\u3057\u3066\u304f\u3060\u3055\u3044",
-        "13": "\u65e0\u6cd5\u81ea\u52a8\u66f4\u65b0.\n\u8bf7\u624b\u52a8\u66f4\u65b0"
+    "updateCopying": {
+        "0": "Updating GMH\nPlease wait...\nDownload complete\ncopying file...",
+        "13": "\u6b63\u5728\u66f4\u65b0 GMH\n\u8bf7\u7a0d\u7b49...\n\u4e0b\u8f7d\u5b8c\u6210\n\u6b63\u5728\u590d\u5236\u6587\u4ef6..."
     },
-    "updateInProgress": {
-        "0": "Update might already\nbe in progress.",
-        "11": "\u30a2\u30c3\u30d7\u30c7\u30fc\u30c8\u5b9f\u884c\u4e2d",
-        "13": "\u6b63\u5728\u66f4\u65b0"
+    "updateInDownloading": {
+        "0": "Updating GMH\nPlease wait...\nDownloading...\n{0}",
+        "13": "\u6b63\u5728\u66f4\u65b0 GMH\n\u8bf7\u7a0d\u7b49...\n\u6b63\u5728\u4e0b\u8f7d...\n{0}"
     },
     "updateRestart": {
-        "0": "The Other Roles GM\nupdated successfully.\nPlease restart the game.",
+        "0": "The Other Roles GM H\nupdated successfully.\nPlease restart the game.",
         "11": "The Other Roles GM-Haoming\u306e\n\u30a2\u30c3\u30d7\u30c7\u30fc\u30c8\u304c\u5b8c\u4e86\u3057\u307e\u3057\u305f\n\u30b2\u30fc\u30e0\u3092\u518d\u8d77\u52d5\u3057\u3066\u304f\u3060\u3055\u3044",
         "13": "The Other Roles GM-Haoming\n\u66f4\u65b0\u6210\u529f.\n\u8bf7\u91cd\u542f\u6e38\u620f."
     },
@@ -4161,14 +4345,14 @@
         "13": "\u66f4\u65b0\u5931\u8d25.\n\u8bf7\u7a0d\u540e\u66f4\u65b0,\n\u6216\u8005\u624b\u52a8\u66f4\u65b0."
     },
     "announcementUpdate": {
-        "0": "<size=150%>A new <color=#FC0303>TheOtherRoles GM-Haoming Edition</color> update to v{0} is available:</size>\n\n{1}",
-        "11": "<size=125%><color=#FC0303>TheOtherRoles GM-Haoming\u30a8\u30c7\u30a3\u30b7\u30e7\u30f3</color> v{0}\u306e\u66f4\u65b0\u304c\u3042\u308a\u307e\u3059:</size>\n\n{1}",
-        "13": "<size=150%><color=#FC0303>\u8d85\u591a\u804c\u4e1a\u6a21\u7ec4GM-HaomingRebuild\u7248</color>\u5df2\u7ecf\u53ef\u4ee5\u66f4\u65b0\u81f3v{0}:</size>\n\n{1}"
+        "0": "<size=150%>A new TheOtherRoles GM-Haoming Edition update to {0} is available:</size>\n\n{1}",
+        "11": "<size=125%>TheOtherRoles GM-Haoming\u30a8\u30c7\u30a3\u30b7\u30e7\u30f3 {0}\u306e\u66f4\u65b0\u304c\u3042\u308a\u307e\u3059:</size>\n\n{1}",
+        "13": "<size=150%>\u8d85\u591a\u804c\u4e1a\u6a21\u7ec4GM-HaomingRebuild\u7248\u5df2\u7ecf\u53ef\u4ee5\u66f4\u65b0\u81f3{0}:</size>\n\n{1}"
     },
     "announcementChangelog": {
-        "0": "<size=150%><color=#FC0303>TheOtherRoles GM-Haoming Edition</color> Version {0}:</size>\n\n{1}",
-        "11": "<size=125%><color=#FC0303>TheOtherRoles GM-Haoming\u30a8\u30c7\u30a3\u30b7\u30e7\u30f3</color> v{0}:</size>\n\n{1}",
-        "13": "<size=150%><color=#FC0303>\u8d85\u591a\u804c\u4e1a\u6a21\u7ec4GM-HaomingRebuild</color>v{0}:</size>\n\n{1}"
+        "0": "<size=150%>TheOtherRoles GM-Haoming Edition</color> Version {0}:</size>\n\n{1}",
+        "11": "<size=125%>TheOtherRoles GM-Haoming\u30a8\u30c7\u30a3\u30b7\u30e7\u30f3</color> v{0}:</size>\n\n{1}",
+        "13": "<size=150%>\u8d85\u591a\u804c\u4e1a\u6a21\u7ec4GM-HaomingRebuild</color>v{0}:</size>\n\n{1}"
     },
     "antiTeleport": {
         "0": "Anti Teleport",
@@ -4684,87 +4868,6 @@
         "11": "\u30b2\u30fc\u30e0\u30de\u30b9\u30bf\u30fc\u306f\u3001\u30b2\u30fc\u30e0\u306b\u5f71\u97ff\u3092\u4e0e\u3048\u306a\u3044\u795e\u306e\u3088\u3046\u306a\u5b58\u5728\u3002",
         "13": "\u7ba1\u7406\u5458\u662f\u4e00\u4e2a\u8d77\u89c2\u6d4b\u8005\u4f5c\u7528\u7684\u8eab\u4efd\u3002\u7ba1\u7406\u5458\u4e0d\u5bf9\u6e38\u620f\u4ea7\u751f\u5f71\u54cd\uff0c\u4e14\u6240\u6709\u73a9\u5bb6\u77e5\u9053\u7ba1\u7406\u5458\u7684\u8eab\u4efd\u3002"
     },
-    "Banner": {
-        "0": "Banner.png"
-    },
-    "CamoButton": {
-        "0": "CamoButton.png"
-    },
-    "CleanButton": {
-        "0": "CleanButton.png"
-    },
-    "CloseVentButton": {
-        "0": "CloseVentButton.png"
-    },
-    "CurseButton": {
-        "0": "CurseButton.png"
-    },
-    "CurseKillButton": {
-        "0": "CurseKillButton.png"
-    },
-    "DouseButton": {
-        "0": "DouseButton.png"
-    },
-    "EraserButton": {
-        "0": "EraserButton.png"
-    },
-    "GarlicButton": {
-        "0": "GarlicButton.png"
-    },
-    "HackerButton": {
-        "0": "HackerButton.png"
-    },
-    "IgniteButton": {
-        "0": "IgniteButton.png"
-    },
-    "LighterButton": {
-        "0": "LighterButton.png"
-    },
-    "LightsOutButton": {
-        "0": "LightsOutButton.png"
-    },
-    "MorphButton": {
-        "0": "MorphButton.png"
-    },
-    "PlaceCameraButton": {
-        "0": "PlaceCameraButton.png"
-    },
-    "PlaceJackInTheBoxButton": {
-        "0": "PlaceJackInTheBoxButton.png"
-    },
-    "RepairButton": {
-        "0": "RepairButton.png"
-    },
-    "RewindButton": {
-        "0": "RewindButton.png"
-    },
-    "SampleButton": {
-        "0": "SampleButton.png"
-    },
-    "SeerButton": {
-        "0": "SeerButton.png"
-    },
-    "ShieldButton": {
-        "0": "ShieldButton.png"
-    },
-    "ShiftButton": {
-        "0": "ShiftButton.png"
-    },
-    "SidekickButton": {
-        "0": "SidekickButton.png"
-    },
-    "TimeShieldButton": {
-        "0": "TimeShieldButton.png"
-    },
-    "TrackerButton": {
-        "0": "TrackerButton.png"
-    },
-    "TricksterVentButton": {
-        "0": "TricksterVentButton.png"
-    },
-    "VampireButton": {
-        "0": "VampireButton.png"
-    },
     "colorSalmon": {
         "0": "Salmon",
         "11": "\u30b5\u30fc\u30e2\u30f3",
@@ -5049,6 +5152,11 @@
         "0": "Backup",
         "11": "\u30ad\u30fc\u30d7\u306b\u3059\u308b",
         "13": "\u9009\u4e3a\u5907\u80ce"
+    },
+    "InvestigateText": {
+        "0": "Investigate",
+        "11": "\u8abf\u67fb",
+        "13": "\u8c03\u67e5"
     },
     "innerslothHats": {
         "0": "Innersloth Hats",

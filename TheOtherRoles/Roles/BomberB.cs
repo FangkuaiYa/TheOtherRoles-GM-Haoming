@@ -4,329 +4,352 @@ using HarmonyLib;
 using Hazel;
 using TheOtherRoles.Objects;
 using TheOtherRoles.Patches;
+using TMPro;
 using UnityEngine;
 using static TheOtherRoles.GameHistory;
 using static TheOtherRoles.Patches.PlayerControlFixedUpdatePatch;
 
-namespace TheOtherRoles
+namespace TheOtherRoles;
+
+[HarmonyPatch]
+public class BomberB : RoleBase<BomberB>
 {
-    [HarmonyPatch]
-    public class BomberB : RoleBase<BomberB>
+    public static Color color = Palette.ImpostorRed;
+
+    public static CustomButton bomberButton;
+    public static CustomButton releaseButton;
+
+    public static PlayerControl bombTarget;
+    public static PlayerControl currentTarget;
+    public static PlayerControl tmpTarget;
+    public static TextMeshPro targetText;
+    public static TextMeshPro partnerTargetText;
+    public static Dictionary<byte, PoolablePlayer> playerIcons = new();
+    public static Sprite bomberButtonSprite;
+    public static Sprite releaseButtonSprite;
+    public static float updateTimer;
+    public static List<Arrow> arrows = new();
+    public static float arrowUpdateInterval = 0.5f;
+
+    public BomberB()
     {
-        public static Color color = Palette.ImpostorRed;
+        RoleType = roleId = RoleType.BomberB;
+    }
 
-        public static CustomButton bomberButton;
-        public static CustomButton releaseButton;
+    public static float duration => CustomOptionHolder.bomberDuration.getFloat();
+    public static float cooldown => CustomOptionHolder.bomberCooldown.getFloat();
+    public static bool ifOneDiesBothDie => CustomOptionHolder.bomberIfOneDiesBothDie.getBool();
 
-        public static PlayerControl bombTarget;
-        public static PlayerControl currentTarget;
-        public static PlayerControl tmpTarget;
-        public static TMPro.TextMeshPro targetText;
-        public static TMPro.TextMeshPro partnerTargetText;
-        public static Dictionary<byte, PoolablePlayer> playerIcons = new();
-        public static float duration { get { return CustomOptionHolder.bomberDuration.getFloat(); } }
-        public static float cooldown { get { return CustomOptionHolder.bomberCooldown.getFloat(); } }
-        public static bool ifOneDiesBothDie { get { return CustomOptionHolder.bomberIfOneDiesBothDie.getBool(); } }
-        public static Sprite bomberButtonSprite;
-        public static Sprite releaseButtonSprite;
-        public static float updateTimer = 0f;
-        public static List<Arrow> arrows = new();
-        public static float arrowUpdateInterval = 0.5f;
+    public override void OnMeetingStart()
+    {
+    }
 
-        public BomberB()
+    public override void OnMeetingEnd()
+    {
+        bombTarget = null;
+    }
+
+    public override void FixedUpdate()
+    {
+        if (player == PlayerControl.LocalPlayer)
         {
-            RoleType = roleId = RoleType.BomberB;
-        }
+            currentTarget = setTarget();
+            setPlayerOutline(currentTarget, BomberA.color);
+            arrowUpdate();
 
-        public override void OnMeetingStart() { }
-        public override void OnMeetingEnd()
-        {
-            bombTarget = null;
-        }
-        public override void FixedUpdate()
-        {
-            if (player == CachedPlayer.LocalPlayer.PlayerControl)
+            foreach (PoolablePlayer pp in TORMapOptions.playerIcons.Values) pp.gameObject.SetActive(false);
+            foreach (PoolablePlayer pp in playerIcons.Values) pp.gameObject.SetActive(false);
+            if (player.isAlive() && BomberA.isAlive())
             {
-                currentTarget = setTarget();
-                setPlayerOutline(currentTarget, BomberA.color);
-                arrowUpdate();
-
-                foreach (PoolablePlayer pp in MapOptions.playerIcons.Values) pp.gameObject.SetActive(false);
-                foreach (PoolablePlayer pp in playerIcons.Values) pp.gameObject.SetActive(false);
-                if (player.isAlive() && BomberA.isAlive())
+                if (bombTarget != null && TORMapOptions.playerIcons.ContainsKey(bombTarget.PlayerId) &&
+                    TORMapOptions.playerIcons[bombTarget.PlayerId].gameObject != null)
                 {
-                    if (bombTarget != null && MapOptions.playerIcons.ContainsKey(bombTarget.PlayerId) && MapOptions.playerIcons[bombTarget.PlayerId].gameObject != null)
+                    PoolablePlayer icon = TORMapOptions.playerIcons[bombTarget.PlayerId];
+                    icon.gameObject.SetActive(true);
+                    icon.transform.localPosition = Patches.IntroCutsceneOnDestroyPatch.bottomLeft + new Vector3(0f, -0.35f, -62f);
+                    icon.transform.localScale = Vector3.one * 0.4f;
+                    if (targetText == null)
                     {
-                        var icon = MapOptions.playerIcons[bombTarget.PlayerId];
-                        Vector3 bottomLeft = new(-FastDestroyableSingleton<HudManager>.Instance.UseButton.transform.localPosition.x, FastDestroyableSingleton<HudManager>.Instance.UseButton.transform.localPosition.y, FastDestroyableSingleton<HudManager>.Instance.UseButton.transform.localPosition.z);
-                        icon.gameObject.SetActive(true);
-                        icon.transform.localPosition = bottomLeft + new Vector3(-0.25f, 0f, 0);
-                        icon.transform.localScale = Vector3.one * 0.4f;
-                        if (targetText == null)
-                        {
-                            targetText = GameObject.Instantiate(icon.cosmetics.nameText, icon.cosmetics.nameText.transform.parent);
-                            targetText.enableWordWrapping = false;
-                            targetText.transform.localScale = Vector3.one * 1.5f;
-                            targetText.transform.localPosition += new Vector3(0f, 1.7f, 0);
-                        }
-                        targetText.text = ModTranslation.getString("bomberTarget");
-                        targetText.gameObject.SetActive(true);
-                        targetText.transform.parent = icon.gameObject.transform;
+                        targetText = GameObject.Instantiate(icon.cosmetics.nameText,
+                            icon.cosmetics.nameText.transform.parent);
+                        targetText.enableWordWrapping = false;
+                        targetText.transform.localScale = Vector3.one * 1.5f;
+                        targetText.transform.localPosition += new Vector3(0f, 1.7f, 0);
                     }
-                    // 相方の設置したターゲットを表示する
-                    if (BomberA.bombTarget != null && playerIcons.ContainsKey(BomberA.bombTarget.PlayerId) && playerIcons[BomberA.bombTarget.PlayerId].gameObject != null)
+
+                    targetText.text = ModTranslation.getString("bomberTarget");
+                    targetText.gameObject.SetActive(true);
+                    targetText.transform.parent = icon.gameObject.transform;
+                }
+
+                // 相方の設置したターゲットを表示する
+                if (BomberA.bombTarget != null && playerIcons.ContainsKey(BomberA.bombTarget.PlayerId) &&
+                    playerIcons[BomberA.bombTarget.PlayerId].gameObject != null)
+                {
+                    PoolablePlayer icon = playerIcons[BomberA.bombTarget.PlayerId];
+                    icon.gameObject.SetActive(true);
+                    icon.transform.localPosition = Patches.IntroCutsceneOnDestroyPatch.bottomLeft + new Vector3(0f, -0.35f, -62f);
+                    icon.transform.localScale = Vector3.one * 0.4f;
+                    if (partnerTargetText == null)
                     {
-                        var icon = playerIcons[BomberA.bombTarget.PlayerId];
-                        Vector3 bottomLeft = new(-FastDestroyableSingleton<HudManager>.Instance.UseButton.transform.localPosition.x, FastDestroyableSingleton<HudManager>.Instance.UseButton.transform.localPosition.y, FastDestroyableSingleton<HudManager>.Instance.UseButton.transform.localPosition.z);
-                        icon.gameObject.SetActive(true);
-                        icon.transform.localPosition = bottomLeft + new Vector3(1.0f, 0f, 0);
-                        icon.transform.localScale = Vector3.one * 0.4f;
-                        if (partnerTargetText == null)
-                        {
-                            partnerTargetText = GameObject.Instantiate(icon.cosmetics.nameText, icon.cosmetics.nameText.transform.parent);
-                            partnerTargetText.enableWordWrapping = false;
-                            partnerTargetText.transform.localScale = Vector3.one * 1.5f;
-                            partnerTargetText.transform.localPosition += new Vector3(0f, 1.7f, 0);
-                        }
-                        partnerTargetText.text = ModTranslation.getString("bomberPartnerTarget");
-                        partnerTargetText.gameObject.SetActive(true);
-                        partnerTargetText.transform.parent = icon.gameObject.transform;
+                        partnerTargetText = GameObject.Instantiate(icon.cosmetics.nameText,
+                            icon.cosmetics.nameText.transform.parent);
+                        partnerTargetText.enableWordWrapping = false;
+                        partnerTargetText.transform.localScale = Vector3.one * 1.5f;
+                        partnerTargetText.transform.localPosition += new Vector3(0f, 1.7f, 0);
                     }
+
+                    partnerTargetText.text = ModTranslation.getString("bomberPartnerTarget");
+                    partnerTargetText.gameObject.SetActive(true);
+                    partnerTargetText.transform.parent = icon.gameObject.transform;
                 }
             }
         }
-        public override void OnKill(PlayerControl target) { }
-        public override void OnDeath(PlayerControl killer = null)
+    }
+
+    public override void OnKill(PlayerControl target)
+    {
+    }
+
+    public override void OnDeath(PlayerControl killer = null)
+    {
+        if (ifOneDiesBothDie)
         {
-            if (ifOneDiesBothDie)
+            PlayerControl partner = BomberA.players.FirstOrDefault().player;
+            if (!partner.Data.IsDead)
             {
-                var partner = BomberA.players.FirstOrDefault().player;
-                if (!partner.Data.IsDead)
-                {
-                    if (killer != null)
-                    {
-                        partner.MurderPlayer(partner);
-                    }
-                    else
-                    {
-                        partner.Exiled();
-                    }
+                if (killer != null)
+                    partner.MurderPlayer(partner, MurderResultFlags.Succeeded);
+                else
+                    partner.Exiled();
 
-                    finalStatuses[partner.PlayerId] = FinalStatus.Suicide;
-                }
+                finalStatuses[partner.PlayerId] = FinalStatus.Suicide;
             }
-
         }
-        public override void OnFinishShipStatusBegin() { }
-        public override void HandleDisconnect(PlayerControl player, DisconnectReasons reason) { }
+    }
 
-        public static void MakeButtons(HudManager hm)
-        {
+    public override void OnFinishShipStatusBegin()
+    {
+    }
 
-            // Bomber button
-            bomberButton = new CustomButton(
-                // OnClick
-                () =>
-                {
-                    if (currentTarget != null)
-                    {
-                        tmpTarget = currentTarget;
-                        bomberButton.HasEffect = true;
-                    }
-                },
-                // HasButton
-                () => { return CachedPlayer.LocalPlayer.PlayerControl.isRole(RoleType.BomberB) && CachedPlayer.LocalPlayer.PlayerControl.isAlive() && BomberA.isAlive(); },
-                // CouldUse
-                () =>
-                {
-                    if (bomberButton.isEffectActive && tmpTarget != currentTarget)
-                    {
-                        tmpTarget = null;
-                        bomberButton.Timer = 0f;
-                        bomberButton.isEffectActive = false;
-                    }
+    public override void HandleDisconnect(PlayerControl player, DisconnectReasons reason)
+    {
+    }
 
-                    return CachedPlayer.LocalPlayer.PlayerControl.CanMove && currentTarget != null;
-                },
-                // OnMeetingEnds
-                () =>
+    public static void MakeButtons(HudManager hm)
+    {
+        // Bomber button
+        bomberButton = new CustomButton(
+            // OnClick
+            () =>
+            {
+                if (currentTarget != null)
                 {
-                    bomberButton.Timer = bomberButton.MaxTimer;
+                    tmpTarget = currentTarget;
+                    bomberButton.HasEffect = true;
+                }
+            },
+            // HasButton
+            () =>
+            {
+                return PlayerControl.LocalPlayer.isRole(RoleType.BomberB) &&
+                       PlayerControl.LocalPlayer.isAlive() && BomberA.isAlive();
+            },
+            // CouldUse
+            () =>
+            {
+                if (bomberButton.isEffectActive && tmpTarget != currentTarget)
+                {
+                    tmpTarget = null;
+                    bomberButton.Timer = 0f;
                     bomberButton.isEffectActive = false;
-                    tmpTarget = null;
-                },
-                getBomberButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
-                hm,
-                hm.KillButton,
-                KeyCode.F,
-                true,
-                duration,
-                // OnEffectsEnd
-                () =>
-                {
-                    if (tmpTarget != null)
-                    {
-                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.PlantBomb, Hazel.SendOption.Reliable, -1);
-                        writer.Write(tmpTarget.PlayerId);
-                        AmongUsClient.Instance.FinishRpcImmediately(writer);
-                        BomberB.bombTarget = tmpTarget;
-                    }
-
-                    tmpTarget = null;
-                    bomberButton.Timer = bomberButton.MaxTimer;
-
                 }
-            )
+
+                return PlayerControl.LocalPlayer.CanMove && currentTarget != null;
+            },
+            // OnMeetingEnds
+            () =>
             {
-                buttonText = ModTranslation.getString("bomberPlantBomb")
-            };
-            // Bomber button
-            releaseButton = new CustomButton(
-                // OnClick
-                () =>
-                {
-                    var bomberA = BomberA.allPlayers.FirstOrDefault();
-                    float distance = Vector2.Distance(CachedPlayer.LocalPlayer.PlayerControl.transform.localPosition, bomberA.transform.localPosition);
-
-                    if (CachedPlayer.LocalPlayer.PlayerControl.CanMove && BomberA.bombTarget != null && BomberB.bombTarget != null && bomberA.isAlive() && distance < 1)
-                    {
-                        var target = BomberB.bombTarget;
-                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.ReleaseBomb, Hazel.SendOption.Reliable, -1);
-                        writer.Write(CachedPlayer.LocalPlayer.PlayerControl.PlayerId);
-                        writer.Write(target.PlayerId);
-                        AmongUsClient.Instance.FinishRpcImmediately(writer);
-                        RPCProcedure.releaseBomb(CachedPlayer.LocalPlayer.PlayerControl.PlayerId, target.PlayerId);
-                    }
-                },
-                // HasButton
-                () => { return CachedPlayer.LocalPlayer.PlayerControl.isRole(RoleType.BomberB) && CachedPlayer.LocalPlayer.PlayerControl.isAlive() && BomberA.isAlive(); },
-                // CouldUse
-                () =>
-                {
-                    var bomberA = BomberA.allPlayers.FirstOrDefault();
-                    float distance = Vector2.Distance(CachedPlayer.LocalPlayer.PlayerControl.transform.localPosition, bomberA.transform.localPosition);
-
-                    return CachedPlayer.LocalPlayer.PlayerControl.CanMove && BomberA.bombTarget != null && BomberB.bombTarget != null && bomberA.isAlive() && distance < 1;
-                },
-                // OnMeetingEnds
-                () =>
-                {
-                    releaseButton.Timer = releaseButton.MaxTimer;
-                },
-                getReleaseButtonSprite(),
-                new Vector3(-2.7f, -0.06f, 0),
-                hm,
-                hm.KillButton,
-                KeyCode.F,
-                false
-            )
+                bomberButton.Timer = bomberButton.MaxTimer;
+                bomberButton.isEffectActive = false;
+                tmpTarget = null;
+            },
+            getBomberButtonSprite(),
+            CustomButton.ButtonPositions.upperRowRight,
+            hm,
+            hm.KillButton,
+            KeyCode.F,
+            true,
+            duration,
+            // OnEffectsEnd
+            () =>
             {
-                buttonText = ModTranslation.getString("bomberDetonate")
-            };
+                if (tmpTarget != null)
+                {
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
+                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlantBomb, SendOption.Reliable, -1);
+                    writer.Write(tmpTarget.PlayerId);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    bombTarget = tmpTarget;
+                }
 
-        }
-        public static void SetButtonCooldowns()
+                tmpTarget = null;
+                bomberButton.Timer = bomberButton.MaxTimer;
+            }
+        )
         {
-            bomberButton.MaxTimer = cooldown;
-            bomberButton.EffectDuration = duration;
-            releaseButton.MaxTimer = 0f;
-        }
+            buttonText = ModTranslation.getString("bomberPlantBomb")
+        };
+        // Bomber button
+        releaseButton = new CustomButton(
+            // OnClick
+            () =>
+            {
+                PlayerControl bomberA = BomberA.allPlayers.FirstOrDefault();
+                float distance = Vector2.Distance(PlayerControl.LocalPlayer.transform.localPosition,
+                    bomberA.transform.localPosition);
 
-        public static void Clear()
+                if (PlayerControl.LocalPlayer.CanMove && BomberA.bombTarget != null &&
+                    bombTarget != null && bomberA.isAlive() && distance < 1)
+                {
+                    PlayerControl target = bombTarget;
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
+                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ReleaseBomb, SendOption.Reliable, -1);
+                    writer.Write(PlayerControl.LocalPlayer.PlayerId);
+                    writer.Write(target.PlayerId);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    RPCProcedure.releaseBomb(PlayerControl.LocalPlayer.PlayerId, target.PlayerId);
+                }
+            },
+            // HasButton
+            () =>
+            {
+                return PlayerControl.LocalPlayer.isRole(RoleType.BomberB) &&
+                       PlayerControl.LocalPlayer.isAlive() && BomberA.isAlive();
+            },
+            // CouldUse
+            () =>
+            {
+                PlayerControl bomberA = BomberA.allPlayers.FirstOrDefault();
+                float distance = Vector2.Distance(PlayerControl.LocalPlayer.transform.localPosition,
+                    bomberA.transform.localPosition);
+
+                return PlayerControl.LocalPlayer.CanMove && BomberA.bombTarget != null &&
+                       bombTarget != null && bomberA.isAlive() && distance < 1;
+            },
+            // OnMeetingEnds
+            () => { releaseButton.Timer = releaseButton.MaxTimer; },
+            getReleaseButtonSprite(),
+            CustomButton.ButtonPositions.lowerRowCenter,
+            hm,
+            hm.KillButton,
+            KeyCode.F
+        )
         {
-            bombTarget = null;
-            currentTarget = null;
-            tmpTarget = null;
+            buttonText = ModTranslation.getString("bomberDetonate")
+        };
+    }
+
+    public static void SetButtonCooldowns()
+    {
+        bomberButton.MaxTimer = cooldown;
+        bomberButton.EffectDuration = duration;
+        releaseButton.MaxTimer = 0f;
+    }
+
+    public static void Clear()
+    {
+        bombTarget = null;
+        currentTarget = null;
+        tmpTarget = null;
+        arrows = new List<Arrow>();
+        players = new List<BomberB>();
+        playerIcons = new Dictionary<byte, PoolablePlayer>();
+        targetText = null;
+        partnerTargetText = null;
+    }
+
+    public static bool isAlive()
+    {
+        foreach (BomberB bomber in players)
+            if (!(bomber.player.Data.IsDead || bomber.player.Data.Disconnected))
+                return true;
+        return false;
+    }
+
+    public static Sprite getBomberButtonSprite()
+    {
+        if (bomberButtonSprite) return bomberButtonSprite;
+        bomberButtonSprite = TheOtherRolesPlugin.getResources("PlantBombButton.png");
+        return bomberButtonSprite;
+    }
+
+    public static Sprite getReleaseButtonSprite()
+    {
+        if (releaseButtonSprite) return releaseButtonSprite;
+        releaseButtonSprite = TheOtherRolesPlugin.getResources("ReleaseButton.png");
+        return releaseButtonSprite;
+    }
+
+    private static void arrowUpdate()
+    {
+        if ((BomberA.bombTarget == null || bombTarget == null) && !BomberA.alwaysShowArrow) return;
+
+        // 前フレームからの経過時間をマイナスする
+        updateTimer -= Time.fixedDeltaTime;
+
+        // 1秒経過したらArrowを更新
+        if (updateTimer <= 0.0f)
+        {
+            // 前回のArrowをすべて破棄する
+            foreach (Arrow arrow in arrows)
+                if (arrow != null)
+                {
+                    arrow.arrow.SetActive(false);
+                    Object.Destroy(arrow.arrow);
+                }
+
+            // Arrows一覧
             arrows = new List<Arrow>();
-            players = new List<BomberB>();
-            playerIcons = new Dictionary<byte, PoolablePlayer>();
-            targetText = null;
-            partnerTargetText = null;
-        }
-        public static bool isAlive()
-        {
-            foreach (var bomber in players)
+
+            // 相方の位置を示すArrowsを描画
+            foreach (PlayerControl p in PlayerControl.AllPlayerControls)
             {
-                if (!(bomber.player.Data.IsDead || bomber.player.Data.Disconnected))
-                    return true;
-            }
-            return false;
-        }
-        public static Sprite getBomberButtonSprite()
-        {
-            if (bomberButtonSprite) return bomberButtonSprite;
-            bomberButtonSprite = ModTranslation.getImage("PlantBombButton.png", 115f);
-            return bomberButtonSprite;
-        }
-        public static Sprite getReleaseButtonSprite()
-        {
-            if (releaseButtonSprite) return releaseButtonSprite;
-            releaseButtonSprite = ModTranslation.getImage("ReleaseButton.png", 115f);
-            return releaseButtonSprite;
-        }
-        static void arrowUpdate()
-        {
-            if ((BomberA.bombTarget == null || BomberB.bombTarget == null) && !BomberA.alwaysShowArrow) return;
-
-            // 前フレームからの経過時間をマイナスする
-            updateTimer -= Time.fixedDeltaTime;
-
-            // 1秒経過したらArrowを更新
-            if (updateTimer <= 0.0f)
-            {
-
-                // 前回のArrowをすべて破棄する
-                foreach (Arrow arrow in arrows)
+                if (p.Data.IsDead) continue;
+                if (p.isRole(RoleType.BomberA))
                 {
-                    if (arrow != null)
-                    {
-                        arrow.arrow.SetActive(false);
-                        UnityEngine.Object.Destroy(arrow.arrow);
-                    }
+                    Arrow arrow;
+                    arrow = new Arrow(Color.red);
+                    arrow.arrow.SetActive(true);
+                    arrow.Update(p.transform.position);
+                    arrows.Add(arrow);
                 }
-
-                // Arrows一覧
-                arrows = new List<Arrow>();
-
-                // 相方の位置を示すArrowsを描画
-                foreach (PlayerControl p in CachedPlayer.AllPlayers)
-                {
-                    if (p.Data.IsDead) continue;
-                    if (p.isRole(RoleType.BomberA))
-                    {
-                        Arrow arrow;
-                        arrow = new Arrow(Color.red);
-                        arrow.arrow.SetActive(true);
-                        arrow.Update(p.transform.position);
-                        arrows.Add(arrow);
-                    }
-                }
-
-                // タイマーに時間をセット
-                updateTimer = arrowUpdateInterval;
             }
-        }
 
-        [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
-        class IntroCutsceneOnDestroyPatch
+            // タイマーに時間をセット
+            updateTimer = arrowUpdateInterval;
+        }
+    }
+
+    [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
+    private class IntroCutsceneOnDestroyPatch
+    {
+        public static void Prefix(IntroCutscene __instance)
         {
-            public static void Prefix(IntroCutscene __instance)
+            if (PlayerControl.LocalPlayer != null && FastDestroyableSingleton<HudManager>.Instance != null)
             {
-                if (CachedPlayer.LocalPlayer.PlayerControl != null && FastDestroyableSingleton<HudManager>.Instance != null)
+                foreach (PlayerControl p in PlayerControl.AllPlayerControls)
                 {
-                    Vector3 bottomLeft = new(-FastDestroyableSingleton<HudManager>.Instance.UseButton.transform.localPosition.x, FastDestroyableSingleton<HudManager>.Instance.UseButton.transform.localPosition.y, FastDestroyableSingleton<HudManager>.Instance.UseButton.transform.localPosition.z);
-                    foreach (PlayerControl p in CachedPlayer.AllPlayers)
-                    {
-                        GameData.PlayerInfo data = p.Data;
-                        PoolablePlayer player = UnityEngine.Object.Instantiate<PoolablePlayer>(__instance.PlayerPrefab, FastDestroyableSingleton<HudManager>.Instance.transform);
-                        player.UpdateFromPlayerOutfit((GameData.PlayerOutfit)p.Data.DefaultOutfit, PlayerMaterial.MaskType.ComplexUI, p.Data.IsDead, true);
-                        player.SetFlipX(true);
-                        player.cosmetics.currentPet?.gameObject.SetActive(false);
-                        player.cosmetics.nameText.text = p.Data.DefaultOutfit.PlayerName;
-                        player.gameObject.SetActive(false);
-                        playerIcons[p.PlayerId] = player;
-                    }
+                    NetworkedPlayerInfo data = p.Data;
+                    PoolablePlayer player = Object.Instantiate(__instance.PlayerPrefab,
+                        FastDestroyableSingleton<HudManager>.Instance.transform);
+                    player.UpdateFromPlayerOutfit(p.Data.DefaultOutfit, PlayerMaterial.MaskType.ComplexUI,
+                        p.Data.IsDead, true);
+                    player.SetFlipX(true);
+                    player.cosmetics.currentPet?.gameObject.SetActive(false);
+                    player.cosmetics.nameText.text = p.Data.DefaultOutfit.PlayerName;
+                    player.gameObject.SetActive(false);
+                    playerIcons[p.PlayerId] = player;
                 }
             }
         }

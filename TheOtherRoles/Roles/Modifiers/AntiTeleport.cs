@@ -1,71 +1,77 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using HarmonyLib;
-using Hazel;
-using TheOtherRoles.Objects;
-using TheOtherRoles.Patches;
 using UnityEngine;
-using static TheOtherRoles.GameHistory;
-using static TheOtherRoles.TheOtherRoles;
 
-namespace TheOtherRoles
+namespace TheOtherRoles;
+
+[HarmonyPatch]
+public class AntiTeleport : ModifierBase<AntiTeleport>
 {
-    [HarmonyPatch]
-    public class AntiTeleport : ModifierBase<AntiTeleport>
+    public static Color color = Palette.Orange;
+    public static Vector3 position;
+
+    public AntiTeleport()
     {
-        public static Color color = Palette.Orange;
-        public static Vector3 position = new();
-        public static List<PlayerControl> candidates
-        {
-            get
-            {
-                List<PlayerControl> validPlayers = new();
+        ModType = modId = ModifierType.AntiTeleport;
+    }
 
-                foreach (var player in PlayerControl.AllPlayerControls.GetFastEnumerator())
-                {
-                    if (!player.hasModifier(ModifierType.AntiTeleport))
-                        validPlayers.Add(player);
-                }
-
-                return validPlayers;
-            }
-        }
-        public static string postfix
+    public static List<PlayerControl> candidates
+    {
+        get
         {
-            get
-            {
-                return ModTranslation.getString("antiTeleportPostfix");
-            }
-        }
-        public static string fullName
-        {
-            get
-            {
-                return ModTranslation.getString("antiTeleport");
-            }
-        }
+            List<PlayerControl> validPlayers = new();
 
-        public AntiTeleport()
-        {
-            ModType = modId = ModifierType.AntiTeleport;
-        }
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                if (!player.hasModifier(ModifierType.AntiTeleport))
+                    validPlayers.Add(player);
 
-        public override void OnMeetingStart() { }
-        public override void OnMeetingEnd() { }
-        public override void FixedUpdate() { }
-        public override void OnKill(PlayerControl target) { }
-        public override void OnDeath(PlayerControl killer = null) { }
-        public override void OnFinishShipStatusBegin() { }
-        public override void HandleDisconnect(PlayerControl player, DisconnectReasons reason) { }
-        public static void MakeButtons(HudManager hm) { }
-        public static void SetButtonCooldowns() { }
-
-        public static void Clear()
-        {
-            players = new List<AntiTeleport>();
-            position = new Vector3();
+            return validPlayers;
         }
+    }
+
+    public static string postfix => ModTranslation.getString("antiTeleportPostfix");
+
+    public static string fullName => ModTranslation.getString("antiTeleport");
+
+    public override void OnMeetingStart()
+    {
+    }
+
+    public override void OnMeetingEnd()
+    {
+    }
+
+    public override void FixedUpdate()
+    {
+    }
+
+    public override void OnKill(PlayerControl target)
+    {
+    }
+
+    public override void OnDeath(PlayerControl killer = null)
+    {
+    }
+
+    public override void OnFinishShipStatusBegin()
+    {
+    }
+
+    public override void HandleDisconnect(PlayerControl player, DisconnectReasons reason)
+    {
+    }
+
+    public static void MakeButtons(HudManager hm)
+    {
+    }
+
+    public static void SetButtonCooldowns()
+    {
+    }
+
+    public static void Clear()
+    {
+        players = new List<AntiTeleport>();
+        position = new Vector3();
     }
 }

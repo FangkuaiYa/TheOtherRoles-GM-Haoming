@@ -1,42 +1,111 @@
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.Runtime.CompilerServices;
-using LogLevel = BepInEx.Logging.LogLevel;
+using System.Text;
+using BepInEx;
+using BepInEx.Logging;
 
-namespace TheOtherRoles
+namespace TheOtherRoles;
+
+internal static class LogHelper
 {
-    class Logger
+    private static ManualLogSource logSource { get; set; }
+
+    internal static void SetLogSource(ManualLogSource Source)
     {
-        public static bool isDetail = false;
-        public static bool isAlsoInGame = false;
-        public static void SendInGame(string text)
+        if (ConsoleManager.ConsoleEnabled) System.Console.OutputEncoding = Encoding.UTF8;
+        logSource = Source;
+    }
+
+    public static void Info(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Info);
+    public static void Message(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Message);
+    public static void Warn(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Warning);
+    public static void Error(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Error);
+    public static void Debug(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Debug);
+    public static void Fatal(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Fatal);
+
+    public static void SendLog(string text, string tag = "", LogLevel logLevel = LogLevel.Info)
+    {
+        string time = DateTime.Now.ToString("HH:mm:ss");
+        if (!string.IsNullOrWhiteSpace(tag)) text = $"[{time}] [{tag}] {text}";
+        else text = $"[{time}] {text}";
+
+        switch (logLevel)
         {
-            if (FastDestroyableSingleton<HudManager>.Instance) FastDestroyableSingleton<HudManager>.Instance.Notifier.AddItem(text);
-        }
-        private static void SendToFile(string text, LogLevel level = LogLevel.Info, string tag = "", int lineNumber = 0)
-        {
-            string t = DateTime.Now.ToString("HH:mm:ss");
-            string log_text = $"[{t}][{tag}]{text}";
-            if (isDetail && TheOtherRolesPlugin.DebugMode.Value)
-            {
-                StackFrame stack = new(2);
-                string class_name = stack.GetMethod().ReflectedType.Name;
-                string method_name = stack.GetMethod().Name;
-                log_text = $"[{t}][{class_name}.{method_name}({lineNumber})][{tag}]{text}";
-            }
-            TheOtherRolesPlugin.Logger.Log(level, log_text);
-            if (isAlsoInGame) SendInGame(text);
-        }
-        public static void info(string text, string tag = "", [CallerLineNumber] int lineNumber = 0) => SendToFile(text, LogLevel.Info, tag, lineNumber);
-        public static void warn(string text, string tag = "", [CallerLineNumber] int lineNumber = 0) => SendToFile(text, LogLevel.Warning, tag, lineNumber);
-        public static void error(string text, string tag = "", [CallerLineNumber] int lineNumber = 0) => SendToFile(text, LogLevel.Error, tag, lineNumber);
-        public static void fatal(string text, string tag = "", [CallerLineNumber] int lineNumber = 0) => SendToFile(text, LogLevel.Fatal, tag, lineNumber);
-        public static void msg(string text, string tag = "", [CallerLineNumber] int lineNumber = 0) => SendToFile(text, LogLevel.Message, tag, lineNumber);
-        public static void currentMethod([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string filePath = "")
-        {
-            StackFrame stack = new(1);
-            Logger.msg($"\"{stack.GetMethod().ReflectedType.Name}.{stack.GetMethod().Name}\" Called in \"{Path.GetFileName(filePath)}({lineNumber})\"", "Method");
+            case LogLevel.Message:
+                logSource.LogMessage(text);
+                break;
+            case LogLevel.Error:
+                logSource.LogError(text);
+                break;
+            case LogLevel.Warning:
+                logSource.LogWarning(text);
+                break;
+            case LogLevel.Fatal:
+                logSource.LogFatal(text);
+                break;
+            case LogLevel.Info:
+                logSource.LogInfo(text);
+                break;
+            case LogLevel.Debug:
+                logSource.LogDebug(text);
+                break;
+            default:
+                logSource.LogInfo(text);
+                break;
         }
     }
+
+    public static void FastLog(LogLevel errorLevel, object @object)
+    {
+        var Logger = logSource;
+        var Message = @object as string;
+        switch (errorLevel)
+        {
+            case LogLevel.Message:
+                Logger.LogMessage(Message);
+                break;
+            case LogLevel.Error:
+                Logger.LogError(Message);
+                break;
+            case LogLevel.Warning:
+                Logger.LogWarning(Message);
+                break;
+            case LogLevel.Fatal:
+                Logger.LogFatal(Message);
+                break;
+            case LogLevel.Info:
+                Logger.LogInfo(Message);
+                break;
+            case LogLevel.Debug:
+                Logger.LogDebug(Message);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(errorLevel), errorLevel, null);
+        }
+    }
+
+    public static void LogObject(object @object)
+    {
+        FastLog(LogLevel.Error, @object);
+    }
 }
+/*
+[HarmonyPatch]
+internal static class LogListener
+{
+    [HarmonyTargetMethods]
+    private static IEnumerable<MethodBase> taregetMethodBases()
+    {
+        return typeof(AmongUsClient).Assembly.GetTypes()
+        .Where(n => n.IsSubclassOf(typeof(InnerNetObject)))
+        .Select(x => x.GetMethod(nameof(InnerNetObject.HandleRpc), AccessTools.allDeclared))
+        .Where(m => m != null);
+    }
+
+    [HarmonyPostfix]
+    internal static void OnRpc(InnerNetObject __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] Hazel.MessageReader reader)
+    {
+        // Debug
+        if (ModOption.DebugMode) Info($"OnRpc: {__instance.name} {callId} {reader.Length} {reader.Tag}");
+    }
+}
+*/

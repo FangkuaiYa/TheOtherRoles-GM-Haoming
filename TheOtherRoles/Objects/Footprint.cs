@@ -2,52 +2,49 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using static TheOtherRoles.TheOtherRolesGM;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
-namespace TheOtherRoles.Objects
+namespace TheOtherRoles.Objects;
+
+internal class Footprint
 {
-    class Footprint
+    private static readonly List<Footprint> footprints = new();
+    private static Sprite sprite;
+    private readonly Color color;
+    private readonly GameObject footprint;
+    private readonly PlayerControl owner;
+    private readonly SpriteRenderer spriteRenderer;
+    private bool anonymousFootprints;
+
+    public Footprint(float footprintDuration, bool anonymousFootprints, PlayerControl player)
     {
-        private static List<Footprint> footprints = new();
-        private static Sprite sprite;
-        private Color color;
-        private GameObject footprint;
-        private SpriteRenderer spriteRenderer;
-        private PlayerControl owner;
-        private bool anonymousFootprints;
+        owner = player;
+        this.anonymousFootprints = anonymousFootprints;
+        if (anonymousFootprints)
+            color = Palette.PlayerColors[6];
+        else
+            color = Palette.PlayerColors[player.Data.DefaultOutfit.ColorId];
 
-        public static Sprite getFootprintSprite()
-        {
-            if (sprite) return sprite;
-            sprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.Footprint.png", 600f);
-            return sprite;
-        }
+        footprint = new GameObject("Footprint");
+        Vector3 position = new(player.transform.position.x, player.transform.position.y,
+            player.transform.position.z + 1f);
+        footprint.transform.position = position;
+        footprint.transform.localPosition = position;
+        footprint.transform.SetParent(player.transform.parent);
 
-        public Footprint(float footprintDuration, bool anonymousFootprints, PlayerControl player)
-        {
-            this.owner = player;
-            this.anonymousFootprints = anonymousFootprints;
-            if (anonymousFootprints)
-                this.color = Palette.PlayerColors[6];
-            else
-                this.color = Palette.PlayerColors[(int)player.Data.DefaultOutfit.ColorId];
-
-            footprint = new GameObject("Footprint");
-            Vector3 position = new(player.transform.position.x, player.transform.position.y, player.transform.position.z + 1f);
-            footprint.transform.position = position;
-            footprint.transform.localPosition = position;
-            footprint.transform.SetParent(player.transform.parent);
-
-            footprint.transform.Rotate(0.0f, 0.0f, UnityEngine.Random.Range(0.0f, 360.0f));
+        footprint.transform.Rotate(0.0f, 0.0f, Random.Range(0.0f, 360.0f));
 
 
-            spriteRenderer = footprint.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = getFootprintSprite();
-            spriteRenderer.color = color;
+        spriteRenderer = footprint.AddComponent<SpriteRenderer>();
+        spriteRenderer.sprite = getFootprintSprite();
+        spriteRenderer.color = color;
 
-            footprint.SetActive(true);
-            footprints.Add(this);
+        footprint.SetActive(true);
+        footprints.Add(this);
 
-            FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(footprintDuration, new Action<float>((p) =>
+        FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(footprintDuration,
+            new Action<float>(p =>
             {
                 Color c = color;
                 if (!anonymousFootprints && owner != null)
@@ -62,10 +59,16 @@ namespace TheOtherRoles.Objects
 
                 if (p == 1f && footprint != null)
                 {
-                    UnityEngine.Object.Destroy(footprint);
+                    Object.Destroy(footprint);
                     footprints.Remove(this);
                 }
             })));
-        }
+    }
+
+    public static Sprite getFootprintSprite()
+    {
+        if (sprite) return sprite;
+        sprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.Footprint.png", 600f);
+        return sprite;
     }
 }

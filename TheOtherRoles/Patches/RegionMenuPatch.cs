@@ -25,103 +25,176 @@ SOFTWARE.
 
 using System;
 using HarmonyLib;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
-namespace TheOtherRoles.Patches
+namespace TheOtherRoles.Patches;
+
+[HarmonyPatch(typeof(RegionMenu), nameof(RegionMenu.Open))]
+public static class RegionMenuOpenPatch
 {
-    [HarmonyPatch(typeof(RegionMenu), nameof(RegionMenu.Open))]
-    public static class RegionMenuOpenPatch
+    private static TextBoxTMP ipField;
+    private static TextBoxTMP portField;
+
+    public static void Postfix(RegionMenu __instance)
     {
-        private static GameObject ipField;
-        private static GameObject portField;
-
-        public static void Postfix(RegionMenu __instance)
+        if (!__instance.TryCast<RegionMenu>()) return;
+        bool isCustomRegion = FastDestroyableSingleton<ServerManager>.Instance.CurrentRegion.Name == "Custom";
+        if (!isCustomRegion)
         {
-            var template = GameObject.Find("NormalMenu/JoinGameButton/JoinGameMenu/GameIdText");
-            if (template == null) return;
+            if (ipField != null && ipField.gameObject != null) ipField.gameObject.SetActive(false);
+            if (portField != null && portField.gameObject != null) portField.gameObject.SetActive(false);
+        }
+        else
+        {
+            if (ipField != null && ipField.gameObject != null) ipField.gameObject.SetActive(true);
+            if (portField != null && portField.gameObject != null) portField.gameObject.SetActive(true);
+        }
 
-            if (ipField == null || ipField.gameObject == null)
+        JoinGameButton template = FastDestroyableSingleton<JoinGameButton>.Instance;
+        Il2CppArrayBase<JoinGameButton> joinGameButtons = GameObject.FindObjectsOfType<JoinGameButton>();
+        foreach (JoinGameButton t in joinGameButtons)
+            // The correct button has a background, the other 2 dont
+            if (t.GameIdText != null && t.GameIdText.Background != null)
             {
-                ipField = UnityEngine.Object.Instantiate(template.gameObject, __instance.transform);
-                ipField.gameObject.name = "IpTextBox";
-                var arrow = ipField.transform.FindChild("arrowEnter");
-                if (arrow == null || arrow.gameObject == null) return;
-                UnityEngine.Object.DestroyImmediate(arrow.gameObject);
-
-                ipField.transform.localPosition = new Vector3(0, -1f, -100f);
-
-                var ipTextBox = ipField.GetComponent<TextBoxTMP>();
-                ipTextBox.characterLimit = 30;
-                ipTextBox.AllowSymbols = true;
-                ipTextBox.ForceUppercase = false;
-                ipTextBox.SetText(TheOtherRolesPlugin.Ip.Value);
-                __instance.StartCoroutine(Effects.Lerp(0.1f, new Action<float>((p) =>
-                {
-                    ipTextBox.outputText.SetText(TheOtherRolesPlugin.Ip.Value);
-                    ipTextBox.SetText(TheOtherRolesPlugin.Ip.Value);
-                })));
-
-                ipTextBox.ClearOnFocus = false;
-                ipTextBox.OnEnter = ipTextBox.OnChange = new Button.ButtonClickedEvent();
-                ipTextBox.OnFocusLost = new Button.ButtonClickedEvent();
-                ipTextBox.OnChange.AddListener((UnityAction)onEnterOrIpChange);
-                ipTextBox.OnFocusLost.AddListener((UnityAction)onFocusLost);
-
+                template = t;
+                break;
             }
 
-            if (portField == null || portField.gameObject == null)
+        if (template == null || template.GameIdText == null) return;
+
+        if (ipField == null || ipField.gameObject == null)
+        {
+            ipField = Object.Instantiate(template.GameIdText, __instance.transform);
+            ipField.gameObject.name = "IpTextBox";
+            Transform arrow = ipField.transform.FindChild("arrowEnter");
+            if (arrow == null || arrow.gameObject == null) return;
+            Object.DestroyImmediate(arrow.gameObject);
+
+            ipField.transform.localPosition = new Vector3(3.225f, -0.8f, -100f);
+            ipField.characterLimit = 30;
+            ipField.AllowSymbols = true;
+            ipField.ForceUppercase = false;
+            ipField.SetText(TheOtherRolesPlugin.Ip.Value);
+            __instance.StartCoroutine(Effects.Lerp(0.1f, new Action<float>(p =>
             {
-                portField = UnityEngine.Object.Instantiate(template.gameObject, __instance.transform);
-                portField.gameObject.name = "PortTextBox";
-                var arrow = portField.transform.FindChild("arrowEnter");
-                if (arrow == null || arrow.gameObject == null) return;
-                UnityEngine.Object.DestroyImmediate(arrow.gameObject);
+                ipField.outputText.SetText(TheOtherRolesPlugin.Ip.Value);
+                ipField.SetText(TheOtherRolesPlugin.Ip.Value);
+            })));
 
-                portField.transform.localPosition = new Vector3(0, -1.75f, -100f);
-
-                var portTextBox = portField.GetComponent<TextBoxTMP>();
-                portTextBox.characterLimit = 5;
-                portTextBox.SetText(TheOtherRolesPlugin.Port.Value.ToString());
-                __instance.StartCoroutine(Effects.Lerp(0.1f, new Action<float>((p) =>
-                {
-                    portTextBox.outputText.SetText(TheOtherRolesPlugin.Port.Value.ToString());
-                    portTextBox.SetText(TheOtherRolesPlugin.Port.Value.ToString());
-                })));
-
-
-                portTextBox.ClearOnFocus = false;
-                portTextBox.OnEnter = portTextBox.OnChange = new Button.ButtonClickedEvent();
-                portTextBox.OnFocusLost = new Button.ButtonClickedEvent();
-                portTextBox.OnChange.AddListener((UnityAction)onEnterOrPortFieldChange);
-                portTextBox.OnFocusLost.AddListener((UnityAction)onFocusLost);
-            }
-
-            void onEnterOrPortFieldChange()
-            {
-                var portTextBox = portField.GetComponent<TextBoxTMP>();
-                if (ushort.TryParse(portTextBox.text, out ushort port))
-                {
-                    TheOtherRolesPlugin.Port.Value = port;
-                    portTextBox.outputText.color = Color.white;
-                }
-                else
-                {
-                    portTextBox.outputText.color = Color.red;
-                }
-            }
+            ipField.ClearOnFocus = false;
+            ipField.OnEnter = ipField.OnChange = new Button.ButtonClickedEvent();
+            ipField.OnFocusLost = new Button.ButtonClickedEvent();
+            ipField.OnChange.AddListener((UnityAction)onEnterOrIpChange);
+            ipField.OnFocusLost.AddListener((UnityAction)onFocusLost);
+            ipField.gameObject.SetActive(isCustomRegion);
 
             void onEnterOrIpChange()
             {
-                TheOtherRolesPlugin.Ip.Value = ipField.GetComponent<TextBoxTMP>().text;
+                TheOtherRolesPlugin.Ip.Value = ipField.text;
             }
 
             void onFocusLost()
             {
                 TheOtherRolesPlugin.UpdateRegions();
-                __instance.ChooseOption(ServerManager.DefaultRegions[ServerManager.DefaultRegions.Length - 1]);
             }
         }
+
+        if (portField == null || portField.gameObject == null)
+        {
+            portField = Object.Instantiate(template.GameIdText, __instance.transform);
+            portField.gameObject.name = "PortTextBox";
+            Transform arrow = portField.transform.FindChild("arrowEnter");
+            if (arrow == null || arrow.gameObject == null) return;
+            Object.DestroyImmediate(arrow.gameObject);
+
+            portField.transform.localPosition = new Vector3(3.225f, -1.55f, -100f);
+            portField.characterLimit = 5;
+            portField.SetText(TheOtherRolesPlugin.Port.Value.ToString());
+            __instance.StartCoroutine(Effects.Lerp(0.1f, new Action<float>(p =>
+            {
+                portField.outputText.SetText(TheOtherRolesPlugin.Port.Value.ToString());
+                portField.SetText(TheOtherRolesPlugin.Port.Value.ToString());
+            })));
+
+
+            portField.ClearOnFocus = false;
+            portField.OnEnter = portField.OnChange = new Button.ButtonClickedEvent();
+            portField.OnFocusLost = new Button.ButtonClickedEvent();
+            portField.OnChange.AddListener((UnityAction)onEnterOrPortFieldChange);
+            portField.OnFocusLost.AddListener((UnityAction)onFocusLost);
+            portField.gameObject.SetActive(isCustomRegion);
+
+            void onEnterOrPortFieldChange()
+            {
+                ushort port = 0;
+                if (ushort.TryParse(portField.text, out port))
+                {
+                    TheOtherRolesPlugin.Port.Value = port;
+                    portField.outputText.color = Color.white;
+                }
+                else
+                    portField.outputText.color = Color.red;
+            }
+
+            void onFocusLost()
+            {
+                TheOtherRolesPlugin.UpdateRegions();
+            }
+        }
+    }
+}
+
+[HarmonyPatch(typeof(RegionMenu), nameof(RegionMenu.ChooseOption))]
+public static class RegionMenuChooseOptionPatch
+{
+    public static bool Prefix(RegionMenu __instance, IRegionInfo region)
+    {
+        if (region.Name != "Custom" ||
+            FastDestroyableSingleton<ServerManager>.Instance.CurrentRegion.Name == "Custom") return true;
+        DestroyableSingleton<ServerManager>.Instance.SetRegion(region);
+        __instance.RegionText.text = "Custom";
+        foreach (PoolableBehavior Button in __instance.ButtonPool.activeChildren)
+        {
+            ServerListButton serverListButton = Button.TryCast<ServerListButton>();
+            if (serverListButton != null) serverListButton.SetSelected(serverListButton.Text.text == "Custom");
+        }
+
+        __instance.Open();
+        return false;
+    }
+}
+[HarmonyPatch(typeof(AuthManager._CoConnect_d__4), nameof(AuthManager._CoConnect_d__4.MoveNext))]
+public static class DoNothingInConnect
+{
+    public static bool Prefix(AuthManager __instance)
+    {
+        return false;
+    }
+}
+[HarmonyPatch(typeof(RegionMenu))]
+public class RegionMenuPatch
+{
+    public static Scroller Scroller;
+
+    [HarmonyPatch(nameof(RegionMenu.Awake)), HarmonyPostfix]
+    public static void Awake_Postfix(RegionMenu __instance)
+    {
+        if (Scroller != null) return;
+
+        var back = __instance.ButtonPool.transform.FindChild("Backdrop");
+        back.transform.localScale *= 10f;
+
+        Scroller = __instance.ButtonPool.transform.parent.gameObject.AddComponent<Scroller>();
+        Scroller.Inner = __instance.ButtonPool.transform;
+        Scroller.MouseMustBeOverToScroll = true;
+        Scroller.ClickMask = back.GetComponent<BoxCollider2D>();
+        Scroller.ScrollWheelSpeed = 0.7f;
+        Scroller.SetYBoundsMin(0f);
+        Scroller.SetYBoundsMax(4f);
+        Scroller.allowY = true;
     }
 }

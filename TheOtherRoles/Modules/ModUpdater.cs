@@ -1,293 +1,277 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Reflection;
-using System.Threading.Tasks;
-using HarmonyLib;
-using Newtonsoft.Json.Linq;
-using Twitch;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using BepInEx;
+using BepInEx.Unity.IL2CPP.Utils;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using AmongUs.Data;
+using Assets.InnerNet;
+using Il2CppInterop.Runtime.Attributes;
+using Twitch;
+using static StarGen;
 
-namespace TheOtherRoles.Modules
-{
+namespace TheOtherRoles.Modules {
+    public class ModUpdater : MonoBehaviour {
+        public const string RepositoryOwner = "FangkuaiYa";
+        public const string RepositoryName = "TheOtherRoles-GM-Haoming";
+        public static ModUpdater Instance { get; private set; }
 
-    [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
-    public class ModUpdaterButton
-    {
-        private static void Prefix(MainMenuManager __instance)
-        {
-            if (TheOtherRolesPlugin.DebugMode.Value) FastDestroyableSingleton<EOSManager>.Instance.PlayOffline();
-            AssetLoader.LoadAssets();
-            CustomHatLoader.LaunchHatFetcher();
+        public ModUpdater(IntPtr ptr) : base(ptr) { }
+
+        private bool _busy;
+        private bool showPopUp = true;
+        public List<GithubRelease> Releases;
+
+        public void Awake() {
+            if (Instance) Destroy(Instance);
+            Instance = this;
+            foreach (var file in Directory.GetFiles(Paths.PluginPath, "*.old")) {
+                File.Delete(file);
+            }
+        }
+
+        private void Start() {
+            if (_busy) return;
+            this.StartCoroutine(CoCheckForUpdate());
+            SceneManager.add_sceneLoaded((System.Action<Scene, LoadSceneMode>)(OnSceneLoaded));
+        }
+
+
+        [HideFromIl2Cpp]
+        public void StartDownloadRelease(GithubRelease release) {
+            if (_busy) return;
+            this.StartCoroutine(CoDownloadRelease(release));
+        }
+
+        [HideFromIl2Cpp]
+        private IEnumerator CoCheckForUpdate() {
+            _busy = true;
+            var www = new UnityWebRequest();
+            www.SetMethod(UnityWebRequest.UnityWebRequestMethod.Get);
+            www.SetUrl($"https://api.github.com/repos/{RepositoryOwner}/{RepositoryName}/releases");
+            www.downloadHandler = new DownloadHandlerBuffer();
+            var operation = www.SendWebRequest();
+
+            while (!operation.isDone) {
+                yield return new WaitForEndOfFrame();
+            }
+
+            if (www.isNetworkError || www.isHttpError) {
+                yield break;
+            }
+
+            Releases = JsonSerializer.Deserialize<List<GithubRelease>>(www.downloadHandler.text);
+            www.downloadHandler.Dispose();
+            www.Dispose();
+            Releases.Sort(SortReleases);
+            _busy = false;
+        }
+
+        [HideFromIl2Cpp]
+        private IEnumerator CoDownloadRelease(GithubRelease release) {
+            _busy = true;
+
+            var popup = Instantiate(TwitchManager.Instance.TwitchPopup);
+            popup.TextAreaTMP.fontSize *= 0.7f;
+            popup.TextAreaTMP.enableAutoSizing = false;
+
+            popup.Show();
+
+            var button = popup.transform.GetChild(2).gameObject;
+            button.SetActive(false);
+            popup.TextAreaTMP.text = ModTranslation.getString("updatePleaseWait");
+
+            var asset = release.Assets.Find(FilterPluginAsset);
+            var www = new UnityWebRequest();
+            www.SetMethod(UnityWebRequest.UnityWebRequestMethod.Get);
+            www.SetUrl(Helpers.isChinese() ? "https://dl.fangkuai.fun/ModFIles/TheOtherRoles-GM-Haoming/TheOtherRolesGM.dll" : asset.DownloadUrl);
+            www.downloadHandler = new DownloadHandlerBuffer();
+            var operation = www.SendWebRequest();
+
+            while (!operation.isDone) {
+                int stars = Mathf.CeilToInt(www.downloadProgress * 10);
+                string progress = string.Format(ModTranslation.getString("updateInDownloading"), new String((char)0x25A0, stars) + new String((char)0x25A1, 10 - stars));
+                popup.TextAreaTMP.text = progress;
+                yield return new WaitForEndOfFrame();
+            }
+
+            if (www.isNetworkError || www.isHttpError) {
+                popup.TextAreaTMP.text = ModTranslation.getString("updateFailed");
+                yield break;
+            }
+            popup.TextAreaTMP.text = ModTranslation.getString("updateCopying");
+
+            var filePath = Path.Combine(Paths.PluginPath, asset.Name);
+
+            if (File.Exists(filePath + ".old")) File.Delete(filePath + "old");
+            if (File.Exists(filePath)) File.Move(filePath, filePath + ".old");
+
+            var persistTask = File.WriteAllBytesAsync(filePath, www.downloadHandler.data);
+            var hasError = false;
+            while (!persistTask.IsCompleted) {
+                if (persistTask.Exception != null) {
+                    hasError = true;
+                    break;
+                }
+
+                yield return new WaitForEndOfFrame();
+            }
+
+            www.downloadHandler.Dispose();
+            www.Dispose();
+
+            if (!hasError) {
+                popup.TextAreaTMP.text = ModTranslation.getString("updateRestart");
+            }
+            button.SetActive(true);
+            _busy = false;
+        }
+
+        [HideFromIl2Cpp]
+        private static bool FilterLatestRelease(GithubRelease release) {
+            return release.IsNewer(TheOtherRolesPlugin.Version) && release.Assets.Any(FilterPluginAsset);
+        }
+
+        [HideFromIl2Cpp]
+        private static bool FilterPluginAsset(GithubAsset asset) {
+            return asset.Name == "TheOtherRolesGM.dll";
+        }
+
+        [HideFromIl2Cpp]
+        private static int SortReleases(GithubRelease a, GithubRelease b) {
+            if (a.IsNewer(b.Version)) return -1;
+            if (b.IsNewer(a.Version)) return 1;
+            return 0;
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+            if (_busy || scene.name != "MainMenu") return;
+            var latestRelease = Releases.FirstOrDefault();
+            if (latestRelease == null || latestRelease.Version <= TheOtherRolesPlugin.Version)
+                return;
+
             var template = GameObject.Find("ExitGameButton");
+            if (!template) return;
 
-            // Discrodボタン
-            var buttonDiscord = UnityEngine.Object.Instantiate(template, null);
-            buttonDiscord.transform.localPosition = new Vector3(buttonDiscord.transform.localPosition.x, buttonDiscord.transform.localPosition.y + 0.6f, buttonDiscord.transform.localPosition.z);
-
-            var textDiscord = buttonDiscord.transform.GetChild(0).GetComponent<TMPro.TMP_Text>();
-            __instance.StartCoroutine(Effects.Lerp(0.1f, new System.Action<float>((p) =>
-            {
-                textDiscord.SetText("Discord");
-            })));
-
-            PassiveButton passiveButtonDiscord = buttonDiscord.GetComponent<PassiveButton>();
-            SpriteRenderer buttonSpriteDiscord = buttonDiscord.GetComponent<SpriteRenderer>();
-
-            passiveButtonDiscord.OnClick = new Button.ButtonClickedEvent();
-            passiveButtonDiscord.OnClick.AddListener((System.Action)(() => Application.OpenURL("https://discord.gg/sTt8EzEpHP")));
-
-            Color discordColor = new Color32(88, 101, 242, byte.MaxValue);
-            buttonSpriteDiscord.color = textDiscord.color = discordColor;
-            passiveButtonDiscord.OnMouseOut.AddListener((System.Action)delegate
-            {
-                buttonSpriteDiscord.color = textDiscord.color = discordColor;
-            });
-
-            // Twitterボタン
-            var buttonTwitter = UnityEngine.Object.Instantiate(template, null);
-            buttonTwitter.transform.localPosition = new Vector3(buttonTwitter.transform.localPosition.x, buttonTwitter.transform.localPosition.y + 1.2f, buttonTwitter.transform.localPosition.z);
-
-            var textTwitter = buttonTwitter.transform.GetChild(0).GetComponent<TMPro.TMP_Text>();
-            __instance.StartCoroutine(Effects.Lerp(0.1f, new System.Action<float>((p) =>
-            {
-                textTwitter.SetText("Twitter");
-            })));
-
-            PassiveButton passiveButtonTwitter = buttonTwitter.GetComponent<PassiveButton>();
-            SpriteRenderer buttonSpriteTwitter = buttonTwitter.GetComponent<SpriteRenderer>();
-
-            passiveButtonTwitter.OnClick = new Button.ButtonClickedEvent();
-            passiveButtonTwitter.OnClick.AddListener((System.Action)(() => Application.OpenURL("https://twitter.com/haoming_dev")));
-
-            Color twitterColor = new Color32(29, 161, 242, byte.MaxValue);
-            buttonSpriteTwitter.color = textTwitter.color = twitterColor;
-            passiveButtonTwitter.OnMouseOut.AddListener((System.Action)delegate
-            {
-                buttonSpriteTwitter.color = textTwitter.color = twitterColor;
-            });
-
-            // アップデートボタン
-            ModUpdater.LaunchUpdater();
-            if (!ModUpdater.hasUpdate) return;
-            if (template == null) return;
-
-            var button = UnityEngine.Object.Instantiate(template, null);
-            button.transform.localPosition = new Vector3(button.transform.localPosition.x, button.transform.localPosition.y + 0.6f, button.transform.localPosition.z);
+            var button = Instantiate(template, null);
+            var buttonTransform = button.transform;
+            //buttonTransform.localPosition = new Vector3(-2f, -2f);
+            button.GetComponent<AspectPosition>().anchorPoint = new Vector2(0.458f, 0.124f);
 
             PassiveButton passiveButton = button.GetComponent<PassiveButton>();
             passiveButton.OnClick = new Button.ButtonClickedEvent();
-            passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)onClick);
-
-            var text = button.transform.GetChild(0).GetComponent<TMPro.TMP_Text>();
-            __instance.StartCoroutine(Effects.Lerp(0.1f, new System.Action<float>((p) =>
+            passiveButton.OnClick.AddListener((Action)(() =>
             {
-                text.SetText(ModTranslation.getString("updateButton"));
-            })));
-
-            TwitchManager man = FastDestroyableSingleton<TwitchManager>.Instance;
-            ModUpdater.InfoPopup = UnityEngine.Object.Instantiate<GenericPopup>(man.TwitchPopup);
-            ModUpdater.InfoPopup.TextAreaTMP.fontSize *= 0.7f;
-            ModUpdater.InfoPopup.TextAreaTMP.enableAutoSizing = false;
-
-            // Discordボタンを上にずらす
-            buttonDiscord.transform.localPosition = new Vector3(buttonDiscord.transform.localPosition.x, buttonDiscord.transform.localPosition.y + 0.6f, buttonDiscord.transform.localPosition.z);
-            buttonTwitter.transform.localPosition = new Vector3(buttonTwitter.transform.localPosition.x, buttonTwitter.transform.localPosition.y + 0.6f, buttonTwitter.transform.localPosition.z);
-
-            void onClick()
-            {
-                ModUpdater.ExecuteUpdate();
+                StartDownloadRelease(latestRelease);
                 button.SetActive(false);
+            }));
+
+            var text = button.transform.GetComponentInChildren<TMPro.TMP_Text>();
+            string t = ModTranslation.getString("updateButton");
+            StartCoroutine(Effects.Lerp(0.1f, (System.Action<float>)(p => text.SetText(t))));
+            passiveButton.OnMouseOut.AddListener((Action)(() => text.color = Color.red));
+            passiveButton.OnMouseOver.AddListener((Action)(() => text.color = Color.white));
+            var announcement = string.Format(ModTranslation.getString("announcementUpdate"), latestRelease.Tag, latestRelease.Description);
+            var mgr = FindObjectOfType<MainMenuManager>(true);
+            if (showPopUp) mgr.StartCoroutine(CoShowAnnouncement(announcement, shortTitle: "TOR GMH Update", date : latestRelease.PublishedAt)) ;
+            showPopUp = false;
+
+        }
+
+        [HideFromIl2Cpp]
+        public IEnumerator CoShowAnnouncement(string announcement, bool show = true, string shortTitle = "TOR GMH Update", string title = "", string date = "") {
+            var mgr = FindObjectOfType<MainMenuManager>(true);
+            var popUpTemplate = UnityEngine.Object.FindObjectOfType<AnnouncementPopUp>(true);
+            if (popUpTemplate == null) {
+                TheOtherRolesPlugin.Logger.LogError("couldnt show credits, popUp is null");
+                yield return null;
             }
+            var popUp = UnityEngine.Object.Instantiate(popUpTemplate);
+
+            popUp.gameObject.SetActive(true);
+
+            Assets.InnerNet.Announcement creditsAnnouncement = new() {
+                Id = "torgmhAnnouncement",
+                Language = 0,
+                Number = 6969,
+                Title = title == "" ? "The Other Roles GM Haoming Announcement" : title,
+                ShortTitle = shortTitle,
+                SubTitle = "",
+                PinState = false,
+                Date = date == "" ? DateTime.Now.Date.ToString() : date,
+                Text = announcement,
+            };
+            mgr.StartCoroutine(Effects.Lerp(0.1f, new Action<float>((p) => {
+                if (p == 1) {
+                    var backup = DataManager.Player.Announcements.allAnnouncements;
+                    DataManager.Player.Announcements.allAnnouncements = new();
+                    popUp.Init(false);
+                    DataManager.Player.Announcements.SetAnnouncements(new Announcement[] { creditsAnnouncement });
+                    popUp.CreateAnnouncementList();
+                    popUp.UpdateAnnouncementText(creditsAnnouncement.Number);
+                    popUp.visibleAnnouncements[0].PassiveButton.OnClick.RemoveAllListeners();
+                    DataManager.Player.Announcements.allAnnouncements = backup;
+                }
+            })));
         }
     }
 
-    [HarmonyPatch(typeof(AnnouncementPopUp), nameof(AnnouncementPopUp.UpdateAnnounceText))]
-    public static class Announcement
-    {
-        public static bool Prefix(AnnouncementPopUp __instance)
-        {
-            var text = __instance.AnnounceTextMeshPro;
-            text.text = ModUpdater.announcement;
-            return false;
+    public class GithubRelease {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+
+        [JsonPropertyName("tag_name")]
+        public string Tag { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("draft")]
+        public bool Draft { get; set; }
+
+        [JsonPropertyName("prerelease")]
+        public bool Prerelease { get; set; }
+
+        [JsonPropertyName("created_at")]
+        public string CreatedAt { get; set; }
+
+        [JsonPropertyName("published_at")]
+        public string PublishedAt { get; set; }
+
+        [JsonPropertyName("body")]
+        public string Description { get; set; }
+
+        [JsonPropertyName("assets")]
+        public List<GithubAsset> Assets { get; set; }
+
+        public Version Version => Version.Parse(Tag.Replace("v", string.Empty));
+
+        public bool IsNewer(Version version) {
+            return Version > version;
         }
     }
 
-    public class ModUpdater
-    {
-        public static bool running = false;
-        public static bool hasUpdate = false;
-        public static string updateURI = null;
-        private static Task updateTask = null;
-        public static string announcement = "";
-        public static GenericPopup InfoPopup;
+    public class GithubAsset {
+        [JsonPropertyName("url")]
+        public string Url { get; set; }
 
-        public static void LaunchUpdater()
-        {
-            if (running) return;
-            running = true;
-            checkForUpdate().GetAwaiter().GetResult();
-            clearOldVersions();
-            if (hasUpdate || TheOtherRolesPlugin.ShowPopUpVersion.Value != TheOtherRolesPlugin.VersionString)
-            {
-                FastDestroyableSingleton<MainMenuManager>.Instance.Announcement.gameObject.SetActive(true);
-                TheOtherRolesPlugin.ShowPopUpVersion.Value = TheOtherRolesPlugin.VersionString;
-            }
-        }
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
 
-        public static void ExecuteUpdate()
-        {
-            string info = ModTranslation.getString("updatePleaseWait");
-            ModUpdater.InfoPopup.Show(info); // Show originally
-            if (updateTask == null)
-            {
-                if (updateURI != null)
-                {
-                    updateTask = downloadUpdate();
-                }
-                else
-                {
-                    info = ModTranslation.getString("updateManually");
-                }
-            }
-            else
-            {
-                info = ModTranslation.getString("updateInProgress");
-            }
-            ModUpdater.InfoPopup.StartCoroutine(Effects.Lerp(0.01f, new System.Action<float>((p) => { ModUpdater.setPopupText(info); })));
-        }
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
 
-        public static void clearOldVersions()
-        {
-            try
-            {
-                DirectoryInfo d = new(Path.GetDirectoryName(Application.dataPath) + @"\BepInEx\plugins");
-                string[] files = d.GetFiles("*.old").Select(x => x.FullName).ToArray(); // Getting old versions
-                foreach (string f in files)
-                    File.Delete(f);
-            }
-            catch (System.Exception e)
-            {
-                System.Console.WriteLine("Exception occurred when clearing old versions:\n" + e);
-            }
-        }
+        [JsonPropertyName("size")]
+        public int Size { get; set; }
 
-        public static async Task<bool> checkForUpdate()
-        {
-            try
-            {
-                HttpClient http = new();
-                http.DefaultRequestHeaders.Add("User-Agent", "TheOtherRoles Updater");
-                var response = await http.GetAsync(new System.Uri("https://api.github.com/repos/haoming37/TheOtherRoles-GM-Haoming/releases/latest"), HttpCompletionOption.ResponseContentRead);
-                if (response.StatusCode != HttpStatusCode.OK || response.Content == null)
-                {
-                    System.Console.WriteLine("Server returned no data: " + response.StatusCode.ToString());
-                    return false;
-                }
-                string json = await response.Content.ReadAsStringAsync();
-                JObject data = JObject.Parse(json);
-
-                string tagname = data["tag_name"]?.ToString();
-                if (tagname == null)
-                {
-                    return false; // Something went wrong
-                }
-
-                string changeLog = data["body"]?.ToString();
-                if (changeLog != null) announcement = changeLog;
-                // check version
-                System.Version ver = System.Version.Parse(tagname.Replace("v", ""));
-                int diff = TheOtherRolesPlugin.Version.CompareTo(ver);
-                if (diff < 0)
-                { // Update required
-                    hasUpdate = true;
-                    announcement = string.Format(ModTranslation.getString("announcementUpdate"), ver, announcement);
-
-                    JToken assets = data["assets"];
-                    if (!assets.HasValues)
-                        return false;
-
-                    for (JToken current = assets.First; current != null; current = current.Next)
-                    {
-                        string browser_download_url = current["browser_download_url"]?.ToString();
-                        if (browser_download_url != null && current["content_type"] != null)
-                        {
-                            if ((current["content_type"].ToString().Equals("application/x-msdownload")
-                                || current["content_type"].ToString().Equals("application/x-dosexec"))
-                                && browser_download_url.EndsWith(".dll"))
-                            {
-                                updateURI = browser_download_url;
-                                return true;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    announcement = string.Format(ModTranslation.getString("announcementChangelog"), ver, announcement);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                TheOtherRolesPlugin.Instance.Log.LogError(ex.ToString());
-                System.Console.WriteLine(ex);
-            }
-            return false;
-        }
-
-        public static async Task<bool> downloadUpdate()
-        {
-            try
-            {
-                HttpClient http = new();
-                http.DefaultRequestHeaders.Add("User-Agent", "TheOtherRoles Updater");
-                var response = await http.GetAsync(new System.Uri(updateURI), HttpCompletionOption.ResponseContentRead);
-                if (response.StatusCode != HttpStatusCode.OK || response.Content == null)
-                {
-                    System.Console.WriteLine("Server returned no data: " + response.StatusCode.ToString());
-                    return false;
-                }
-                string codeBase = Assembly.GetExecutingAssembly().CodeBase;
-                System.UriBuilder uri = new(codeBase);
-                string fullname = System.Uri.UnescapeDataString(uri.Path);
-                if (File.Exists(fullname + ".old")) // Clear old file in case it wasnt;
-                    File.Delete(fullname + ".old");
-
-                File.Move(fullname, fullname + ".old"); // rename current executable to old
-
-                using (var responseStream = await response.Content.ReadAsStreamAsync())
-                {
-                    using var fileStream = File.Create(fullname);
-                    // probably want to have proper name here
-                    responseStream.CopyTo(fileStream);
-                }
-                showPopup(ModTranslation.getString("updateRestart"));
-                return true;
-            }
-            catch (System.Exception ex)
-            {
-                TheOtherRolesPlugin.Instance.Log.LogError(ex.ToString());
-                System.Console.WriteLine(ex);
-            }
-            showPopup(ModTranslation.getString("updateFailed"));
-            return false;
-        }
-        private static void showPopup(string message)
-        {
-            setPopupText(message);
-            InfoPopup.gameObject.SetActive(true);
-        }
-
-        public static void setPopupText(string message)
-        {
-            if (InfoPopup == null)
-                return;
-            if (InfoPopup.TextAreaTMP != null)
-            {
-                InfoPopup.TextAreaTMP.text = message;
-            }
-        }
+        [JsonPropertyName("browser_download_url")]
+        public string DownloadUrl { get; set; }
     }
 }

@@ -83,7 +83,7 @@ namespace TheOtherRoles
         public override void OnMeetingStart() { }
         public override void OnMeetingEnd()
         {
-            if (CachedPlayer.LocalPlayer.PlayerControl.isRole(RoleType.ChangeMaster) && changeTargetAfterMeeting)
+            if (PlayerControl.LocalPlayer.isRole(RoleType.ChangeMaster) && changeTargetAfterMeeting)
             {
                 setCurrentCosmetic();
             }
@@ -101,41 +101,45 @@ namespace TheOtherRoles
 
         public static void MakeButtons(HudManager hm)
         {
-            Logger.info("MakeButtons");
+            LogHelper.Info("MakeButtons");
             changeMasterButton = new CustomButton(
                 () =>
                 {
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.SetChangeMaster, Hazel.SendOption.Reliable, -1);
+                    MessageWriter writer =
+ AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetChangeMaster, Hazel.SendOption.Reliable, -1);
                     writer.Write(local.currentTarget.PlayerId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.setChangeMaster(local.currentTarget.PlayerId);
-                    writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.PlayChangeMasterVoice, Hazel.SendOption.Reliable, -1);
+                    writer =
+ AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayChangeMasterVoice, Hazel.SendOption.Reliable, -1);
                     writer.Write(local.currentTarget.PlayerId);
                     writer.Write(local.player.PlayerId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.playChangeMasterVoice(local.currentTarget.PlayerId, local.player.PlayerId);
                 },
-                () => { return CachedPlayer.LocalPlayer.PlayerControl.isRole(RoleType.ChangeMaster) && !CachedPlayer.LocalPlayer.PlayerControl.Data.IsDead && numChangeMaster > changeMasters.Count(); },
+                () => { return PlayerControl.LocalPlayer.isRole(RoleType.ChangeMaster) && !PlayerControl.LocalPlayer.Data.IsDead && numChangeMaster > changeMasters.Count(); },
                 () =>
                 {
                     if (numChangeMasterText != null)
                     {
                         if (numChangeMaster > changeMasters.Count())
-                            numChangeMasterText.text = String.Format(ModTranslation.getString("sheriffShots"), numChangeMaster - changeMasters.Count());
+                            numChangeMasterText.text =
+ String.Format(ModTranslation.getString("sheriffShots"), numChangeMaster - changeMasters.Count());
                         else
                             numChangeMasterText.text = "";
                     }
-                    return local.currentTarget && CachedPlayer.LocalPlayer.PlayerControl.CanMove;
+                    return local.currentTarget && PlayerControl.LocalPlayer.CanMove;
                 },
                 () => { changeMasterButton.Timer = changeMasterButton.MaxTimer; },
                 ChangeMaster.getButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
+                CustomButton.ButtonPositions.lowerRowRight,
                 hm,
                 hm.UseButton,
                 KeyCode.F
             )
             { buttonText = "Change!" };
-            numChangeMasterText = GameObject.Instantiate(changeMasterButton.actionButton.cooldownTimerText, changeMasterButton.actionButton.cooldownTimerText.transform.parent);
+            numChangeMasterText =
+ GameObject.Instantiate(changeMasterButton.actionButton.cooldownTimerText, changeMasterButton.actionButton.cooldownTimerText.transform.parent);
             numChangeMasterText.text = "";
             numChangeMasterText.enableWordWrapping = false;
             numChangeMasterText.transform.localScale = Vector3.one * 0.5f;
@@ -175,7 +179,7 @@ namespace TheOtherRoles
             var target = Helpers.playerById(targetPlayerId);
             var changeMaster = Helpers.playerById(changeMasterId);
 
-            var targetAudioObject= new GameObject("targetAudioSource");
+            var targetAudioObject = new GameObject("targetAudioSource");
             targetAudioObject.transform.position = target.transform.position;
             AudioSource targetAudioSource = targetAudioObject.gameObject.GetComponent<AudioSource>();
             if (targetAudioSource == null)
@@ -196,7 +200,8 @@ namespace TheOtherRoles
         public static void setCurrentCosmetic()
         {
             byte val = Convert.ToByte(rnd.Next(0, cosmetics.Count));
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.SetCosmetic, Hazel.SendOption.Reliable, -1);
+            MessageWriter writer =
+ AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCosmetic, Hazel.SendOption.Reliable, -1);
             writer.Write(val);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.setCosmetic(val);

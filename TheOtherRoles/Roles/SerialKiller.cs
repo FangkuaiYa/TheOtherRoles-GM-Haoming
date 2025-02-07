@@ -5,103 +5,123 @@ using TheOtherRoles.Objects;
 using TheOtherRoles.Patches;
 using UnityEngine;
 
-namespace TheOtherRoles
+namespace TheOtherRoles;
+
+[HarmonyPatch]
+public class SerialKiller : RoleBase<SerialKiller>
 {
-    [HarmonyPatch]
-    public class SerialKiller : RoleBase<SerialKiller>
+    private static CustomButton serialKillerButton;
+
+    public static Color color = Palette.ImpostorRed;
+
+    private static Sprite buttonSprite;
+
+    public bool isCountDown;
+
+    public SerialKiller()
     {
+        RoleType = roleId = RoleType.SerialKiller;
+        isCountDown = false;
+    }
 
-        private static CustomButton serialKillerButton;
+    public static float killCooldown => CustomOptionHolder.serialKillerKillCooldown.getFloat();
 
-        public static Color color = Palette.ImpostorRed;
+    public static float suicideTimer =>
+        Mathf.Max(CustomOptionHolder.serialKillerSuicideTimer.getFloat(), killCooldown + 2.5f);
 
-        public static float killCooldown { get { return CustomOptionHolder.serialKillerKillCooldown.getFloat(); } }
-        public static float suicideTimer { get { return Mathf.Max(CustomOptionHolder.serialKillerSuicideTimer.getFloat(), killCooldown + 2.5f); } }
-        public static bool resetTimer { get { return CustomOptionHolder.serialKillerResetTimer.getBool(); } }
+    public static bool resetTimer => CustomOptionHolder.serialKillerResetTimer.getBool();
 
-        public bool isCountDown = false;
+    public override void OnMeetingStart()
+    {
+    }
 
-        public SerialKiller()
+    public override void OnMeetingEnd()
+    {
+        if (PlayerControl.LocalPlayer.isRole(RoleType.SerialKiller))
         {
-            RoleType = roleId = RoleType.SerialKiller;
-            isCountDown = false;
+            PlayerControl.LocalPlayer.SetKillTimerUnchecked(killCooldown);
+
+            if (resetTimer)
+                serialKillerButton.Timer = suicideTimer;
         }
+    }
 
-        public override void OnMeetingStart() { }
+    public override void FixedUpdate()
+    {
+    }
 
-        public override void OnMeetingEnd()
-        {
-            if (CachedPlayer.LocalPlayer.PlayerControl.isRole(RoleType.SerialKiller))
+    public override void HandleDisconnect(PlayerControl player, DisconnectReasons reason)
+    {
+    }
+
+    public override void OnKill(PlayerControl target)
+    {
+        if (PlayerControl.LocalPlayer == player)
+            player.SetKillTimerUnchecked(killCooldown);
+
+        serialKillerButton.Timer = suicideTimer;
+        isCountDown = true;
+    }
+
+    public override void OnDeath(PlayerControl killer)
+    {
+    }
+
+    public override void OnFinishShipStatusBegin()
+    {
+    }
+
+    public static Sprite getButtonSprite()
+    {
+        if (buttonSprite) return buttonSprite;
+        buttonSprite = TheOtherRolesPlugin.getResources("SuicideButton.png");
+        return buttonSprite;
+    }
+
+    public static void MakeButtons(HudManager hm)
+    {
+        // SerialKiller Suicide Countdown
+        serialKillerButton = new CustomButton(
+            () => { },
+            () =>
             {
-                CachedPlayer.LocalPlayer.PlayerControl.SetKillTimerUnchecked(killCooldown);
-
-                if (resetTimer)
-                    serialKillerButton.Timer = suicideTimer;
-            }
-        }
-
-        public override void FixedUpdate() { }
-        public override void HandleDisconnect(PlayerControl player, DisconnectReasons reason) { }
-
-        public override void OnKill(PlayerControl target)
+                return PlayerControl.LocalPlayer.isRole(RoleType.SerialKiller) &&
+                       PlayerControl.LocalPlayer.isAlive() && local.isCountDown;
+            },
+            () => { return true; },
+            () => { },
+            getButtonSprite(),
+            CustomButton.ButtonPositions.upperRowRight,
+            hm,
+            hm.AbilityButton,
+            KeyCode.F,
+            true,
+            suicideTimer,
+            () => { local.suicide(); }
+        )
         {
-            if (CachedPlayer.LocalPlayer.PlayerControl == player)
-                player.SetKillTimerUnchecked(killCooldown);
+            buttonText = ModTranslation.getString("SerialKillerText"),
+            isEffectActive = true
+        };
+    }
 
-            serialKillerButton.Timer = suicideTimer;
-            isCountDown = true;
-        }
+    public void suicide()
+    {
+        byte targetId = PlayerControl.LocalPlayer.PlayerId;
+        MessageWriter killWriter = AmongUsClient.Instance.StartRpcImmediately(
+            PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SerialKillerSuicide, SendOption.Reliable, -1);
+        killWriter.Write(targetId);
+        AmongUsClient.Instance.FinishRpcImmediately(killWriter);
+        RPCProcedure.serialKillerSuicide(targetId);
+    }
 
-        public override void OnDeath(PlayerControl killer) { }
-        public override void OnFinishShipStatusBegin() { }
+    public static void SetButtonCooldowns()
+    {
+        serialKillerButton.MaxTimer = suicideTimer;
+    }
 
-        private static Sprite buttonSprite;
-        public static Sprite getButtonSprite()
-        {
-            if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.SuicideButton.png", 115f);
-            return buttonSprite;
-        }
-
-        public static void MakeButtons(HudManager hm)
-        {
-            // SerialKiller Suicide Countdown
-            serialKillerButton = new CustomButton(
-                () => { },
-                () => { return CachedPlayer.LocalPlayer.PlayerControl.isRole(RoleType.SerialKiller) && CachedPlayer.LocalPlayer.PlayerControl.isAlive() && local.isCountDown; },
-                () => { return true; },
-                () => { },
-                SerialKiller.getButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
-                hm,
-                hm.AbilityButton,
-                KeyCode.F,
-                true,
-                suicideTimer,
-                () => { local.suicide(); }
-            )
-            {
-                buttonText = ModTranslation.getString("SerialKillerText"),
-                isEffectActive = true
-            };
-        }
-
-        public void suicide()
-        {
-            byte targetId = CachedPlayer.LocalPlayer.PlayerControl.PlayerId;
-            MessageWriter killWriter = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.SerialKillerSuicide, Hazel.SendOption.Reliable, -1); killWriter.Write(targetId);
-            AmongUsClient.Instance.FinishRpcImmediately(killWriter);
-            RPCProcedure.serialKillerSuicide(targetId);
-        }
-
-        public static void SetButtonCooldowns()
-        {
-            serialKillerButton.MaxTimer = SerialKiller.suicideTimer;
-        }
-
-        public static void Clear()
-        {
-            players = new List<SerialKiller>();
-        }
+    public static void Clear()
+    {
+        players = new List<SerialKiller>();
     }
 }
