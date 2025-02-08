@@ -115,13 +115,13 @@ public class Moriarty : RoleBase<Moriarty>
             () =>
             {
                 if (text != null) text.text = $"{counter}/{numberToWin}";
-                killButton.buttonText = killTarget ? killTarget.name : "None";
+                killButton.buttonText = killTarget ? killTarget.name : AmongUs.Data.DataManager.Settings.Language.CurrentLanguage == SupportedLangs.SChinese ? "无目标" : "None";
                 return killTarget != null && PlayerControl.LocalPlayer.CanMove;
             },
             // OnMeetingEnds
             () => { killButton.Timer = killButton.MaxTimer = killCooldown; },
             hm.KillButton.graphic.sprite,
-            CustomButton.ButtonPositions.upperRowRight,
+            CustomButton.ButtonPositions.upperRowLeft,
             hm,
             hm.KillButton,
             KeyCode.Q
@@ -194,9 +194,9 @@ public class Moriarty : RoleBase<Moriarty>
             () =>
             {
                 brainwashButton.buttonText = currentTarget ? currentTarget.name : "None";
-                if (currentTarget != null && currentTarget.name == "牛丼")
+                if (currentTarget != null/* && currentTarget.name == "牛丼"*/)
                     brainwashButton.Sprite = getBrainwashGyudonIcon();
-                else if (currentTarget != null && currentTarget.name == "にくきゅう")
+                else if (currentTarget != null/* && currentTarget.name == "にくきゅう"*/ /*这是个什么玩意*/)
                     brainwashButton.Sprite = getBrainwashNikukyuuIcon();
                 else
                     brainwashButton.Sprite = getBrainwashIcon();

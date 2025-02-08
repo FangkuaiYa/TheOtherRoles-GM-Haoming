@@ -210,7 +210,7 @@ public class Trapper : RoleBase<Trapper>
             },
             getTrapButtonSprite(),
             // new Vector3(-2.6f, 0f, 0f),
-            new Vector3(-1.8f, -0.06f, 0f),
+            CustomButton.ButtonPositions.upperRowLeft,
             hm,
             hm.AbilityButton,
             KeyCode.F

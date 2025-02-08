@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using AsmResolver.Collections;
 using HarmonyLib;
-using Rewired.Utils.Platforms.Windows;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +12,7 @@ namespace TheOtherRoles.Modules
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
     public class ModUpdaterButton
     {
+        public static bool openFirst = true;
         private static void Prefix(MainMenuManager __instance)
         {
             var template = GameObject.Find("ExitGameButton");
@@ -62,7 +62,11 @@ Slok7565 - Code support
         [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
         public static void Start_Postfix(MainMenuManager __instance)
         {
-            CustomPopup.Show(ModTranslation.getString("contributorsText"), contributorsText,  new List<(string, Action)> { (DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.Okay), null) });// 哇酷哇酷
+            if (openFirst)
+            {
+                CustomPopup.Show(ModTranslation.getString("contributorsText"), contributorsText, new List<(string, Action)> { (DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.Okay), null) });
+                openFirst = false;
+            }
         }
     }
 }

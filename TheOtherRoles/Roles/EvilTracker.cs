@@ -89,7 +89,7 @@ public class EvilTracker : RoleBase<EvilTracker>
             () => { return currentTarget != null && target == null && PlayerControl.LocalPlayer.CanMove; },
             () => { trackerButton.Timer = trackerButton.MaxTimer; },
             getTrackerButtonSprite(),
-            CustomButton.ButtonPositions.upperRowRight,
+            CustomButton.ButtonPositions.upperRowLeft,
             hm,
             hm.KillButton,
             KeyCode.F

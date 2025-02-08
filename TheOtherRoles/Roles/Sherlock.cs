@@ -131,7 +131,7 @@ public class Sherlock : RoleBase<Sherlock>
             },
             () => { sherlockInvestigateButton.Timer = sherlockInvestigateButton.MaxTimer; },
             getInvestigateIcon(),
-            CustomButton.ButtonPositions.upperRowRight,
+            CustomButton.ButtonPositions.upperRowLeft,
             hm,
             hm.KillButton,
             KeyCode.Q

@@ -30,7 +30,7 @@ public class TheOtherRolesPlugin : BasePlugin
 {
     public const string Id = "me.eisbison.theotherroles";
 
-    public const string VersionString = "2.3.137";
+    public const string VersionString = "2.3.138";
 
     public static Version Version = Version.Parse(VersionString);
     internal static ManualLogSource Logger;

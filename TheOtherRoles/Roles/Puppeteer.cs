@@ -66,7 +66,7 @@ public class Puppeteer : RoleBase<Puppeteer>
                          PlayerControl.LocalPlayer.isRole(RoleType.JekyllAndHyde) ||
                          PlayerControl.LocalPlayer.isRole(RoleType.Moriarty)))
         {
-            string msg = $"人形遣いのカウント数 {counter}/{numKills}";
+            string msg = AmongUs.Data.DataManager.Settings.Language.CurrentLanguage == SupportedLangs.SChinese ? $"木偶单位数 {counter}/{numKills}" : $"Number of people {counter}/{numKills}";
             if (AmongUsClient.Instance.AmClient && FastDestroyableSingleton<HudManager>.Instance)
                 FastDestroyableSingleton<HudManager>.Instance.Chat.AddChat(PlayerControl.LocalPlayer, msg);
         }
@@ -532,40 +532,12 @@ public class Puppeteer : RoleBase<Puppeteer>
 
     public static void setOpacity(PlayerControl player, float opacity)
     {
-        // Sometimes it just doesn't work?
-        Color color = Color.Lerp(Palette.ClearWhite, Palette.White, opacity);
+        var color = Color.Lerp(Palette.ClearWhite, Palette.White, opacity);
         try
         {
-            if (player.MyPhysics?.myPlayer.cosmetics.currentBodySprite.BodySprite != null)
-            {
-                if (player.MyPhysics.myPlayer.cosmetics.currentBodySprite.BodySprite.color != color)
-                    LogHelper.Info(
-                        $"ChangeOpacity {player.MyPhysics.myPlayer.cosmetics.currentBodySprite.BodySprite.color.a} to {opacity} of {player.getNameWithRole()}",
-                        "setOpacity");
-                player.MyPhysics.myPlayer.cosmetics.currentBodySprite.BodySprite.color = color;
-            }
-
-            if (player.MyPhysics?.myPlayer.cosmetics.skin?.layer != null)
-                player.MyPhysics.myPlayer.cosmetics.skin.layer.color = color;
-
-            if (player.cosmetics.hat != null)
-                player.cosmetics.hat.SpriteColor = color;
-
-            foreach (var rend in player.cosmetics.currentPet.renderers)
-                rend.color = rend.color = color;
-
-            foreach (var shadowRend in player.cosmetics.currentPet.shadows)
-                shadowRend.color = shadowRend.color = color;
-
-            if (player.cosmetics.visor != null)
-                player.cosmetics.visor.Image.color = color;
-
-            if (player.cosmetics.colorBlindText != null)
-                player.cosmetics.colorBlindText.color = color;
+            Helpers.setInvisible(player, color, opacity);
         }
-        catch
-        {
-        }
+        catch { }
     }
 
     [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.FixedUpdate))]

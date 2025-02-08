@@ -413,18 +413,17 @@ public static class RPCProcedure
     {
         TimeMaster.shieldActive = false; // Shield is no longer active when rewinding
         if (TimeMaster.timeMaster != null && TimeMaster.timeMaster == PlayerControl.LocalPlayer)
+        {
             resetTimeMasterButton();
+        }
         FastDestroyableSingleton<HudManager>.Instance.FullScreen.color = new Color(0f, 0.5f, 0.8f, 0.3f);
         FastDestroyableSingleton<HudManager>.Instance.FullScreen.enabled = true;
-        FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(TimeMaster.rewindTime / 2,
-            new Action<float>(p =>
-            {
-                if (p == 1f) FastDestroyableSingleton<HudManager>.Instance.FullScreen.enabled = false;
-            })));
+        FastDestroyableSingleton<HudManager>.Instance.FullScreen.gameObject.SetActive(true);
+        FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(TimeMaster.rewindTime / 2, new Action<float>((p) => {
+            if (p == 1f) FastDestroyableSingleton<HudManager>.Instance.FullScreen.enabled = false;
+        })));
 
-        if (TimeMaster.timeMaster == null || PlayerControl.LocalPlayer == TimeMaster.timeMaster)
-            return; // Time Master himself does not rewind
-        if (PlayerControl.LocalPlayer.isGM()) return; // GM does not rewind
+        if (TimeMaster.timeMaster == null || PlayerControl.LocalPlayer == TimeMaster.timeMaster) return; // Time Master himself does not rewind
 
         TimeMaster.isRewinding = true;
 

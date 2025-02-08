@@ -12,6 +12,7 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Collections.Generic;
+using Il2CppSystem.Data;
 using InnerNet;
 using PowerTools;
 using TheOtherRoles.Modules;
@@ -188,6 +189,32 @@ public static class Helpers
         writer.WriteBytesAndSize(taskTypeIds.ToArray());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCProcedure.uncheckedSetTasks(player.PlayerId, taskTypeIds.ToArray());
+    }
+    public static void setInvisible(PlayerControl player, Color color, float alpha)
+    {
+        if (player.cosmetics.currentBodySprite.BodySprite != null)
+            player.cosmetics.currentBodySprite.BodySprite.color = color;
+
+        if (player.cosmetics.skin?.layer != null)
+            player.cosmetics.skin.layer.color = color;
+
+        if (player.cosmetics.hat != null)
+        {
+            player.cosmetics.hat.FrontLayer.color = color;
+            player.cosmetics.hat.BackLayer.color = color;
+        }
+
+        if (player.cosmetics.currentPet != null)
+            player.cosmetics.currentPet.SetAlpha(alpha);
+
+        if (player.cosmetics.visor != null)
+            player.cosmetics.visor.Image.color = color;
+
+        if (player.cosmetics.colorBlindText != null)
+            player.cosmetics.colorBlindText.color = color;
+
+        if (player.cosmetics.PettingHand != null)
+            player.cosmetics.PettingHand.SetAlpha(alpha);
     }
 
     public static void setSkinWithAnim(PlayerPhysics playerPhysics, string SkinId)
@@ -402,6 +429,16 @@ public static class Helpers
             return;
         player.RpcSetRole(RoleTypes.Crewmate);
     }
+    public static string camelString(this string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        string firstLetter = input.Substring(0, 1).ToUpper();
+        string remainingLetters = input.Substring(1).ToLower();
+        return firstLetter + remainingLetters;
+    }
+
     public static bool isImpostor(this PlayerControl player)
     {
         return player != null && player.Data.Role.IsImpostor;

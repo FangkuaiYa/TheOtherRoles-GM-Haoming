@@ -89,7 +89,7 @@ public class SoulPlayer
             CustomButton.ButtonPositions.upperRowFarLeft,
             hm,
             hm.AbilityButton,
-            KeyCode.F
+            KeyCode.G
         )
         {
             MaxTimer = 0f,

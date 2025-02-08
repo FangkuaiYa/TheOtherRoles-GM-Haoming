@@ -180,7 +180,7 @@ public class BomberA : RoleBase<BomberA>
                 tmpTarget = null;
             },
             getBomberButtonSprite(),
-            CustomButton.ButtonPositions.upperRowRight,
+            CustomButton.ButtonPositions.upperRowLeft,
             hm,
             hm.KillButton,
             KeyCode.F,

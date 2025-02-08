@@ -281,7 +281,7 @@ public static class ButtonsGM
             () => { },
             GM.getZoomOutSprite(),
             // position
-            Vector3.zero + (Vector3.up * 3.75f) + (Vector3.right * 0.55f) + Vector3.down,
+            Vector3.zero + (Vector3.up * 3.75f) + (Vector3.right * 0.55f),
             // hudmanager
             hm,
             hm.UseButton,
@@ -313,7 +313,7 @@ public static class ButtonsGM
             () => { },
             GM.getZoomInSprite(),
             // position
-            Vector3.zero + (Vector3.up * 3.75f) + (Vector3.right * 0.2f) + Vector3.down,
+            Vector3.zero + (Vector3.up * 3.75f) + (Vector3.right * 0.2f),
             // hudmanager
             hm,
             hm.UseButton,

@@ -236,12 +236,12 @@ namespace TheOtherRoles
         }
         // Option changes
 
-        public virtual void updateSelection(int newSelection, bool notifyUsers = true)
+        public void updateSelection(int newSelection, bool notifyUsers = true)
         {
             newSelection = Mathf.Clamp((newSelection + selections.Length) % selections.Length, 0, selections.Length - 1);
-            if (AmongUsClient.Instance?.AmClient == true && notifyUsers && selection != newSelection)
+            bool doNeedNotifier = AmongUsClient.Instance?.AmClient == true && notifyUsers && selection != newSelection;
+            if (doNeedNotifier)
             {
-                DestroyableSingleton<HudManager>.Instance.Notifier.AddSettingsChangeMessage((StringNames)(this.id + 6000), getString(), false);
                 try
                 {
                     selection = newSelection;
@@ -253,11 +253,17 @@ namespace TheOtherRoles
                 catch { }
             }
             selection = newSelection;
-            try
+            if (doNeedNotifier)
             {
-                if (onChange != null) onChange();
+                CustomOption originalParent = parent;
+                if (originalParent != null)
+                {
+                    while (originalParent.parent != null)
+                        originalParent = originalParent.parent;
+                }
+                DestroyableSingleton<HudManager>.Instance.Notifier.AddModSettingsChangeMessage((StringNames)(this.id + 6000), getString(),
+                    (originalParent != null ? originalParent.getName().Replace("- ", "") + ": " : "") + getName().Replace("- ", ""), false);
             }
-            catch { }
             if (AmongUsClient.Instance?.AmHost == true)
             {
                 var currentTab = GameOptionsMenuStartPatch.currentTabs.FirstOrDefault(x => x.active).GetComponent<GameOptionsMenu>();
@@ -271,6 +277,7 @@ namespace TheOtherRoles
             {
                 stringOption.oldValue = stringOption.Value = selection;
                 stringOption.ValueText.text = getString();
+
                 if (AmongUsClient.Instance?.AmHost == true && PlayerControl.LocalPlayer)
                 {
                     if (id == 0 && selection != preset)

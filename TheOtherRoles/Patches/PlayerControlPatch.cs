@@ -565,6 +565,9 @@ public static class PlayerControlFixedUpdatePatch
 
         bool canSeeEverything = PlayerControl.LocalPlayer.isDead() ||
                                 PlayerControl.LocalPlayer.isGM();
+
+        Vector3 colorBlindTextMeetingInitialLocalPos = new(0.3384f, -0.16666f, -0.01f);
+        Vector3 colorBlindTextMeetingInitialLocalScale = new(0.9f, 1f, 1f);
         foreach (PlayerControl p in PlayerControl.AllPlayerControls)
         {
             if (p == null) continue;
@@ -592,9 +595,22 @@ public static class PlayerControlFixedUpdatePatch
 
                 // Set the position every time bc it sometimes ends up in the wrong place due to camoflauge
                 playerInfo.transform.localPosition = p.cosmetics.nameText.transform.localPosition + (Vector3.up * 0.225f);
+                // Colorblind Text in Meeting
+                PlayerVoteArea playerVoteArea = MeetingHud.Instance?.playerStates?.FirstOrDefault(x => x.TargetPlayerId == p.PlayerId);
+                if (playerVoteArea != null && playerVoteArea.ColorBlindName.gameObject.active)
+                {
+                    playerVoteArea.ColorBlindName.transform.localPosition = colorBlindTextMeetingInitialLocalPos + new Vector3(0f, 0.4f, 0f);
+                    playerVoteArea.ColorBlindName.transform.localScale = colorBlindTextMeetingInitialLocalScale * 0.8f;
+                }
 
-                PlayerVoteArea playerVoteArea =
-                    MeetingHud.Instance?.playerStates?.FirstOrDefault(x => x.TargetPlayerId == p.PlayerId);
+                // Colorblind Text During the round
+                if (p.cosmetics.colorBlindText != null && p.cosmetics.showColorBlindText && p.cosmetics.colorBlindText.gameObject.active)
+                {
+                    p.cosmetics.colorBlindText.transform.localPosition = new Vector3(0, -1f, 0f);
+                }
+
+                p.cosmetics.nameText.transform.parent.SetLocalZ(-0.0001f);  // This moves both the name AND the colorblindtext behind objects (if the player is behind the object), like the rock on polus
+
                 Transform meetingInfoTransform = playerVoteArea != null
                     ? playerVoteArea.NameText.transform.parent.FindChild("Info")
                     : null;
@@ -1445,6 +1461,31 @@ public static class MurderPlayerPatch
         target.OnDeath(__instance);
     }
 }
+
+// From https://github.com/dabao40/TheOtherRolesGMIA/
+/*[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Revive))]
+class RevivePatch
+{
+    public static bool Prefix(PlayerControl __instance)
+    {
+        __instance.Data.IsDead = false;
+        __instance.gameObject.layer = LayerMask.NameToLayer("Players");
+        __instance.MyPhysics.ResetMoveState(true);
+        __instance.clickKillCollider.enabled = true;
+        __instance.cosmetics.SetPetSource(__instance);
+        __instance.cosmetics.SetNameMask(true);
+        if (__instance.AmOwner)
+        {
+            DestroyableSingleton<HudManager>.Instance.ShadowQuad.gameObject.SetActive(true);
+            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+            DestroyableSingleton<HudManager>.Instance.Chat.ForceClosed();
+            DestroyableSingleton<HudManager>.Instance.Chat.SetVisible(false);
+        }
+        DeadPlayer deadPlayerEntry = deadPlayers.Where(x => x.player.PlayerId == __instance.PlayerId).FirstOrDefault();
+        if (deadPlayerEntry != null) deadPlayers.Remove(deadPlayerEntry);
+        return false;
+    }
+}*/
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetKillTimer))]
 internal static class PlayerControlSetCoolDownPatch

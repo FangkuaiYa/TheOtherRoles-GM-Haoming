@@ -186,6 +186,8 @@ internal class IntroCutsceneOnDestroyPatch
             RPCProcedure.spawnDummy(playerId, PlayerControl.LocalPlayer.transform.position);
         }
 
+        HudManager.Instance.ShowVanillaKeyGuide();
+
         // Cornucopiaのバナーを表示する
         Cornucopia.showBanner();
 

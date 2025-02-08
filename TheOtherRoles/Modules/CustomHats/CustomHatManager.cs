@@ -15,13 +15,13 @@ public static class CustomHatManager
     public const string InnerslothPackageName = "Innersloth Hats";
     public const string DeveloperPackageName = "Developer Hats";
 
-    internal static readonly Tuple<string, string> Repository = new("dabao40", "TheOtherHats");
+    internal static readonly Tuple<string, string> Repository = new("TheOtherRolesAU", "TheOtherHats");
     internal static string RepositoryUrl
     {
         get
         {
             var (owner, repository) = Repository;
-            return Helpers.isChinese() ? "https://dl.fangkuai.fun/ModFiles/TheOtherRolesGMIA/TheOtherHats" : $"https://raw.githubusercontent.com/{owner}/{repository}/master";
+            return Helpers.isChinese() ? "https://dl.fangkuai.fun/ModFiles/TheOtherRoles-GM-Haoming/TheOtherHats" : $"https://raw.githubusercontent.com/{owner}/{repository}/master";
         }
     }
 

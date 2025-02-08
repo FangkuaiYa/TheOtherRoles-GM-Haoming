@@ -143,7 +143,7 @@ public class MimicA : RoleBase<MimicA>
             () => { return PlayerControl.LocalPlayer.CanMove; },
             () => { },
             getMorphButtonSprite(),
-            CustomButton.ButtonPositions.upperRowRight,
+            CustomButton.ButtonPositions.upperRowLeft,
             hm,
             hm.UseButton,
             KeyCode.Q

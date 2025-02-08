@@ -100,7 +100,7 @@ public class Immoralist : RoleBase<Immoralist>
             () => { return true; },
             () => { immoralistButton.Timer = immoralistButton.MaxTimer = 20f; },
             getButtonSprite(),
-            CustomButton.ButtonPositions.upperRowRight,
+            CustomButton.ButtonPositions.upperRowCenter,
             hm,
             hm.KillButton,
             KeyCode.F,

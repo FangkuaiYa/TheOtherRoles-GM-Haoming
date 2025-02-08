@@ -91,7 +91,7 @@ public class SerialKiller : RoleBase<SerialKiller>
             () => { return true; },
             () => { },
             getButtonSprite(),
-            CustomButton.ButtonPositions.upperRowRight,
+            CustomButton.ButtonPositions.upperRowLeft,
             hm,
             hm.AbilityButton,
             KeyCode.F,

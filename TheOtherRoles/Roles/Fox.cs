@@ -228,7 +228,7 @@ public class Fox : RoleBase<Fox>
             },
             () => { foxButton.Timer = foxButton.MaxTimer = stealthCooldown; },
             getHideButtonSprite(),
-            CustomButton.ButtonPositions.upperRowLeft,
+            CustomButton.ButtonPositions.upperRowRight,
             hm,
             hm.AbilityButton,
             KeyCode.F,
@@ -306,7 +306,7 @@ public class Fox : RoleBase<Fox>
             },
             () => { foxRepairButton.Timer = foxRepairButton.MaxTimer = 0f; },
             getRepairButtonSprite(),
-            CustomButton.ButtonPositions.upperRowRight,
+            CustomButton.ButtonPositions.upperRowLeft,
             hm,
             hm.AbilityButton,
             KeyCode.G
@@ -469,7 +469,12 @@ public class Fox : RoleBase<Fox>
                 else
                     opacity = Math.Max(opacity, stealthFade(fox));
 
-                Ninja.setOpacity(fox, opacity);
+                var color = Color.Lerp(Palette.ClearWhite, Palette.White, opacity);
+                try
+                {
+                    Helpers.setInvisible(fox, color, opacity);
+                }
+                catch { }
             }
         }
     }

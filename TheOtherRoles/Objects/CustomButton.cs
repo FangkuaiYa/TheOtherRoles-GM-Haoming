@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using TheOtherRoles.Modules;
 using TheOtherRoles.Patches;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using static TheOtherRoles.TheOtherRoles;
 using Object = UnityEngine.Object;
 
 namespace TheOtherRoles.Objects;
@@ -75,7 +77,7 @@ public class CustomButton
             Object.Destroy(actionButton.buttonLabelText);
             actionButton.buttonLabelText = Object.Instantiate(textTemplate.buttonLabelText, actionButton.transform);
         }
-
+        setKeyBind();
         setActive(false);
     }
 #nullable enable
@@ -156,16 +158,8 @@ public class CustomButton
 
     public void setActive(bool isActive)
     {
-        if (isActive)
-        {
-            actionButton.gameObject.SetActive(true);
-            actionButton.graphic.enabled = true;
-        }
-        else
-        {
-            actionButton.gameObject.SetActive(false);
-            actionButton.graphic.enabled = false;
-        }
+        actionButton.gameObject.SetActive(isActive);
+        actionButton.graphic.enabled = isActive;
     }
 
     private void Update()
@@ -229,4 +223,23 @@ public class CustomButton
         // Trigger OnClickEvent if the hotkey is being pressed down
         if (hotkey.HasValue && Input.GetKeyDown(hotkey.Value)) onClickEvent();
     }
+    public void setKeyBind()
+    {
+        if (hotkey != null && hotkey != KeyCode.None && hotkey != KeyCode.KeypadPlus)
+        {
+            actionButton.gameObject.ForEachChild((Il2CppSystem.Action<GameObject>)((c) => { if (c.name.Equals("HotKeyGuide")) GameObject.Destroy(c); }));
+            ButtonEffect.SetKeyGuide(actionButton.gameObject, (KeyCode)hotkey, action: showButtonText && buttonText != "" ? buttonText : "Action");
+        }
+    }
+
+    /*public void resetKeyBind()
+    {
+        bool isVampire = Sprite == Vampire.getButtonSprite();
+        if (buttonText == "" && !isVampire) return; // English or something that doesn't require an update, return
+                                                    // Specify vampire as not to override things with English language
+        if ((buttonText != "" || isVampire)) return;
+        actionButton.gameObject.ForEachChild((Il2CppSystem.Action<GameObject>)((c) => { if (c.name.Equals("HotKeyGuide")) GameObject.Destroy(c); }));
+        setKeyBind();
+    }*/
+
 }
