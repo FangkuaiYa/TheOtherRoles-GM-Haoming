@@ -86,7 +86,7 @@ public class JekyllAndHyde : RoleBase<JekyllAndHyde>
         local.assignTasks();
         oddIsJekyll = TheOtherRoles.rnd.Next(0, 2) == 1;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-            (byte)CustomRPC.SetOddIsJekyll, SendOption.Reliable, -1);
+            (byte)CustomRPC.SetOddIsJekyll, SendOption.Reliable);
         writer.Write(oddIsJekyll);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -146,7 +146,7 @@ public class JekyllAndHyde : RoleBase<JekyllAndHyde>
             {
                 oddIsJekyll = !oddIsJekyll;
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetOddIsJekyll, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetOddIsJekyll, SendOption.Reliable);
                 writer.Write(oddIsJekyll);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 suicideButton.Timer = suicideButton.MaxTimer;
@@ -216,7 +216,7 @@ public class JekyllAndHyde : RoleBase<JekyllAndHyde>
     {
         byte targetId = PlayerControl.LocalPlayer.PlayerId;
         MessageWriter killWriter = AmongUsClient.Instance.StartRpcImmediately(
-            PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SerialKillerSuicide, SendOption.Reliable, -1);
+            PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SerialKillerSuicide, SendOption.Reliable);
         killWriter.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(killWriter);
         RPCProcedure.serialKillerSuicide(targetId);

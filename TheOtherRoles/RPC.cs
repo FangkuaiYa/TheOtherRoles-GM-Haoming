@@ -13,9 +13,9 @@ using TMPro;
 using UnityEngine;
 using static TheOtherRoles.GameHistory;
 using static TheOtherRoles.HudManagerStartPatch;
-using static TheOtherRoles.TORMapOptions;
 using static TheOtherRoles.TheOtherRoles;
 using static TheOtherRoles.TheOtherRolesGM;
+using static TheOtherRoles.TORMapOptions;
 using Action = Il2CppSystem.Action;
 using Object = UnityEngine.Object;
 
@@ -171,7 +171,7 @@ public static class RPCProcedure
         KillAnimationCoPerformKillPatch.hideNextAnimation = false;
 
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-            (byte)CustomRPC.FinishResetVariables, SendOption.Reliable, -1);
+            (byte)CustomRPC.FinishResetVariables, SendOption.Reliable);
         writer.Write(PlayerControl.LocalPlayer.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         finishResetVariables(PlayerControl.LocalPlayer.PlayerId);
@@ -194,11 +194,11 @@ public static class RPCProcedure
     {
         try
         {
-            for (var i = 0; i < numberOfOptions; i++)
+            for (int i = 0; i < numberOfOptions; i++)
             {
-                var optionId = reader.ReadPackedUInt32();
-                var selection = reader.ReadPackedUInt32();
-                var option = CustomOption.options.First(option => option.id == (int)optionId);
+                uint optionId = reader.ReadPackedUInt32();
+                uint selection = reader.ReadPackedUInt32();
+                CustomOption option = CustomOption.options.First(option => option.id == (int)optionId);
                 option.updateSelection((int)selection, i == numberOfOptions - 1);
             }
         }
@@ -207,6 +207,7 @@ public static class RPCProcedure
             LogHelper.Error("Error while deserializing options: " + e.Message);
         }
     }
+
     public static void workaroundSetRoles(byte numberOfRoles, MessageReader reader)
     {
         for (int i = 0; i < numberOfRoles; i++)
@@ -306,7 +307,7 @@ public static class RPCProcedure
 
     public static void uncheckedMurderPlayer(byte sourceId, byte targetId, byte showAnimation)
     {
-        if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
+        if (AmongUsClient.Instance.GameState != InnerNetClient.GameStates.Started) return;
         PlayerControl source = Helpers.playerById(sourceId);
         PlayerControl target = Helpers.playerById(targetId);
         if (source != null && target != null)
@@ -350,7 +351,7 @@ public static class RPCProcedure
 
     public static void uncheckedSetTasks(byte playerId, byte[] taskTypeIds)
     {
-        var player = Helpers.playerById(playerId);
+        PlayerControl player = Helpers.playerById(playerId);
         player.clearAllTasks();
 
         player.Data.SetTasks(taskTypeIds);
@@ -413,17 +414,18 @@ public static class RPCProcedure
     {
         TimeMaster.shieldActive = false; // Shield is no longer active when rewinding
         if (TimeMaster.timeMaster != null && TimeMaster.timeMaster == PlayerControl.LocalPlayer)
-        {
             resetTimeMasterButton();
-        }
         FastDestroyableSingleton<HudManager>.Instance.FullScreen.color = new Color(0f, 0.5f, 0.8f, 0.3f);
         FastDestroyableSingleton<HudManager>.Instance.FullScreen.enabled = true;
         FastDestroyableSingleton<HudManager>.Instance.FullScreen.gameObject.SetActive(true);
-        FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(TimeMaster.rewindTime / 2, new Action<float>((p) => {
-            if (p == 1f) FastDestroyableSingleton<HudManager>.Instance.FullScreen.enabled = false;
-        })));
+        FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(TimeMaster.rewindTime / 2,
+            new Action<float>(p =>
+            {
+                if (p == 1f) FastDestroyableSingleton<HudManager>.Instance.FullScreen.enabled = false;
+            })));
 
-        if (TimeMaster.timeMaster == null || PlayerControl.LocalPlayer == TimeMaster.timeMaster) return; // Time Master himself does not rewind
+        if (TimeMaster.timeMaster == null || PlayerControl.LocalPlayer == TimeMaster.timeMaster)
+            return; // Time Master himself does not rewind
 
         TimeMaster.isRewinding = true;
 
@@ -598,7 +600,9 @@ public static class RPCProcedure
                     player.generateAndAssignTasks(0, CreatedMadmate.numTasks, 0);
                 }
 
-            GameData.Instance.GetPlayerById(player.PlayerId); // player.RemoveInfected(); (was removed in 2022.12.08, no idea if we ever need that part again, replaced by these 2 lines.)
+            GameData.Instance
+                .GetPlayerById(player
+                    .PlayerId); // player.RemoveInfected(); (was removed in 2022.12.08, no idea if we ever need that part again, replaced by these 2 lines.)
             player.CoSetRole(RoleTypes.Crewmate, true);
             erasePlayerRoles(player.PlayerId, true, false);
 
@@ -814,14 +818,17 @@ public static class RPCProcedure
         {
             SpriteAnim animator = vent.GetComponent<SpriteAnim>();
             vent.EnterVentAnim = vent.ExitVentAnim = null;
-            Sprite newSprite = animator == null ? SecurityGuard.getStaticVentSealedSprite() : SecurityGuard.getAnimatedVentSealedSprite();
+            Sprite newSprite = animator == null
+                ? SecurityGuard.getStaticVentSealedSprite()
+                : SecurityGuard.getAnimatedVentSealedSprite();
             SpriteRenderer rend = vent.myRend;
             if (Helpers.isFungle())
             {
                 newSprite = SecurityGuard.getFungleVentSealedSprite();
                 rend = vent.transform.GetChild(3).GetComponent<SpriteRenderer>();
-                animator = vent.transform.GetChild(3).GetComponent<PowerTools.SpriteAnim>();
+                animator = vent.transform.GetChild(3).GetComponent<SpriteAnim>();
             }
+
             animator?.Stop();
             rend.sprite = newSprite;
             if (SubmergedCompatibility.isSubmerged() && vent.Id == 0)
@@ -1285,7 +1292,7 @@ public static class RPCProcedure
             if (BomberA.bombTarget != null && BomberB.bombTarget != null)
             {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BomberKill, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BomberKill, SendOption.Reliable);
                 writer.Write(killer);
                 writer.Write(target);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -1312,12 +1319,12 @@ public static class RPCProcedure
 
     public static void spawnDummy(byte playerId, Vector3 pos)
     {
-        var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
-        var i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
+        PlayerControl playerControl = Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
+        byte i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
 
         playerControl.isDummy = true;
 
-        var playerInfo = GameData.Instance.AddDummy(playerControl);
+        NetworkedPlayerInfo playerInfo = GameData.Instance.AddDummy(playerControl);
 
         playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
         playerControl.GetComponent<DummyBehaviour>().enabled = true;
@@ -1329,7 +1336,7 @@ public static class RPCProcedure
         playerControl.SetSkin(CosmeticsLayer.EMPTY_SKIN_ID, i);
         playerControl.SetPet(CosmeticsLayer.EMPTY_PET_ID, i);
 
-        AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
+        AmongUsClient.Instance.Spawn(playerControl);
         playerInfo.RpcSetTasks(new byte[0]);
     }
 
@@ -1506,13 +1513,13 @@ public static class RPCProcedure
         private static void GetRpcNames()
         {
             RpcNames ??= new Dictionary<CustomRPC, string>();
-            var values = EnumHelper.GetAllValues<CustomRPC>();
-            foreach (var value in values) RpcNames.Add(value, Enum.GetName(value) ?? string.Empty);
+            CustomRPC[] values = EnumHelper.GetAllValues<CustomRPC>();
+            foreach (CustomRPC value in values) RpcNames.Add(value, Enum.GetName(value) ?? string.Empty);
         }
 
         private static void Postfix([HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
         {
-            var packetId = (CustomRPC)callId;
+            CustomRPC packetId = (CustomRPC)callId;
             if (RpcNames!.ContainsKey(packetId)) return;
             LogHelper.Error($"接收 PlayerControl 原版Rpc RpcId{callId} Message Size {reader.Length}");
         }
@@ -1522,11 +1529,12 @@ public static class RPCProcedure
             if (RpcNames == null)
                 GetRpcNames();
 
-            var packetId = (CustomRPC)callId;
+            CustomRPC packetId = (CustomRPC)callId;
             if (!RpcNames!.ContainsKey(packetId))
                 return true;
 
-            LogHelper.Error($"接收 PlayerControl CustomRpc RpcId{callId} Rpc {RpcNames?[(CustomRPC)callId] ?? nameof(packetId)} Message Size {reader.Length}");
+            LogHelper.Error(
+                $"接收 PlayerControl CustomRpc RpcId{callId} Rpc {RpcNames?[(CustomRPC)callId] ?? nameof(packetId)} Message Size {reader.Length}");
 
             switch (packetId)
             {

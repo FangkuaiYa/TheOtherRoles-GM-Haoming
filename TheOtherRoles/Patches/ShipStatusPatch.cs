@@ -22,7 +22,8 @@ public class ShipStatusPatch
     public static bool Prefix(ref float __result, ShipStatus __instance,
         [HarmonyArgument(0)] NetworkedPlayerInfo player)
     {
-        if ((!__instance.Systems.ContainsKey(SystemTypes.Electrical) && !Helpers.isFungle()) || GameOptionsManager.Instance.currentGameOptions.GameMode == GameModes.HideNSeek) return true;
+        if ((!__instance.Systems.ContainsKey(SystemTypes.Electrical) && !Helpers.isFungle()) ||
+            GameOptionsManager.Instance.currentGameOptions.GameMode == GameModes.HideNSeek) return true;
 
         // If player is a role which has Impostor vision
         if (Helpers.hasImpostorVision(player.Object))
@@ -75,13 +76,18 @@ public class ShipStatusPatch
         if (SubmergedCompatibility.Loaded && shipStatus.Type == SubmergedCompatibility.SUBMERGED_MAP_TYPE)
             return SubmergedCompatibility.GetSubmergedNeutralLightRadius(isImpostor);
 
-        if (isImpostor) return shipStatus.MaxLightRadius * GameOptionsManager.Instance.currentNormalGameOptions.ImpostorLightMod;
+        if (isImpostor)
+            return shipStatus.MaxLightRadius * GameOptionsManager.Instance.currentNormalGameOptions.ImpostorLightMod;
 
         float lerpValue = 1.0f;
-        try {
+        try
+        {
             SwitchSystem switchSystem = MapUtilities.Systems[SystemTypes.Electrical].CastFast<SwitchSystem>();
             lerpValue = switchSystem.Value / 255f;
-        } catch { }
+        }
+        catch
+        {
+        }
 
         return Mathf.Lerp(shipStatus.MinLightRadius, shipStatus.MaxLightRadius, lerpValue) *
                GameOptionsManager.Instance.currentNormalGameOptions.CrewLightMod;
@@ -138,7 +144,7 @@ public class ShipStatusPatch
 
         // 一部役職のタスクを再割り当てする
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-            (byte)CustomRPC.FinishShipStatusBegin, SendOption.Reliable, -1);
+            (byte)CustomRPC.FinishShipStatusBegin, SendOption.Reliable);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCProcedure.finishShipStatusBegin();
     }
@@ -148,13 +154,14 @@ public class ShipStatusPatch
     public static void Postfix(ShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
     {
         // Polusの湧き位置をランダムにする 無駄に人数分シャッフルが走るのをそのうち直す
-        if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 2 && CustomOptionHolder.polusRandomSpawn.getBool())
+        if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 2 &&
+            CustomOptionHolder.polusRandomSpawn.getBool())
             if (AmongUsClient.Instance.AmHost)
             {
                 Random rand = new();
                 int randVal = rand.Next(0, 6);
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RandomSpawn, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RandomSpawn, SendOption.Reliable);
                 writer.Write(player.Data.PlayerId);
                 writer.Write((byte)randVal);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);

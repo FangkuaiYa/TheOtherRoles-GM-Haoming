@@ -118,7 +118,7 @@ public class MimicA : RoleBase<MimicA>
                 if (!isMorph)
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.mimicMorph, SendOption.Reliable, -1);
+                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.mimicMorph, SendOption.Reliable);
                     writer.Write(PlayerControl.LocalPlayer.PlayerId);
                     writer.Write(MimicK.allPlayers.FirstOrDefault().PlayerId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -129,7 +129,7 @@ public class MimicA : RoleBase<MimicA>
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                         PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.mimicResetMorph,
-                        SendOption.Reliable, -1);
+                        SendOption.Reliable);
                     writer.Write(PlayerControl.LocalPlayer.PlayerId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.mimicResetMorph(PlayerControl.LocalPlayer.PlayerId);
@@ -156,11 +156,13 @@ public class MimicA : RoleBase<MimicA>
             () =>
             {
                 PlayerControl.LocalPlayer.NetTransform.Halt();
-                if (!MapBehaviour.Instance || !MapBehaviour.Instance.isActiveAndEnabled) {
+                if (!MapBehaviour.Instance || !MapBehaviour.Instance.isActiveAndEnabled)
+                {
                     HudManager __instance = FastDestroyableSingleton<HudManager>.Instance;
                     __instance.InitMap();
-                    MapBehaviour.Instance.ShowCountOverlay(allowedToMove: true, showLivePlayerPosition: true, includeDeadBodies: false);
+                    MapBehaviour.Instance.ShowCountOverlay(true, true, false);
                 }
+
                 if (PlayerControl.LocalPlayer.AmOwner)
                 {
                     PlayerControl.LocalPlayer.MyPhysics.inputHandler.enabled = true;

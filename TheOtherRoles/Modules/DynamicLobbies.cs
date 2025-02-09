@@ -36,7 +36,9 @@ public static class DynamicLobbies
                             {
                                 GameOptionsManager.Instance.currentNormalGameOptions.MaxPlayers = LobbyLimit;
                                 FastDestroyableSingleton<GameStartManager>.Instance.LastPlayerCount = LobbyLimit;
-                                PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.currentGameOptions, false));
+                                PlayerControl.LocalPlayer.RpcSyncSettings(
+                                    GameOptionsManager.Instance.gameOptionsFactory.ToBytes(
+                                        GameOptionsManager.Instance.currentGameOptions, false));
                                 __instance.AddChat(PlayerControl.LocalPlayer,
                                     $"Lobby Size changed to {LobbyLimit} players");
                             }
@@ -62,12 +64,15 @@ public static class DynamicLobbies
         public static void Prefix(InnerNetClient __instance, [HarmonyArgument(0)] GameOptionsData settings)
         {
             int maxPlayers;
-            try {
+            try
+            {
                 maxPlayers = GameOptionsManager.Instance.currentNormalGameOptions.MaxPlayers;
             }
-            catch {
+            catch
+            {
                 maxPlayers = 15;
             }
+
             LobbyLimit = maxPlayers;
             settings.MaxPlayers = 15; // Force 15 Player Lobby on Server
             DataManager.Settings.Multiplayer.chatMode = QuickChatModes.FreeChatOrQuickChat;

@@ -17,13 +17,14 @@ internal class RoleAssignmentPatch
 {
     public static bool isAssigned;
 
-    [HarmonyPatch(typeof(RoleOptionsData), nameof(RoleOptionsData.GetNumPerGame))]
+    [HarmonyPatch(typeof(RoleOptionsCollectionV08), nameof(RoleOptionsCollectionV08.GetNumPerGame))]
     private class RoleOptionsDataGetNumPerGamePatch
     {
         public static void Postfix(ref int __result, ref RoleTypes role)
         {
+            if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.Normal)
+                __result = 0; // Deactivate Vanilla Roles if the mod roles are active
             if (role is RoleTypes.Crewmate or RoleTypes.Impostor) return;
-            __result = 0; // Deactivate Vanilla Roles if the mod roles are active
         }
     }
 
@@ -56,7 +57,8 @@ internal class RoleAssignmentPatch
             if (LobbyBehaviour.Instance) LobbyBehaviour.Instance.Despawn();
             if (!ShipStatus.Instance)
             {
-                int num = Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.MapId, 0, Constants.MapNames.Length - 1);
+                int num = Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.MapId, 0,
+                    Constants.MapNames.Length - 1);
                 try
                 {
                     if (num == 0 && AprilFoolsMode.ShouldFlipSkeld())
@@ -109,18 +111,19 @@ internal class RoleAssignmentPatch
             // 独自処理開始
             createCheckList();
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ResetVariables, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ResetVariables, SendOption.Reliable);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.resetVariables();
             yield return waitResetVariables().WrapToIl2Cpp();
 
 
             if (!DestroyableSingleton<TutorialManager>.InstanceExists &&
-                GameOptionsManager.Instance.currentGameOptions.GameMode != GameModes.HideNSeek) // Don't assign Roles in Tutorial or if deactivated
+                GameOptionsManager.Instance.currentGameOptions.GameMode !=
+                GameModes.HideNSeek) // Don't assign Roles in Tutorial or if deactivated
             {
                 assignRoles();
                 writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                    (byte)CustomRPC.FinishSetRole, SendOption.Reliable, -1);
+                    (byte)CustomRPC.FinishSetRole, SendOption.Reliable);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCProcedure.finishSetRole();
             }
@@ -185,7 +188,7 @@ internal class RoleAssignmentPatch
 
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                             PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.OverrideNativeRole,
-                            SendOption.Reliable, -1);
+                            SendOption.Reliable);
                         writer.Write(host.PlayerId);
                         writer.Write((byte)RoleTypes.Crewmate);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -193,7 +196,7 @@ internal class RoleAssignmentPatch
 
                         writer = AmongUsClient.Instance.StartRpcImmediately(
                             PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.OverrideNativeRole,
-                            SendOption.Reliable, -1);
+                            SendOption.Reliable);
                         writer.Write(newImp.PlayerId);
                         writer.Write((byte)RoleTypes.Impostor);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -413,7 +416,7 @@ internal class RoleAssignmentPatch
                         {
                             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                                 PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetLovers,
-                                SendOption.Reliable, -1);
+                                SendOption.Reliable);
                             writer.Write((byte)lover1);
                             writer.Write((byte)lover2);
                             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -540,7 +543,7 @@ internal class RoleAssignmentPatch
             }
 
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetShifterType, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetShifterType, SendOption.Reliable);
             writer.Write(shifterIsNeutral);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.setShifterType(shifterIsNeutral);
@@ -688,7 +691,7 @@ internal class RoleAssignmentPatch
             byte playerId = host.PlayerId;
 
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRole, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRole, SendOption.Reliable);
             writer.Write(roleId);
             writer.Write(playerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -710,7 +713,7 @@ internal class RoleAssignmentPatch
                 {
                     MessageWriter w = AmongUsClient.Instance.StartRpcImmediately(
                         PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.LawyerPromotesToPursuer,
-                        SendOption.Reliable, -1);
+                        SendOption.Reliable);
                     AmongUsClient.Instance.FinishRpcImmediately(w);
                     RPCProcedure.lawyerPromotesToPursuer();
                 }
@@ -719,7 +722,7 @@ internal class RoleAssignmentPatch
                     PlayerControl target = possibleTargets[rnd.Next(0, possibleTargets.Count)];
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                         PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.LawyerSetTarget,
-                        SendOption.Reliable, -1);
+                        SendOption.Reliable);
                     writer.Write(target.PlayerId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.lawyerSetTarget(target.PlayerId);
@@ -795,7 +798,7 @@ internal class RoleAssignmentPatch
             playerRoleMap.Add(new Tuple<byte, byte>(playerId, roleId));
 
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRole, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRole, SendOption.Reliable);
             writer.Write(roleId);
             writer.Write(playerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -811,7 +814,7 @@ internal class RoleAssignmentPatch
             byte playerId = playerList[index].PlayerId;
 
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AddModifier, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AddModifier, SendOption.Reliable);
             writer.Write(modId);
             writer.Write(playerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -826,7 +829,7 @@ internal class RoleAssignmentPatch
                 byte amount = (byte)Math.Min(playerRoleMap.Count, 20);
                 MessageWriter writer = AmongUsClient.Instance!.StartRpcImmediately(
                     PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.WorkaroundSetRoles,
-                    SendOption.Reliable, -1);
+                    SendOption.Reliable);
                 writer.Write(amount);
                 for (int i = 0; i < amount; i++)
                 {

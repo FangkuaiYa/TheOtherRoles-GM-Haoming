@@ -18,7 +18,6 @@ using TheOtherRoles.Modules.CustomHats;
 using TheOtherRoles.Objects;
 using TheOtherRoles.Patches;
 using UnityEngine;
-using Object = UnityEngine.Object;
 using Random = System.Random;
 
 namespace TheOtherRoles;
@@ -30,7 +29,7 @@ public class TheOtherRolesPlugin : BasePlugin
 {
     public const string Id = "me.eisbison.theotherroles";
 
-    public const string VersionString = "2.3.138";
+    public const string VersionString = "2.3.139";
 
     public static Version Version = Version.Parse(VersionString);
     internal static ManualLogSource Logger;
@@ -43,6 +42,8 @@ public class TheOtherRolesPlugin : BasePlugin
     public static Sprite ModStamp;
 
     public static IRegionInfo[] defaultRegions;
+
+    private static Dictionary<string, Sprite> gmhResources = new();
 
     public Harmony Harmony { get; } = new(Id);
 
@@ -69,20 +70,17 @@ public class TheOtherRolesPlugin : BasePlugin
     public static ConfigEntry<string> WebhookUrl { get; set; }
     public static ConfigEntry<bool> TransparentMap { get; set; }
 
-    private static Dictionary<string, Sprite> gmhResources = new();
-
     public static void LoadResources()
     {
         gmhResources = new Dictionary<string, Sprite>();
         Assembly assembly = Assembly.GetExecutingAssembly();
         string[] resourceNames = assembly.GetManifestResourceNames();
 
-        var resourceBundle = assembly.GetManifestResourceStream("TheOtherRoles.Resources.AssetBundle.fangkuaiassets");
-        var assetBundle = AssetBundle.LoadFromMemory(resourceBundle.ReadFully());
-        foreach (var f in assetBundle.GetAllAssetNames())
-        {
+        Stream resourceBundle =
+            assembly.GetManifestResourceStream("TheOtherRoles.Resources.AssetBundle.fangkuaiassets");
+        AssetBundle assetBundle = AssetBundle.LoadFromMemory(resourceBundle.ReadFully());
+        foreach (string f in assetBundle.GetAllAssetNames())
             gmhResources.Add(f, assetBundle.LoadAsset<Sprite>(f).DontUnload());
-        }
         assetBundle.Unload(false);
     }
 

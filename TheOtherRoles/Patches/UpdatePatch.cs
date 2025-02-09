@@ -523,7 +523,8 @@ internal class HudManagerUpdatePatch
 
     private static void Postfix(HudManager __instance)
     {
-        if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started || GameOptionsManager.Instance.currentGameOptions.GameMode == GameModes.HideNSeek) return;
+        if (AmongUsClient.Instance.GameState != InnerNetClient.GameStates.Started ||
+            GameOptionsManager.Instance.currentGameOptions.GameMode == GameModes.HideNSeek) return;
 
         CustomButton.HudUpdate();
         resetNameTagsAndColors();
@@ -549,10 +550,10 @@ internal class HudManagerUpdatePatch
         // Fix dead player's pets being visible by just always updating whether the pet should be visible at all.
         foreach (PlayerControl target in PlayerControl.AllPlayerControls)
         {
-            var pet = target.GetPet();
-            if (pet != null) {
-                pet.Visible = (PlayerControl.LocalPlayer.Data.IsDead && target.Data.IsDead || !target.Data.IsDead) && !target.inVent;
-            }
+            PetBehaviour pet = target.GetPet();
+            if (pet != null)
+                pet.Visible = ((PlayerControl.LocalPlayer.Data.IsDead && target.Data.IsDead) || !target.Data.IsDead) &&
+                              !target.inVent;
         }
     }
 }

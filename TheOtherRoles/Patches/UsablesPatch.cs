@@ -1,10 +1,9 @@
 using HarmonyLib;
 using Hazel;
-using Il2CppSystem;
 using UnityEngine;
-using static TheOtherRoles.TORMapOptions;
 using static TheOtherRoles.TheOtherRoles;
 using static TheOtherRoles.TheOtherRolesGM;
+using static TheOtherRoles.TORMapOptions;
 
 
 namespace TheOtherRoles.Patches;
@@ -323,7 +322,8 @@ public static class UsablesPatch
                 // Handle blank kill
                 if (res == MurderAttemptResult.BlankKill)
                 {
-                    PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown;
+                    PlayerControl.LocalPlayer.killTimer =
+                        GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown;
                     if (PlayerControl.LocalPlayer == Cleaner.cleaner)
                         Cleaner.cleaner.killTimer = HudManagerStartPatch.cleanerCleanButton.Timer =
                             HudManagerStartPatch.cleanerCleanButton.MaxTimer;
@@ -332,10 +332,11 @@ public static class UsablesPatch
                             HudManagerStartPatch.warlockCurseButton.MaxTimer;
                     else if (PlayerControl.LocalPlayer.hasModifier(ModifierType.Mini) &&
                              PlayerControl.LocalPlayer.Data.Role.IsImpostor)
-                        PlayerControl.LocalPlayer.SetKillTimer(GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown *
-                                                                            (Mini.isGrownUp(PlayerControl.LocalPlayer)
-                                                                                ? 0.66f
-                                                                                : 2f));
+                        PlayerControl.LocalPlayer.SetKillTimer(
+                            GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown *
+                            (Mini.isGrownUp(PlayerControl.LocalPlayer)
+                                ? 0.66f
+                                : 2f));
                     else if (PlayerControl.LocalPlayer == Witch.witch)
                         Witch.witch.killTimer = HudManagerStartPatch.witchSpellButton.Timer =
                             HudManagerStartPatch.witchSpellButton.MaxTimer;
@@ -375,11 +376,13 @@ public static class UsablesPatch
             // The sabotage button behaves just fine if it's a regular impostor
             if (PlayerControl.LocalPlayer.Data.Role.TeamType == RoleTeamTypes.Impostor) return true;
 
-            if (!MapBehaviour.Instance || !MapBehaviour.Instance.isActiveAndEnabled) {
+            if (!MapBehaviour.Instance || !MapBehaviour.Instance.isActiveAndEnabled)
+            {
                 HudManager Instance = FastDestroyableSingleton<HudManager>.Instance;
                 Instance.InitMap();
-                MapBehaviour.Instance.ShowCountOverlay(allowedToMove: true, showLivePlayerPosition: true, includeDeadBodies: false);
+                MapBehaviour.Instance.ShowCountOverlay(true, true, false);
             }
+
             return false;
         }
     }

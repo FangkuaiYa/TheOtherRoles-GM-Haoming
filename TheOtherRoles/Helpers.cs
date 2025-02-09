@@ -12,7 +12,6 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Collections.Generic;
-using Il2CppSystem.Data;
 using InnerNet;
 using PowerTools;
 using TheOtherRoles.Modules;
@@ -37,69 +36,6 @@ public static class Helpers
 {
     public static Dictionary<string, Sprite> CachedSprites = new();
 
-    public static Sprite loadSpriteFromResources(string path, float pixelsPerUnit)
-    {
-        try
-        {
-            if (CachedSprites.TryGetValue(path + pixelsPerUnit, out var sprite)) return sprite;
-            Texture2D texture = loadTextureFromResources(path);
-            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
-            sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
-            return CachedSprites[path + pixelsPerUnit] = sprite;
-        }
-        catch
-        {
-            System.Console.WriteLine("Error loading sprite from path: " + path);
-        }
-        return null;
-    }
-    public static Sprite loadSpriteFromResources(Texture2D texture, float pixelsPerUnit, Rect textureRect, Vector2 pivot)
-    {
-        return Sprite.Create(texture, textureRect, pivot, pixelsPerUnit);
-    }
-    public static unsafe Texture2D loadTextureFromResources(string path)
-    {
-        try
-        {
-            Texture2D texture = new(2, 2, TextureFormat.ARGB32, true);
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            Stream stream = assembly.GetManifestResourceStream(path);
-            var length = stream.Length;
-            var byteTexture = new Il2CppStructArray<byte>(length);
-            stream.Read(new Span<byte>(IntPtr.Add(byteTexture.Pointer, IntPtr.Size * 4).ToPointer(), (int)length));
-            if (path.Contains("HorseHats"))
-            {
-                byteTexture = new Il2CppStructArray<byte>(byteTexture.Reverse().ToArray());
-            }
-            ImageConversion.LoadImage(texture, byteTexture, false);
-            return texture;
-        }
-        catch
-        {
-            System.Console.WriteLine("Error loading texture from resources: " + path);
-        }
-        return null;
-    }
-
-    public static Texture2D loadTextureFromDisk(string path)
-    {
-        try
-        {
-            if (File.Exists(path))
-            {
-                Texture2D texture = new(2, 2, TextureFormat.ARGB32, true);
-                var byteTexture = Il2CppSystem.IO.File.ReadAllBytes(path);
-                ImageConversion.LoadImage(texture, byteTexture, false);
-                return texture;
-            }
-        }
-        catch
-        {
-            TheOtherRolesPlugin.Logger.LogError("Error loading texture from disk: " + path);
-        }
-        return null;
-    }
-
 
     public static bool ShowButtons =>
         !(MapBehaviour.Instance && MapBehaviour.Instance.IsOpen) &&
@@ -118,6 +54,73 @@ public static class Helpers
 
     public static bool RefundVotes => CustomOptionHolder.refundVotesOnDeath.getBool();
 
+    public static Sprite loadSpriteFromResources(string path, float pixelsPerUnit)
+    {
+        try
+        {
+            if (CachedSprites.TryGetValue(path + pixelsPerUnit, out Sprite sprite)) return sprite;
+            Texture2D texture = loadTextureFromResources(path);
+            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f),
+                pixelsPerUnit);
+            sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
+            return CachedSprites[path + pixelsPerUnit] = sprite;
+        }
+        catch
+        {
+            System.Console.WriteLine("Error loading sprite from path: " + path);
+        }
+
+        return null;
+    }
+
+    public static Sprite loadSpriteFromResources(Texture2D texture, float pixelsPerUnit, Rect textureRect,
+        Vector2 pivot)
+    {
+        return Sprite.Create(texture, textureRect, pivot, pixelsPerUnit);
+    }
+
+    public static unsafe Texture2D loadTextureFromResources(string path)
+    {
+        try
+        {
+            Texture2D texture = new(2, 2, TextureFormat.ARGB32, true);
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            Stream stream = assembly.GetManifestResourceStream(path);
+            long length = stream.Length;
+            Il2CppStructArray<byte> byteTexture = new(length);
+            stream.Read(new Span<byte>(IntPtr.Add(byteTexture.Pointer, IntPtr.Size * 4).ToPointer(), (int)length));
+            if (path.Contains("HorseHats")) byteTexture = new Il2CppStructArray<byte>(byteTexture.Reverse().ToArray());
+            texture.LoadImage(byteTexture, false);
+            return texture;
+        }
+        catch
+        {
+            System.Console.WriteLine("Error loading texture from resources: " + path);
+        }
+
+        return null;
+    }
+
+    public static Texture2D loadTextureFromDisk(string path)
+    {
+        try
+        {
+            if (File.Exists(path))
+            {
+                Texture2D texture = new(2, 2, TextureFormat.ARGB32, true);
+                Il2CppStructArray<byte> byteTexture = Il2CppSystem.IO.File.ReadAllBytes(path);
+                texture.LoadImage(byteTexture, false);
+                return texture;
+            }
+        }
+        catch
+        {
+            TheOtherRolesPlugin.Logger.LogError("Error loading texture from disk: " + path);
+        }
+
+        return null;
+    }
+
     public static void destroyList<T>(List<T> items) where T : Object
     {
         if (items == null) return;
@@ -134,11 +137,12 @@ public static class Helpers
     {
         TheOtherRolesPlugin.Instance.Log.LogInfo(msg);
     }
+
     public static bool isChinese()
     {
         try
         {
-            var name = CultureInfo.CurrentUICulture.Name;
+            string name = CultureInfo.CurrentUICulture.Name;
             if (name.StartsWith("zh")) return true;
             return false;
         }
@@ -147,24 +151,25 @@ public static class Helpers
             return false;
         }
     }
+
     public static System.Collections.Generic.List<byte> generateTasks(int numCommon, int numShort, int numLong)
     {
-        if (numCommon + numShort + numLong <= 0)
-        {
-            numShort = 1;
-        }
+        if (numCommon + numShort + numLong <= 0) numShort = 1;
 
-        var tasks = new List<byte>();
-        var hashSet = new HashSet<TaskTypes>();
+        List<byte> tasks = new();
+        HashSet<TaskTypes> hashSet = new();
 
-        var commonTasks = new List<NormalPlayerTask>();
-        foreach (var task in MapUtilities.CachedShipStatus.CommonTasks.OrderBy(x => rnd.Next())) commonTasks.Add(task);
+        List<NormalPlayerTask> commonTasks = new();
+        foreach (NormalPlayerTask task in MapUtilities.CachedShipStatus.CommonTasks.OrderBy(x => rnd.Next()))
+            commonTasks.Add(task);
 
-        var shortTasks = new List<NormalPlayerTask>();
-        foreach (var task in MapUtilities.CachedShipStatus.ShortTasks.OrderBy(x => rnd.Next())) shortTasks.Add(task);
+        List<NormalPlayerTask> shortTasks = new();
+        foreach (NormalPlayerTask task in MapUtilities.CachedShipStatus.ShortTasks.OrderBy(x => rnd.Next()))
+            shortTasks.Add(task);
 
-        var longTasks = new List<NormalPlayerTask>();
-        foreach (var task in MapUtilities.CachedShipStatus.LongTasks.OrderBy(x => rnd.Next())) longTasks.Add(task);
+        List<NormalPlayerTask> longTasks = new();
+        foreach (NormalPlayerTask task in MapUtilities.CachedShipStatus.LongTasks.OrderBy(x => rnd.Next()))
+            longTasks.Add(task);
 
         int start = 0;
         MapUtilities.CachedShipStatus.AddTasksFromList(ref start, numCommon, tasks, hashSet, commonTasks);
@@ -184,12 +189,14 @@ public static class Helpers
 
         System.Collections.Generic.List<byte> taskTypeIds = generateTasks(numCommon, numShort, numLong);
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedSetTasks, Hazel.SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.UncheckedSetTasks, SendOption.Reliable);
         writer.Write(player.PlayerId);
         writer.WriteBytesAndSize(taskTypeIds.ToArray());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCProcedure.uncheckedSetTasks(player.PlayerId, taskTypeIds.ToArray());
     }
+
     public static void setInvisible(PlayerControl player, Color color, float alpha)
     {
         if (player.cosmetics.currentBodySprite.BodySprite != null)
@@ -220,7 +227,16 @@ public static class Helpers
     public static void setSkinWithAnim(PlayerPhysics playerPhysics, string SkinId)
     {
         SkinViewData nextSkin = null;
-        try { nextSkin = ShipStatus.Instance.CosmeticsCache.GetSkin(SkinId); } catch { return; };
+        try
+        {
+            nextSkin = ShipStatus.Instance.CosmeticsCache.GetSkin(SkinId);
+        }
+        catch
+        {
+            return;
+        }
+
+        ;
         AnimationClip clip = null;
         SpriteAnim spriteAnim = playerPhysics.myPlayer.cosmetics.skin.animator;
         Animator anim = spriteAnim.m_animator;
@@ -268,7 +284,7 @@ public static class Helpers
         // Murder the bitten player and reset bitten (regardless whether the kill was successful or not)
         checkMuderAttemptAndKill(Vampire.vampire, Vampire.bitten, true, false);
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-            (byte)CustomRPC.VampireSetBitten, SendOption.Reliable, -1);
+            (byte)CustomRPC.VampireSetBitten, SendOption.Reliable);
         writer.Write(byte.MaxValue);
         writer.Write(byte.MaxValue);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -383,52 +399,32 @@ public static class Helpers
     public static bool isNeutral(this RoleType roleType)
     {
         return roleType == RoleType.Jackal ||
-                roleType == RoleType.Sidekick ||
-                roleType == RoleType.Jackal ||
-                roleType == RoleType.Arsonist ||
-                roleType == RoleType.Jester ||
-                roleType == RoleType.Opportunist ||
-                roleType == RoleType.PlagueDoctor ||
-                roleType == RoleType.Fox ||
-                roleType == RoleType.Immoralist ||
-                roleType == RoleType.SchrodingersCat ||
-                roleType == RoleType.Puppeteer ||
-                (roleType == RoleType.JekyllAndHyde) && !JekyllAndHyde.isJekyll() ||
-                roleType == RoleType.Moriarty ||
-                //player == Puppeteer.dummy ||
-                roleType == RoleType.Vulture ||
-                roleType == RoleType.Lawyer ||
-                roleType == RoleType.Pursuer ||
-                roleType == RoleType.Akujo ||
-                roleType == RoleType.Cupid ||
-                (roleType == RoleType.Shifter) && Shifter.isNeutral;
+               roleType == RoleType.Sidekick ||
+               roleType == RoleType.Jackal ||
+               roleType == RoleType.Arsonist ||
+               roleType == RoleType.Jester ||
+               roleType == RoleType.Opportunist ||
+               roleType == RoleType.PlagueDoctor ||
+               roleType == RoleType.Fox ||
+               roleType == RoleType.Immoralist ||
+               roleType == RoleType.SchrodingersCat ||
+               roleType == RoleType.Puppeteer ||
+               (roleType == RoleType.JekyllAndHyde && !JekyllAndHyde.isJekyll()) ||
+               roleType == RoleType.Moriarty ||
+               //player == Puppeteer.dummy ||
+               roleType == RoleType.Vulture ||
+               roleType == RoleType.Lawyer ||
+               roleType == RoleType.Pursuer ||
+               roleType == RoleType.Akujo ||
+               roleType == RoleType.Cupid ||
+               (roleType == RoleType.Shifter && Shifter.isNeutral);
     }
 
     public static bool isCrew(this PlayerControl player)
     {
         return player != null && !player.isImpostor() && !player.isNeutral() && !player.isGM();
     }
-    public static void ModRevive(this PlayerControl player, bool resetRoleIfGhost = true)
-    {
-        player.Data.IsDead = false;
-        player.gameObject.layer = LayerMask.NameToLayer("Players");
-        player.MyPhysics.ResetMoveState();
-        player.cosmetics.SetPetSource(player);
-        player.cosmetics.SetNameMask(true);
-        if (player.AmOwner)
-        {
-            DestroyableSingleton<HudManager>.Instance.ShadowQuad.gameObject.SetActive(true);
-            DestroyableSingleton<HudManager>.Instance.KillButton.ToggleVisible(player.Data.Role.IsImpostor);
-            DestroyableSingleton<HudManager>.Instance.AdminButton.ToggleVisible(player.Data.Role.IsImpostor);
-            DestroyableSingleton<HudManager>.Instance.SabotageButton.ToggleVisible(player.Data.Role.IsImpostor);
-            DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(player.Data.Role.IsImpostor);
-            DestroyableSingleton<HudManager>.Instance.Chat.ForceClosed();
-            DestroyableSingleton<HudManager>.Instance.Chat.SetVisible(false);
-        }
-        if (!resetRoleIfGhost || !AmongUsClient.Instance.AmHost || !RoleManager.IsGhostRole(player.Data.Role.Role))
-            return;
-        player.RpcSetRole(RoleTypes.Crewmate);
-    }
+
     public static string camelString(this string input)
     {
         if (string.IsNullOrEmpty(input))
@@ -513,16 +509,23 @@ public static class Helpers
             player.Data.Tasks.Clear();
     }
 
-    public static bool isMira() {
+    public static bool isMira()
+    {
         return GameOptionsManager.Instance.CurrentGameOptions.MapId == 1;
     }
-    public static bool isAirship() {
+
+    public static bool isAirship()
+    {
         return GameOptionsManager.Instance.CurrentGameOptions.MapId == 4;
     }
-    public static bool isSkeld() {
+
+    public static bool isSkeld()
+    {
         return GameOptionsManager.Instance.CurrentGameOptions.MapId == 0;
     }
-    public static bool isPolus() {
+
+    public static bool isPolus()
+    {
         return GameOptionsManager.Instance.CurrentGameOptions.MapId == 2;
     }
 
@@ -561,16 +564,22 @@ public static class Helpers
         f = Mathf.Clamp01(f);
         return (byte)(f * 255);
     }
-    public static void AddModSettingsChangeMessage(this NotificationPopper popper, StringNames key, string value, string option, bool playSound = true)
+
+    public static void AddModSettingsChangeMessage(this NotificationPopper popper, StringNames key, string value,
+        string option, bool playSound = true)
     {
-        string str = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.LobbyChangeSettingNotification, "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + option + "</font>", "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + value + "</font>");
+        string str = DestroyableSingleton<TranslationController>.Instance.GetString(
+            StringNames.LobbyChangeSettingNotification,
+            "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + option + "</font>",
+            "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + value + "</font>");
         popper.SettingsChangeMessageLogic(key, str, playSound);
     }
+
     public static int lineCount(string text)
     {
         return text.Count(c => c == '\n');
     }
-    
+
     public static bool hidePlayerName(PlayerControl target)
     {
         return hidePlayerName(PlayerControl.LocalPlayer, target);
@@ -632,12 +641,21 @@ public static class Helpers
 
 
         SkinViewData nextSkin = null;
-        try { nextSkin = ShipStatus.Instance.CosmeticsCache.GetSkin(skinId); } catch { return; };
+        try
+        {
+            nextSkin = ShipStatus.Instance.CosmeticsCache.GetSkin(skinId);
+        }
+        catch
+        {
+            return;
+        }
+
+        ;
 
         PlayerPhysics playerPhysics = target.MyPhysics;
         AnimationClip clip = null;
-        var spriteAnim = playerPhysics.myPlayer.cosmetics.skin.animator;
-        var currentPhysicsAnim = playerPhysics.Animations.Animator.GetCurrentAnimation();
+        SpriteAnim spriteAnim = playerPhysics.myPlayer.cosmetics.skin.animator;
+        AnimationClip currentPhysicsAnim = playerPhysics.Animations.Animator.GetCurrentAnimation();
 
 
         if (currentPhysicsAnim == playerPhysics.Animations.group.RunAnim) clip = nextSkin.RunAnim;
@@ -650,7 +668,7 @@ public static class Helpers
         playerPhysics.myPlayer.cosmetics.skin.skin = nextSkin;
         playerPhysics.myPlayer.cosmetics.skin.UpdateMaterial();
 
-        spriteAnim.Play(clip, 1f);
+        spriteAnim.Play(clip);
         spriteAnim.m_animator.Play("a", 0, progress % 1);
         spriteAnim.m_animator.Update(0f);
 
@@ -712,6 +730,29 @@ public static class Helpers
         return roleCouldUse;
     }
 
+    public static void NoDeath(this PlayerControl player, bool resetRoleIfGhost = true)
+    {
+        player.Data.IsDead = false;
+        player.gameObject.layer = LayerMask.NameToLayer("Players");
+        player.MyPhysics.ResetMoveState();
+        player.cosmetics.SetPetSource(player);
+        player.cosmetics.SetNameMask(true);
+        if (player.AmOwner)
+        {
+            DestroyableSingleton<HudManager>.Instance.ShadowQuad.gameObject.SetActive(true);
+            DestroyableSingleton<HudManager>.Instance.KillButton.ToggleVisible(player.Data.Role.IsImpostor);
+            DestroyableSingleton<HudManager>.Instance.AdminButton.ToggleVisible(player.Data.Role.IsImpostor);
+            DestroyableSingleton<HudManager>.Instance.SabotageButton.ToggleVisible(player.Data.Role.IsImpostor);
+            DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(player.Data.Role.IsImpostor);
+            DestroyableSingleton<HudManager>.Instance.Chat.ForceClosed();
+            DestroyableSingleton<HudManager>.Instance.Chat.SetVisible(false);
+        }
+
+        if (!resetRoleIfGhost || !AmongUsClient.Instance.AmHost || !RoleManager.IsGhostRole(player.Data.Role.Role))
+            return;
+        player.RpcSetRole(RoleTypes.Crewmate);
+    }
+
     public static MurderAttemptResult checkMuderAttempt(PlayerControl killer, PlayerControl target,
         bool blockRewind = false)
     {
@@ -722,11 +763,14 @@ public static class Helpers
         if (target == null || target.Data == null || target.Data.IsDead || target.Data.Disconnected)
             return MurderAttemptResult.SuppressKill; // Allow killing players in vents compared to vanilla code
 
+        if ((target.isRole(RoleType.SchrodingersCat) && !target.Data.Disconnected) ||
+            (target == Puppeteer.dummy && !target.Data.Disconnected)) target.NoDeath();
+
         // Handle blank shot
         if (Pursuer.blankedList.Any(x => x.PlayerId == killer.PlayerId))
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetBlanked, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetBlanked, SendOption.Reliable);
             writer.Write(killer.PlayerId);
             writer.Write((byte)0);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -739,7 +783,7 @@ public static class Helpers
         if (Medic.shielded != null && Medic.shielded == target)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(killer.NetId,
-                (byte)CustomRPC.ShieldedMurderAttempt, SendOption.Reliable, -1);
+                (byte)CustomRPC.ShieldedMurderAttempt, SendOption.Reliable);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.shieldedMurderAttempt();
             return MurderAttemptResult.SuppressKill;
@@ -755,7 +799,7 @@ public static class Helpers
             {
                 // Only rewind the attempt was not called because a meeting startet
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(killer.NetId,
-                    (byte)CustomRPC.TimeMasterRewindTime, SendOption.Reliable, -1);
+                    (byte)CustomRPC.TimeMasterRewindTime, SendOption.Reliable);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCProcedure.timeMasterRewindTime();
             }
@@ -785,7 +829,7 @@ public static class Helpers
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                 PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedMurderPlayer,
-                SendOption.Reliable, -1);
+                SendOption.Reliable);
             writer.Write(killer.PlayerId);
             writer.Write(target.PlayerId);
             writer.Write(showAnimation ? byte.MaxValue : 0);
@@ -800,7 +844,7 @@ public static class Helpers
     public static void shareGameVersion()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-            (byte)CustomRPC.VersionHandshake, SendOption.Reliable, -1);
+            (byte)CustomRPC.VersionHandshake, SendOption.Reliable);
         writer.WritePacked(TheOtherRolesPlugin.Version.Major);
         writer.WritePacked(TheOtherRolesPlugin.Version.Minor);
         writer.WritePacked(TheOtherRolesPlugin.Version.Build);
@@ -853,7 +897,8 @@ public static class Helpers
                     if (task.TaskType == TaskTypes.StopCharles)
                         reactorActive = true;
 
-                if (!reactorActive && GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4) renderer.color = Color.black;
+                if (!reactorActive && GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4)
+                    renderer.color = Color.black;
                 renderer.gameObject.SetActive(false);
             }
         })));
@@ -973,7 +1018,11 @@ public static class Helpers
         TextTranslatorTMP[] translator = obj.GetComponentsInChildren<TextTranslatorTMP>(true);
         translator?.Do(Object.Destroy);
     }
-    public static void DestroyTranslator(this MonoBehaviour obj) => obj?.gameObject?.DestroyTranslator();
+
+    public static void DestroyTranslator(this MonoBehaviour obj)
+    {
+        obj?.gameObject?.DestroyTranslator();
+    }
 
     public static bool hasImpostorVision(PlayerControl player)
     {

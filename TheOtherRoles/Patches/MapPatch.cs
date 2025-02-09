@@ -308,7 +308,7 @@ internal class MapBehaviorPatch
     public static void shareRealTasks()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-            (byte)CustomRPC.ShareRealTasks, SendOption.Reliable, -1);
+            (byte)CustomRPC.ShareRealTasks, SendOption.Reliable);
         int count = 0;
         foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks)
             if (!task.IsComplete && task.HasLocation && !PlayerTask.TaskIsEmergency(task))

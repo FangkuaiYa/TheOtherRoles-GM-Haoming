@@ -161,7 +161,8 @@ public class GameStartManagerPatch
                 if (blockStart)
                 {
                     __instance.GameStartText.text = message;
-                    __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition + Vector3.up * 5;
+                    __instance.GameStartText.transform.localPosition =
+                        __instance.StartButton.transform.localPosition + (Vector3.up * 5);
                     __instance.GameStartText.transform.localScale = new Vector3(2f, 2f, 1f);
                     __instance.GameStartTextParent.SetActive(true);
                 }
@@ -169,9 +170,10 @@ public class GameStartManagerPatch
                 {
                     __instance.GameStartText.transform.localPosition = Vector3.zero;
                     __instance.GameStartText.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
-                    if (!__instance.GameStartText.text.Contains(FastDestroyableSingleton<TranslationController>.Instance.GetString(StringNames.GameStarting).Replace("{0}", "")))
+                    if (!__instance.GameStartText.text.Contains(FastDestroyableSingleton<TranslationController>.Instance
+                            .GetString(StringNames.GameStarting).Replace("{0}", "")))
                     {
-                        __instance.GameStartText.text = String.Empty;
+                        __instance.GameStartText.text = string.Empty;
                         __instance.GameStartTextParent.SetActive(false);
                     }
                 }
@@ -208,7 +210,8 @@ public class GameStartManagerPatch
             //__instance.GameRoomName.text = TheOtherRolesPlugin.StreamerMode.Value ? $"<color={TheOtherRolesPlugin.StreamerModeReplacementColor.Value}>{TheOtherRolesPlugin.StreamerModeReplacementText.Value}</color>" : lobbyCodeText;
 
             // Lobby timer
-            if (!AmongUsClient.Instance.AmHost || !GameData.Instance || !__instance.PlayerCounter) return; // Not host or no instance
+            if (!AmongUsClient.Instance.AmHost || !GameData.Instance || !__instance.PlayerCounter)
+                return; // Not host or no instance
 
             if (update) currentText = __instance.PlayerCounter.text;
 
@@ -284,7 +287,7 @@ public class GameStartManagerPatch
 
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                         PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DynamicMapOption,
-                        SendOption.Reliable, -1);
+                        SendOption.Reliable);
                     writer.Write(chosenMapId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.dynamicMapOption(chosenMapId);
@@ -321,14 +324,17 @@ public class GameStartManagerPatch
         {
             return Assembly.GetExecutingAssembly().ManifestModule.ModuleVersionId.Equals(guid);
         }
+
         // Moves the haunt menu a bit further down
         [HarmonyPostfix]
         [HarmonyPatch(typeof(HauntMenuMinigame), nameof(HauntMenuMinigame.FixedUpdate))]
-        public static void UpdatePostfix(HauntMenuMinigame __instance) {
+        public static void UpdatePostfix(HauntMenuMinigame __instance)
+        {
             if (GameOptionsManager.Instance.currentGameOptions.GameMode != GameModes.Normal) return;
-            if (PlayerControl.LocalPlayer.Data.Role.IsImpostor && TheOtherRoles.Vampire.vampire != PlayerControl.LocalPlayer)
-                __instance.gameObject.transform.localPosition = new UnityEngine.Vector3(-6f, -1.1f, __instance.gameObject.transform.localPosition.z);
-            return;
+            if (PlayerControl.LocalPlayer.Data.Role.IsImpostor &&
+                TheOtherRoles.Vampire.vampire != PlayerControl.LocalPlayer)
+                __instance.gameObject.transform.localPosition =
+                    new Vector3(-6f, -1.1f, __instance.gameObject.transform.localPosition.z);
         }
     }
 }

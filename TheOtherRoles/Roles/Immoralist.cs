@@ -74,7 +74,7 @@ public class Immoralist : RoleBase<Immoralist>
     {
         byte targetId = PlayerControl.LocalPlayer.PlayerId;
         MessageWriter killWriter = AmongUsClient.Instance.StartRpcImmediately(
-            PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SerialKillerSuicide, SendOption.Reliable, -1);
+            PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SerialKillerSuicide, SendOption.Reliable);
         killWriter.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(killWriter);
         RPCProcedure.serialKillerSuicide(targetId);

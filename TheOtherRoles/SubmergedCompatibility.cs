@@ -15,7 +15,7 @@ namespace TheOtherRoles;
 public static class SubmergedCompatibility
 {
     public const string SUBMERGED_GUID = "Submerged";
-    public const ShipStatus.MapType SUBMERGED_MAP_TYPE = (ShipStatus.MapType) 6;
+    public const ShipStatus.MapType SUBMERGED_MAP_TYPE = (ShipStatus.MapType)6;
 
     private static MonoBehaviour _submarineStatus;
 

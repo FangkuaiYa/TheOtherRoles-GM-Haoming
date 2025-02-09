@@ -141,8 +141,10 @@ public class LastImpostor : ModifierBase<LastImpostor>
         void setBountyIconPos(Vector3 offset)
         {
             PoolablePlayer icon = TORMapOptions.playerIcons[BountyHunter.bounty.PlayerId];
-            icon.transform.localPosition = Patches.IntroCutsceneOnDestroyPatch.bottomLeft + new Vector3(0f, -0.35f, -62f) + offset;
-            BountyHunter.cooldownText.transform.localPosition = Patches.IntroCutsceneOnDestroyPatch.bottomLeft + new Vector3(0f, -0.35f, -63f) + offset;
+            icon.transform.localPosition =
+                Patches.IntroCutsceneOnDestroyPatch.bottomLeft + new Vector3(0f, -0.35f, -62f) + offset;
+            BountyHunter.cooldownText.transform.localPosition = Patches.IntroCutsceneOnDestroyPatch.bottomLeft +
+                                                                new Vector3(0f, -0.35f, -63f) + offset;
         }
 
         Func<bool> lastImpostorCouldUse(byte index)
@@ -246,7 +248,7 @@ public class LastImpostor : ModifierBase<LastImpostor>
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                 PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ImpostorPromotesToLastImpostor,
-                SendOption.Reliable, -1);
+                SendOption.Reliable);
             writer.Write(impList[0].PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.impostorPromotesToLastImpostor(impList[0].PlayerId);
@@ -311,7 +313,7 @@ public class LastImpostor : ModifierBase<LastImpostor>
 
         // 占いを実行したことで発火される処理を他クライアントに通知
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-            (byte)CustomRPC.FortuneTellerUsedDivine, SendOption.Reliable, -1);
+            (byte)CustomRPC.FortuneTellerUsedDivine, SendOption.Reliable);
         writer.Write(PlayerControl.LocalPlayer.PlayerId);
         writer.Write(p.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -325,7 +327,6 @@ public class LastImpostor : ModifierBase<LastImpostor>
         public static void Prefix(IntroCutscene __instance)
         {
             if (PlayerControl.LocalPlayer != null && FastDestroyableSingleton<HudManager>.Instance != null)
-            {
                 foreach (PlayerControl p in PlayerControl.AllPlayerControls)
                 {
                     NetworkedPlayerInfo data = p.Data;
@@ -339,7 +340,6 @@ public class LastImpostor : ModifierBase<LastImpostor>
                     player.gameObject.SetActive(false);
                     playerIcons[p.PlayerId] = player;
                 }
-            }
         }
     }
 }

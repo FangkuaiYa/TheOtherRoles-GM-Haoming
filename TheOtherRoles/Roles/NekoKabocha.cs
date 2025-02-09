@@ -74,7 +74,7 @@ public class NekoKabocha : RoleBase<NekoKabocha>
             PlayerControl target = candidates[targetID];
 
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NekoKabochaExile, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NekoKabochaExile, SendOption.Reliable);
             writer.Write(target.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.nekoKabochaExile(target.PlayerId);

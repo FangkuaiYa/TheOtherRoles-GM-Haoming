@@ -151,7 +151,7 @@ public class Trap
                         {
                             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                                 PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.TrapperKill,
-                                SendOption.Reliable, -1);
+                                SendOption.Reliable);
                             writer.Write(trapId);
                             writer.Write(PlayerControl.LocalPlayer.PlayerId);
                             writer.Write(target.PlayerId);
@@ -228,7 +228,7 @@ public class Trap
                     {
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                             PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.TrapperKill,
-                            SendOption.Reliable, -1);
+                            SendOption.Reliable);
                         writer.Write(trap.Key);
                         writer.Write(PlayerControl.LocalPlayer.PlayerId);
                         writer.Write(trap.Value.target.PlayerId);

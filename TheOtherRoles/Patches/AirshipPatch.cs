@@ -152,10 +152,7 @@ internal class OptimizeMapPatch
     {
         Console console = ActivateConsole(consoleName);
 
-        if (console == null)
-        {
-            return null;
-        }
+        if (console == null) return null;
 
         if (!console.TaskTypes.Contains(TaskTypes.FixWiring))
         {
@@ -171,10 +168,7 @@ internal class OptimizeMapPatch
     protected static Console ActivateConsole(string objectName)
     {
         GameObject obj = GameObject.Find(objectName);
-        if (obj == null)
-        {
-            return null;
-        }
+        if (obj == null) return null;
 
         obj.layer = LayerMask.NameToLayer("ShortObjects");
         Console console = obj.GetComponent<Console>();
@@ -218,7 +212,8 @@ internal class OptimizeMapPatch
     }
 }
 
-[HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.PickRandomConsoles), new Type[] { typeof(TaskTypes), typeof(Il2CppStructArray<byte>) })]
+[HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.PickRandomConsoles), typeof(TaskTypes),
+    typeof(Il2CppStructArray<byte>))]
 internal class NormalPlayerTaskPickRandomConsolesPatch
 {
     private static int numWireTask => (int)CustomOptionHolder.numWireTask.getFloat();

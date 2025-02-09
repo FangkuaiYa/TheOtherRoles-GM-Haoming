@@ -87,7 +87,7 @@ public class PlagueDoctor : RoleBase<PlagueDoctor>
             byte targetId = killer.PlayerId;
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                 PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlagueDoctorSetInfected,
-                SendOption.Reliable, -1);
+                SendOption.Reliable);
             writer.Write(targetId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.plagueDoctorInfected(targetId);
@@ -136,7 +136,7 @@ public class PlagueDoctor : RoleBase<PlagueDoctor>
                             // 他のクライアントに進行状況を通知する
                             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                                 PlayerControl.LocalPlayer.NetId,
-                                (byte)CustomRPC.PlagueDoctorUpdateProgress, SendOption.Reliable, -1);
+                                (byte)CustomRPC.PlagueDoctorUpdateProgress, SendOption.Reliable);
                             writer.Write(target.PlayerId);
                             writer.Write(progress[target.PlayerId]);
                             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -156,7 +156,7 @@ public class PlagueDoctor : RoleBase<PlagueDoctor>
                     byte targetId = p.PlayerId;
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                         PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlagueDoctorSetInfected,
-                        SendOption.Reliable, -1);
+                        SendOption.Reliable);
                     writer.Write(targetId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.plagueDoctorInfected(targetId);
@@ -179,7 +179,7 @@ public class PlagueDoctor : RoleBase<PlagueDoctor>
                 {
                     MessageWriter winWriter = AmongUsClient.Instance.StartRpcImmediately(
                         PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlagueDoctorWin,
-                        SendOption.Reliable, -1);
+                        SendOption.Reliable);
                     AmongUsClient.Instance.FinishRpcImmediately(winWriter);
                     RPCProcedure.plagueDoctorWin();
                 }
@@ -265,7 +265,7 @@ public class PlagueDoctor : RoleBase<PlagueDoctor>
 
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                     PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlagueDoctorSetInfected,
-                    SendOption.Reliable, -1);
+                    SendOption.Reliable);
                 writer.Write(targetId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCProcedure.plagueDoctorInfected(targetId);

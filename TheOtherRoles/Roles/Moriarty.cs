@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.Data;
 using HarmonyLib;
 using Hazel;
 using TheOtherRoles.Objects;
@@ -98,7 +99,7 @@ public class Moriarty : RoleBase<Moriarty>
                 if (murder != MurderAttemptResult.BlankKill)
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                        (byte)CustomRPC.MoriartyKill, SendOption.Reliable, -1);
+                        (byte)CustomRPC.MoriartyKill, SendOption.Reliable);
                     writer.Write(killTarget.PlayerId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.moriartyKill(killTarget.PlayerId);
@@ -115,7 +116,8 @@ public class Moriarty : RoleBase<Moriarty>
             () =>
             {
                 if (text != null) text.text = $"{counter}/{numberToWin}";
-                killButton.buttonText = killTarget ? killTarget.name : AmongUs.Data.DataManager.Settings.Language.CurrentLanguage == SupportedLangs.SChinese ? "无目标" : "None";
+                killButton.buttonText = killTarget ? killTarget.name :
+                    DataManager.Settings.Language.CurrentLanguage == SupportedLangs.SChinese ? "无目标" : "None";
                 return killTarget != null && PlayerControl.LocalPlayer.CanMove;
             },
             // OnMeetingEnds
@@ -144,7 +146,7 @@ public class Moriarty : RoleBase<Moriarty>
                 if (currentTarget != null)
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                        (byte)CustomRPC.SetBrainwash, SendOption.Reliable, -1);
+                        (byte)CustomRPC.SetBrainwash, SendOption.Reliable);
                     writer.Write(currentTarget.PlayerId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.setBrainwash(currentTarget.PlayerId);
@@ -194,9 +196,9 @@ public class Moriarty : RoleBase<Moriarty>
             () =>
             {
                 brainwashButton.buttonText = currentTarget ? currentTarget.name : "None";
-                if (currentTarget != null/* && currentTarget.name == "牛丼"*/)
+                if (currentTarget != null /* && currentTarget.name == "牛丼"*/)
                     brainwashButton.Sprite = getBrainwashGyudonIcon();
-                else if (currentTarget != null/* && currentTarget.name == "にくきゅう"*/ /*这是个什么玩意*/)
+                else if (currentTarget != null /* && currentTarget.name == "にくきゅう"*/ /*这是个什么玩意*/)
                     brainwashButton.Sprite = getBrainwashNikukyuuIcon();
                 else
                     brainwashButton.Sprite = getBrainwashIcon();

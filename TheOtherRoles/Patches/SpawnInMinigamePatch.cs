@@ -73,7 +73,8 @@ public class SpawnInMinigamePatch
         isFirstSpawn = false;
         if (CustomOptionHolder.airshipSetOriginalCooldown.getBool())
         {
-            PlayerControl.LocalPlayer.SetKillTimerUnchecked(GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown);
+            PlayerControl.LocalPlayer.SetKillTimerUnchecked(GameOptionsManager.Instance.currentNormalGameOptions
+                .KillCooldown);
             foreach (CustomButton b in CustomButton.buttons) b.Timer = b.MaxTimer;
         }
         else
@@ -184,7 +185,7 @@ public class SpawnInMinigamePatch
     public static void Synchronize(SynchronizeTag tag, byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-            (byte)CustomRPC.Synchronize, SendOption.Reliable, -1);
+            (byte)CustomRPC.Synchronize, SendOption.Reliable);
         writer.Write(playerId);
         writer.Write((int)tag);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

@@ -191,7 +191,7 @@ public class Munou : ModifierBase<Munou>
     {
         colorPairs = new Dictionary<byte, byte>();
         List<PlayerControl> allPlayers = PlayerControl.AllPlayerControls.ToArray().ToList();
-        foreach (PlayerControl p in allPlayers) MorphHandler.morphToPlayer(p, p);
+        foreach (PlayerControl p in allPlayers) p.morphToPlayer(p);
         randomColorFlag = false;
     }
 

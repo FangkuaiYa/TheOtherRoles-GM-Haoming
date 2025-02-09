@@ -23,11 +23,12 @@ public class CameraPatch
     private static void UseCameraTime()
     {
         // Don't waste network traffic if we're out of time.
-        if (TORMapOptions.restrictDevices > 0 && TORMapOptions.restrictCameras && TORMapOptions.restrictCamerasTime > 0f &&
+        if (TORMapOptions.restrictDevices > 0 && TORMapOptions.restrictCameras &&
+            TORMapOptions.restrictCamerasTime > 0f &&
             PlayerControl.LocalPlayer.isAlive())
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UseCameraTime, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UseCameraTime, SendOption.Reliable);
             writer.Write(cameraTimer);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.useCameraTime(cameraTimer);
@@ -98,7 +99,8 @@ public class CameraPatch
                 {
                     if (TimeRemaining == null)
                     {
-                        TimeRemaining = Object.Instantiate(FastDestroyableSingleton<HudManager>.Instance.TaskPanel.taskText,
+                        TimeRemaining = Object.Instantiate(
+                            FastDestroyableSingleton<HudManager>.Instance.TaskPanel.taskText,
                             __instance.transform);
                         TimeRemaining.alignment = TextAlignmentOptions.Center;
                         TimeRemaining.transform.position = Vector3.zero;
@@ -213,7 +215,8 @@ public class CameraPatch
                 {
                     if (TimeRemaining == null)
                     {
-                        TimeRemaining = Object.Instantiate(FastDestroyableSingleton<HudManager>.Instance.TaskPanel.taskText,
+                        TimeRemaining = Object.Instantiate(
+                            FastDestroyableSingleton<HudManager>.Instance.TaskPanel.taskText,
                             __instance.transform);
                         TimeRemaining.alignment = TextAlignmentOptions.BottomRight;
                         TimeRemaining.transform.position = Vector3.zero;
@@ -285,7 +288,8 @@ public class CameraPatch
                 {
                     if (TimeRemaining == null)
                     {
-                        TimeRemaining = Object.Instantiate(FastDestroyableSingleton<HudManager>.Instance.TaskPanel.taskText,
+                        TimeRemaining = Object.Instantiate(
+                            FastDestroyableSingleton<HudManager>.Instance.TaskPanel.taskText,
                             __instance.transform);
                         TimeRemaining.alignment = TextAlignmentOptions.BottomRight;
                         TimeRemaining.transform.position = Vector3.zero;

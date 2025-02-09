@@ -5,7 +5,6 @@ using TheOtherRoles.Patches;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using static TheOtherRoles.TheOtherRoles;
 using Object = UnityEngine.Object;
 
 namespace TheOtherRoles.Objects;
@@ -35,17 +34,6 @@ public class CustomButton
     public bool showButtonText = true;
     public Sprite Sprite;
     public float Timer;
-
-    public static class ButtonPositions
-    {
-        public static readonly Vector3 lowerRowRight = new Vector3(-2f, -0.06f, 0);  // Not usable for imps beacuse of new button positions!
-        public static readonly Vector3 lowerRowCenter = new Vector3(-3f, -0.06f, 0);
-        public static readonly Vector3 lowerRowLeft = new Vector3(-4f, -0.06f, 0);
-        public static readonly Vector3 upperRowRight = new Vector3(0f, 1f, 0f);  // Not usable for imps beacuse of new button positions!
-        public static readonly Vector3 upperRowCenter = new Vector3(-1f, 1f, 0f);  // Not usable for imps beacuse of new button positions!
-        public static readonly Vector3 upperRowLeft = new Vector3(-2f, 1f, 0f);
-        public static readonly Vector3 upperRowFarLeft = new Vector3(-3f, 1f, 0f);
-    }
 
     public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite,
         Vector3 PositionOffset, HudManager hudManager, ActionButton textTemplate, KeyCode? hotkey, bool HasEffect,
@@ -77,6 +65,7 @@ public class CustomButton
             Object.Destroy(actionButton.buttonLabelText);
             actionButton.buttonLabelText = Object.Instantiate(textTemplate.buttonLabelText, actionButton.transform);
         }
+
         setKeyBind();
         setActive(false);
     }
@@ -184,9 +173,10 @@ public class CustomButton
             {
                 float aspect = Camera.main.aspect;
                 float safeOrthographicSize = CameraSafeArea.GetSafeOrthographicSize(Camera.main);
-                float xpos = 0.05f - safeOrthographicSize * aspect * 1.70f;
+                float xpos = 0.05f - (safeOrthographicSize * aspect * 1.70f);
                 pos = new Vector3(xpos, pos.y, pos.z);
             }
+
             actionButton.transform.localPosition = pos + PositionOffset;
             actionButton.transform.localScale = LocalScale;
         }
@@ -223,13 +213,36 @@ public class CustomButton
         // Trigger OnClickEvent if the hotkey is being pressed down
         if (hotkey.HasValue && Input.GetKeyDown(hotkey.Value)) onClickEvent();
     }
+
     public void setKeyBind()
     {
         if (hotkey != null && hotkey != KeyCode.None && hotkey != KeyCode.KeypadPlus)
         {
-            actionButton.gameObject.ForEachChild((Il2CppSystem.Action<GameObject>)((c) => { if (c.name.Equals("HotKeyGuide")) GameObject.Destroy(c); }));
-            ButtonEffect.SetKeyGuide(actionButton.gameObject, (KeyCode)hotkey, action: showButtonText && buttonText != "" ? buttonText : "Action");
+            actionButton.gameObject.ForEachChild((Il2CppSystem.Action<GameObject>)(c =>
+            {
+                if (c.name.Equals("HotKeyGuide")) GameObject.Destroy(c);
+            }));
+            ButtonEffect.SetKeyGuide(actionButton.gameObject, (KeyCode)hotkey,
+                action: showButtonText && buttonText != "" ? buttonText : "Action");
         }
+    }
+
+    public static class ButtonPositions
+    {
+        public static readonly Vector3
+            lowerRowRight = new(-2f, -0.06f, 0); // Not usable for imps beacuse of new button positions!
+
+        public static readonly Vector3 lowerRowCenter = new(-3f, -0.06f, 0);
+        public static readonly Vector3 lowerRowLeft = new(-4f, -0.06f, 0);
+
+        public static readonly Vector3
+            upperRowRight = new(0f, 1f, 0f); // Not usable for imps beacuse of new button positions!
+
+        public static readonly Vector3
+            upperRowCenter = new(-1f, 1f, 0f); // Not usable for imps beacuse of new button positions!
+
+        public static readonly Vector3 upperRowLeft = new(-2f, 1f, 0f);
+        public static readonly Vector3 upperRowFarLeft = new(-3f, 1f, 0f);
     }
 
     /*public void resetKeyBind()
@@ -241,5 +254,4 @@ public class CustomButton
         actionButton.gameObject.ForEachChild((Il2CppSystem.Action<GameObject>)((c) => { if (c.name.Equals("HotKeyGuide")) GameObject.Destroy(c); }));
         setKeyBind();
     }*/
-
 }

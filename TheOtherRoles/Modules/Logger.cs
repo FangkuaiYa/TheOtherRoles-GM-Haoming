@@ -15,12 +15,35 @@ internal static class LogHelper
         logSource = Source;
     }
 
-    public static void Info(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Info);
-    public static void Message(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Message);
-    public static void Warn(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Warning);
-    public static void Error(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Error);
-    public static void Debug(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Debug);
-    public static void Fatal(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Fatal);
+    public static void Info(object text, string Tag = "")
+    {
+        SendLog(text.ToString(), Tag);
+    }
+
+    public static void Message(object text, string Tag = "")
+    {
+        SendLog(text.ToString(), Tag, LogLevel.Message);
+    }
+
+    public static void Warn(object text, string Tag = "")
+    {
+        SendLog(text.ToString(), Tag, LogLevel.Warning);
+    }
+
+    public static void Error(object text, string Tag = "")
+    {
+        SendLog(text.ToString(), Tag, LogLevel.Error);
+    }
+
+    public static void Debug(object text, string Tag = "")
+    {
+        SendLog(text.ToString(), Tag, LogLevel.Debug);
+    }
+
+    public static void Fatal(object text, string Tag = "")
+    {
+        SendLog(text.ToString(), Tag, LogLevel.Fatal);
+    }
 
     public static void SendLog(string text, string tag = "", LogLevel logLevel = LogLevel.Info)
     {
@@ -56,8 +79,8 @@ internal static class LogHelper
 
     public static void FastLog(LogLevel errorLevel, object @object)
     {
-        var Logger = logSource;
-        var Message = @object as string;
+        ManualLogSource Logger = logSource;
+        string Message = @object as string;
         switch (errorLevel)
         {
             case LogLevel.Message:

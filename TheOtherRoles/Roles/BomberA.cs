@@ -71,7 +71,8 @@ public class BomberA : RoleBase<BomberA>
                 {
                     PoolablePlayer icon = TORMapOptions.playerIcons[bombTarget.PlayerId];
                     icon.gameObject.SetActive(true);
-                    icon.transform.localPosition = Patches.IntroCutsceneOnDestroyPatch.bottomLeft + new Vector3(0f, -0.35f, -62f);
+                    icon.transform.localPosition =
+                        Patches.IntroCutsceneOnDestroyPatch.bottomLeft + new Vector3(0f, -0.35f, -62f);
                     icon.transform.localScale = Vector3.one * 0.4f;
                     if (targetText == null)
                     {
@@ -93,7 +94,8 @@ public class BomberA : RoleBase<BomberA>
                 {
                     PoolablePlayer icon = playerIcons[BomberB.bombTarget.PlayerId];
                     icon.gameObject.SetActive(true);
-                    icon.transform.localPosition = Patches.IntroCutsceneOnDestroyPatch.bottomLeft + new Vector3(0f, -0.35f, -62f);
+                    icon.transform.localPosition =
+                        Patches.IntroCutsceneOnDestroyPatch.bottomLeft + new Vector3(0f, -0.35f, -62f);
                     icon.transform.localScale = Vector3.one * 0.4f;
                     if (partnerTargetText == null)
                     {
@@ -189,17 +191,24 @@ public class BomberA : RoleBase<BomberA>
             // OnEffectsEnd
             () =>
             {
-                if (tmpTarget != null)
+                if ((tmpTarget.hasModifier(ModifierType.Mini) && !Mini.isGrownUp(tmpTarget)) || (BomberB.bombTarget != null && tmpTarget == BomberB.bombTarget))
                 {
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlantBomb, SendOption.Reliable, -1);
-                    writer.Write(tmpTarget.PlayerId);
-                    AmongUsClient.Instance.FinishRpcImmediately(writer);
-                    bombTarget = tmpTarget;
+                    bomberButton.Timer = 0f;
                 }
+                else
+                {
+                    if (tmpTarget != null)
+                    {
+                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
+                            PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlantBomb, SendOption.Reliable);
+                        writer.Write(tmpTarget.PlayerId);
+                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                        bombTarget = tmpTarget;
+                    }
 
-                tmpTarget = null;
-                bomberButton.Timer = bomberButton.MaxTimer;
+                    tmpTarget = null;
+                    bomberButton.Timer = bomberButton.MaxTimer;
+                }
             }
         )
         {
@@ -219,7 +228,7 @@ public class BomberA : RoleBase<BomberA>
                 {
                     PlayerControl target = bombTarget;
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ReleaseBomb, SendOption.Reliable, -1);
+                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ReleaseBomb, SendOption.Reliable);
                     writer.Write(PlayerControl.LocalPlayer.PlayerId);
                     writer.Write(target.PlayerId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -342,7 +351,6 @@ public class BomberA : RoleBase<BomberA>
         public static void Prefix(IntroCutscene __instance)
         {
             if (PlayerControl.LocalPlayer != null && FastDestroyableSingleton<HudManager>.Instance != null)
-            {
                 foreach (PlayerControl p in PlayerControl.AllPlayerControls)
                 {
                     NetworkedPlayerInfo data = p.Data;
@@ -356,7 +364,6 @@ public class BomberA : RoleBase<BomberA>
                     player.gameObject.SetActive(false);
                     playerIcons[p.PlayerId] = player;
                 }
-            }
         }
     }
 }

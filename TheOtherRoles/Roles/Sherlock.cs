@@ -78,65 +78,68 @@ public class Sherlock : RoleBase<Sherlock>
     {
         // Sherlock Investigate
         sherlockInvestigateButton = new CustomButton(
-            () =>
-            {
-                string message = "";
-                foreach (Tuple<byte, Tuple<byte, Vector3>> item in killLog)
+                () =>
                 {
-                    float distance = Vector3.Distance(item.Item2.Item2, PlayerControl.LocalPlayer.transform.position);
-                    if (distance < investigateDistance)
+                    string message = "";
+                    foreach (Tuple<byte, Tuple<byte, Vector3>> item in killLog)
                     {
-                        PlayerControl killer = Helpers.getPlayerById(item.Item1);
-                        PlayerControl target = Helpers.getPlayerById(item.Item2.Item1);
-                        string killerTeam = RoleInfo.GetRolesString(killer, true);
+                        float distance = Vector3.Distance(item.Item2.Item2,
+                            PlayerControl.LocalPlayer.transform.position);
+                        if (distance < investigateDistance)
+                        {
+                            PlayerControl killer = Helpers.getPlayerById(item.Item1);
+                            PlayerControl target = Helpers.getPlayerById(item.Item2.Item1);
+                            string killerTeam = RoleInfo.GetRolesString(killer, true);
 
-                        // if(killer.isImpostor())
-                        // {
-                        //     killerTeam = ModTranslation.getString("sherlockImpostor");
-                        // }
-                        // else if(killer.isRole(RoleType.Moriarty))
-                        // {
-                        //     killerTeam = ModTranslation.getString("moriarty");
-                        // }
-                        // else if(killer.isRole(RoleType.Jackal))
-                        // {
-                        //     killerTeam = ModTranslation.getString("jackal");
-                        // }
-                        // else if(killer.isNeutral())
-                        // {
-                        //     killerTeam = ModTranslation.getString("sherlockNeutral");
-                        // }
-                        // else
-                        // {
-                        //     killerTeam = ModTranslation.getString("sherlockCrewmate");
-                        // }
-                        message += string.Format(ModTranslation.getString("sherlockInvestigateMessage1"), target.name,
-                            killerTeam);
+                            // if(killer.isImpostor())
+                            // {
+                            //     killerTeam = ModTranslation.getString("sherlockImpostor");
+                            // }
+                            // else if(killer.isRole(RoleType.Moriarty))
+                            // {
+                            //     killerTeam = ModTranslation.getString("moriarty");
+                            // }
+                            // else if(killer.isRole(RoleType.Jackal))
+                            // {
+                            //     killerTeam = ModTranslation.getString("jackal");
+                            // }
+                            // else if(killer.isNeutral())
+                            // {
+                            //     killerTeam = ModTranslation.getString("sherlockNeutral");
+                            // }
+                            // else
+                            // {
+                            //     killerTeam = ModTranslation.getString("sherlockCrewmate");
+                            // }
+                            message += string.Format(ModTranslation.getString("sherlockInvestigateMessage1"),
+                                target.name,
+                                killerTeam);
+                        }
                     }
-                }
 
-                if (message == "") message = ModTranslation.getString("sherlockInvestigateMessage2");
-                investigateMessage(message, 5f, Color.white);
-                numUsed += 1;
-            },
-            () =>
-            {
-                return PlayerControl.LocalPlayer.isRole(RoleType.Sherlock) && !PlayerControl.LocalPlayer.Data.IsDead;
-            },
-            () =>
-            {
-                if (numInvestigateText != null) numInvestigateText.text = $"{numUsed}/{getNumInvestigate()}";
+                    if (message == "") message = ModTranslation.getString("sherlockInvestigateMessage2");
+                    investigateMessage(message, 5f, Color.white);
+                    numUsed += 1;
+                },
+                () =>
+                {
+                    return PlayerControl.LocalPlayer.isRole(RoleType.Sherlock) &&
+                           !PlayerControl.LocalPlayer.Data.IsDead;
+                },
+                () =>
+                {
+                    if (numInvestigateText != null) numInvestigateText.text = $"{numUsed}/{getNumInvestigate()}";
 
-                return PlayerControl.LocalPlayer.CanMove && numUsed < getNumInvestigate();
-            },
-            () => { sherlockInvestigateButton.Timer = sherlockInvestigateButton.MaxTimer; },
-            getInvestigateIcon(),
-            CustomButton.ButtonPositions.upperRowLeft,
-            hm,
-            hm.KillButton,
-            KeyCode.Q
-        )
-        { buttonText = ModTranslation.getString("InvestigateText") };
+                    return PlayerControl.LocalPlayer.CanMove && numUsed < getNumInvestigate();
+                },
+                () => { sherlockInvestigateButton.Timer = sherlockInvestigateButton.MaxTimer; },
+                getInvestigateIcon(),
+                CustomButton.ButtonPositions.upperRowLeft,
+                hm,
+                hm.KillButton,
+                KeyCode.Q
+            )
+            { buttonText = ModTranslation.getString("InvestigateText") };
 
         numInvestigateText = GameObject.Instantiate(sherlockInvestigateButton.actionButton.cooldownTimerText,
             sherlockInvestigateButton.actionButton.cooldownTimerText.transform.parent);
@@ -147,30 +150,31 @@ public class Sherlock : RoleBase<Sherlock>
 
         // Sherlock Watch
         sherlockWatchButton = new CustomButton(
-            () => { },
-            () =>
-            {
-                return PlayerControl.LocalPlayer.isRole(RoleType.Sherlock) && !PlayerControl.LocalPlayer.Data.IsDead;
-            },
-            () =>
-            {
-                if (numKillTimerText != null) numKillTimerText.text = $"{killTimerCounter}";
-                if (sherlockWatchButton.Timer <= 0)
+                () => { },
+                () =>
                 {
-                    killTimerCounter += 1;
-                    sherlockWatchButton.Timer = GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown;
-                }
+                    return PlayerControl.LocalPlayer.isRole(RoleType.Sherlock) &&
+                           !PlayerControl.LocalPlayer.Data.IsDead;
+                },
+                () =>
+                {
+                    if (numKillTimerText != null) numKillTimerText.text = $"{killTimerCounter}";
+                    if (sherlockWatchButton.Timer <= 0)
+                    {
+                        killTimerCounter += 1;
+                        sherlockWatchButton.Timer = GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown;
+                    }
 
-                return PlayerControl.LocalPlayer.CanMove && numUsed < getNumInvestigate();
-            },
-            () => { sherlockWatchButton.Timer = sherlockWatchButton.MaxTimer; },
-            getWatchIcon(),
-            new Vector3(-0.9f, 1f, 0),
-            hm,
-            hm.KillButton,
-            KeyCode.Q
-        )
-        { buttonText = "" };
+                    return PlayerControl.LocalPlayer.CanMove && numUsed < getNumInvestigate();
+                },
+                () => { sherlockWatchButton.Timer = sherlockWatchButton.MaxTimer; },
+                getWatchIcon(),
+                new Vector3(-0.9f, 1f, 0),
+                hm,
+                hm.KillButton,
+                KeyCode.Q
+            )
+            { buttonText = "" };
 
         numKillTimerText = GameObject.Instantiate(sherlockWatchButton.actionButton.cooldownTimerText,
             sherlockWatchButton.actionButton.cooldownTimerText.transform.parent);

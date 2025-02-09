@@ -12,12 +12,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using static TheOtherRoles.GameHistory;
-using static TheOtherRoles.TORMapOptions;
 using static TheOtherRoles.TheOtherRoles;
 using static TheOtherRoles.TheOtherRolesGM;
+using static TheOtherRoles.TORMapOptions;
 using Object = UnityEngine.Object;
 using Random = System.Random;
-using UnityEngine.UIElements.UIR;
 
 namespace TheOtherRoles.Patches;
 
@@ -25,6 +24,8 @@ namespace TheOtherRoles.Patches;
 internal class MeetingHudPatch
 {
     private const float scale = 0.65f;
+
+    public const int MaxOneScreenRole = 40;
     private static bool[] selections;
     private static SpriteRenderer[] renderers;
     private static Sprite blankNameplate;
@@ -34,10 +35,13 @@ internal class MeetingHudPatch
     private static TextMeshPro meetingInfoText;
 
     private static GameObject guesserUI;
+    private static List<Transform> RoleButtons;
+    private static List<SpriteRenderer> PageButtons;
+    public static int Page;
 
     public static void updateNameplate(PlayerVoteArea pva, byte playerId = byte.MaxValue)
     {
-        blankNameplate ??=  ShipStatus.Instance.CosmeticsCache.GetNameplate("nameplate_NoPlate").Image;
+        blankNameplate ??= ShipStatus.Instance.CosmeticsCache.GetNameplate("nameplate_NoPlate").Image;
 
         Sprite nameplate = blankNameplate;
         if (!hideNameplates)
@@ -61,7 +65,7 @@ internal class MeetingHudPatch
             if (target.AmDead)
             {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GMRevive, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GMRevive, SendOption.Reliable);
                 writer.Write(target.TargetPlayerId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCProcedure.GMRevive(target.TargetPlayerId);
@@ -72,7 +76,7 @@ internal class MeetingHudPatch
             else
             {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GMKill, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GMKill, SendOption.Reliable);
                 writer.Write(target.TargetPlayerId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCProcedure.GMKill(target.TargetPlayerId);
@@ -126,7 +130,7 @@ internal class MeetingHudPatch
                 if (firstPlayer != null && secondPlayer != null)
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SwapperSwap, SendOption.Reliable, -1);
+                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SwapperSwap, SendOption.Reliable);
                     writer.Write(firstPlayer.TargetPlayerId);
                     writer.Write(secondPlayer.TargetPlayerId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -137,22 +141,28 @@ internal class MeetingHudPatch
         }
     }
 
-    public const int MaxOneScreenRole = 40;
-    private static List<Transform> RoleButtons;
-    private static List<SpriteRenderer> PageButtons;
-    public static int Page;
-    static void guesserSelectRole(bool SetPage = true)
+    private static void guesserSelectRole(bool SetPage = true)
     {
         if (SetPage) Page = 1;
-        foreach (var RoleButton in RoleButtons)
+        foreach (Transform RoleButton in RoleButtons)
         {
             int index = 0;
-            foreach (var RoleBtn in RoleButtons)
+            foreach (Transform RoleBtn in RoleButtons)
             {
                 if (RoleBtn == null) continue;
                 index++;
-                if (index <= (Page - 1) * MaxOneScreenRole) { RoleBtn.gameObject.SetActive(false); continue; }
-                if ((Page * MaxOneScreenRole) < index) { RoleBtn.gameObject.SetActive(false); continue; }
+                if (index <= (Page - 1) * MaxOneScreenRole)
+                {
+                    RoleBtn.gameObject.SetActive(false);
+                    continue;
+                }
+
+                if (Page * MaxOneScreenRole < index)
+                {
+                    RoleBtn.gameObject.SetActive(false);
+                    continue;
+                }
+
                 RoleBtn.gameObject.SetActive(true);
             }
         }
@@ -160,15 +170,16 @@ internal class MeetingHudPatch
 
     private static void guesserOnClick(int buttonTarget, MeetingHud __instance)
     {
-        if (guesserUI != null || !(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted)) return;
+        if (guesserUI != null || !(__instance.state == MeetingHud.VoteStates.Voted ||
+                                   __instance.state == MeetingHud.VoteStates.NotVoted)) return;
         __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(false));
 
         Page = 1;
-        RoleButtons = new();
-        PageButtons = new();
+        RoleButtons = new List<Transform>();
+        PageButtons = new List<SpriteRenderer>();
 
-        Transform PhoneUI = UnityEngine.Object.FindObjectsOfType<Transform>().FirstOrDefault(x => x.name == "PhoneUI");
-        Transform container = UnityEngine.Object.Instantiate(PhoneUI, __instance.transform);
+        Transform PhoneUI = Object.FindObjectsOfType<Transform>().FirstOrDefault(x => x.name == "PhoneUI");
+        Transform container = Object.Instantiate(PhoneUI, __instance.transform);
         container.transform.localPosition = new Vector3(0, 0, -5f);
         guesserUI = container.gameObject;
 
@@ -198,46 +209,49 @@ internal class MeetingHudPatch
         {
             PageButtons[0].gameObject.SetActive(true);
             PageButtons[1].gameObject.SetActive(true);
-            if (((RoleButtons.Count / MaxOneScreenRole) +
-                (RoleButtons.Count % MaxOneScreenRole != 0 ? 1 : 0)) < Page)
+            if ((RoleButtons.Count / MaxOneScreenRole) +
+                (RoleButtons.Count % MaxOneScreenRole != 0 ? 1 : 0) < Page)
             {
                 Page -= 1;
                 PageButtons[1].gameObject.SetActive(false);
             }
-            else if (((RoleButtons.Count / MaxOneScreenRole) +
-                (RoleButtons.Count % MaxOneScreenRole != 0 ? 1 : 0)) < Page + 1)
-            {
+            else if ((RoleButtons.Count / MaxOneScreenRole) +
+                     (RoleButtons.Count % MaxOneScreenRole != 0 ? 1 : 0) < Page + 1)
                 PageButtons[1].gameObject.SetActive(false);
-            }
+
             if (Page <= 1)
             {
                 Page = 1;
                 PageButtons[0].gameObject.SetActive(false);
             }
+
             guesserSelectRole(false);
         }
+
         void CreatePage(bool IsNext, MeetingHud __instance, Transform container)
         {
-            var buttonTemplate = __instance.playerStates[0].transform.FindChild("votePlayerBase");
-            var maskTemplate = __instance.playerStates[0].transform.FindChild("MaskArea");
-            var smallButtonTemplate = __instance.playerStates[0].Buttons.transform.Find("CancelButton");
-            var textTemplate = __instance.playerStates[0].NameText;
+            Transform buttonTemplate = __instance.playerStates[0].transform.FindChild("votePlayerBase");
+            Transform maskTemplate = __instance.playerStates[0].transform.FindChild("MaskArea");
+            Transform smallButtonTemplate = __instance.playerStates[0].Buttons.transform.Find("CancelButton");
+            TextMeshPro textTemplate = __instance.playerStates[0].NameText;
             Transform PagebuttonParent = new GameObject().transform;
             PagebuttonParent.SetParent(container);
-            Transform Pagebutton = UnityEngine.Object.Instantiate(buttonTemplate, PagebuttonParent);
+            Transform Pagebutton = Object.Instantiate(buttonTemplate, PagebuttonParent);
             Pagebutton.FindChild("ControllerHighlight").gameObject.SetActive(false);
-            Transform PagebuttonMask = UnityEngine.Object.Instantiate(maskTemplate, PagebuttonParent);
-            TextMeshPro Pagelabel = UnityEngine.Object.Instantiate(textTemplate, Pagebutton);
-            Pagebutton.GetComponent<SpriteRenderer>().sprite = ShipStatus.Instance.CosmeticsCache.GetNameplate("nameplate_NoPlate").Image;
-            PagebuttonParent.localPosition = IsNext ? new(3.535f, -2.2f, -200) : new(-3.475f, -2.2f, -200);
-            PagebuttonParent.localScale = new(0.55f, 0.55f, 1f);
+            Transform PagebuttonMask = Object.Instantiate(maskTemplate, PagebuttonParent);
+            TextMeshPro Pagelabel = Object.Instantiate(textTemplate, Pagebutton);
+            Pagebutton.GetComponent<SpriteRenderer>().sprite =
+                ShipStatus.Instance.CosmeticsCache.GetNameplate("nameplate_NoPlate").Image;
+            PagebuttonParent.localPosition =
+                IsNext ? new Vector3(3.535f, -2.2f, -200) : new Vector3(-3.475f, -2.2f, -200);
+            PagebuttonParent.localScale = new Vector3(0.55f, 0.55f, 1f);
             Pagelabel.color = Color.white;
             Pagelabel.text = ModTranslation.getString(IsNext ? "next" : "previous");
             Pagelabel.alignment = TextAlignmentOptions.Center;
             Pagelabel.transform.localPosition = new Vector3(0, 0, Pagelabel.transform.localPosition.z);
             Pagelabel.transform.localScale *= 1.6f;
             Pagelabel.autoSizeTextContainer = true;
-            Pagebutton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+            Pagebutton.GetComponent<PassiveButton>().OnClick.AddListener((UnityAction)(() =>
             {
                 if (IsNext) Page += 1;
                 else Page -= 1;
@@ -245,6 +259,7 @@ internal class MeetingHudPatch
             }));
             PageButtons.Add(Pagebutton.GetComponent<SpriteRenderer>());
         }
+
         CreatePage(false, __instance, container);
         CreatePage(true, __instance, container);
 
@@ -276,6 +291,7 @@ internal class MeetingHudPatch
                 int numberOfLeftTasks = playerTotal - playerCompleted;
                 if (numberOfLeftTasks <= 0 && roleInfo.roleType == RoleType.Snitch) continue;
             }
+
             CreateRole(roleInfo);
         }
 
@@ -288,10 +304,11 @@ internal class MeetingHudPatch
             Transform button = Object.Instantiate(buttonTemplate, buttonParent);
             Transform buttonMask = Object.Instantiate(maskTemplate, buttonParent);
             TextMeshPro label = Object.Instantiate(textTemplate, button);
-            button.GetComponent<SpriteRenderer>().sprite =  ShipStatus.Instance.CosmeticsCache.GetNameplate("nameplate_NoPlate").Image;
+            button.GetComponent<SpriteRenderer>().sprite =
+                ShipStatus.Instance.CosmeticsCache.GetNameplate("nameplate_NoPlate").Image;
             RoleButtons.Add(button);
             int row = i / 5, col = i % 5;
-            buttonParent.localPosition = new Vector3(-3.47f + 1.75f * col, 1.5f - 0.45f * row, -5);
+            buttonParent.localPosition = new Vector3(-3.47f + (1.75f * col), 1.5f - (0.45f * row), -5);
             buttonParent.localScale = new Vector3(0.55f, 0.55f, 1f);
             label.text = Helpers.cs(roleInfo.color, roleInfo.name);
             label.alignment = TextAlignmentOptions.Center;
@@ -326,7 +343,7 @@ internal class MeetingHudPatch
 
                             MessageWriter murderAttemptWriter =
                                 AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                                    (byte)CustomRPC.ShieldedMurderAttempt, SendOption.Reliable, -1);
+                                    (byte)CustomRPC.ShieldedMurderAttempt, SendOption.Reliable);
                             AmongUsClient.Instance.FinishRpcImmediately(murderAttemptWriter);
                             RPCProcedure.shieldedMurderAttempt();
                             return;
@@ -367,7 +384,7 @@ internal class MeetingHudPatch
                         // Shoot player and send chat info if activated
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                             PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GuesserShoot,
-                            SendOption.Reliable, -1);
+                            SendOption.Reliable);
                         writer.Write(PlayerControl.LocalPlayer.PlayerId);
                         writer.Write(dyingTarget.PlayerId);
                         writer.Write(focusedTarget.PlayerId);
@@ -380,6 +397,7 @@ internal class MeetingHudPatch
 
             i++;
         }
+
         guesserSelectRole();
         ReloadPage();
         container.transform.localScale *= 0.75f;
@@ -737,7 +755,7 @@ internal class MeetingHudPatch
                     {
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                             PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SwapperAnimate,
-                            SendOption.Reliable, -1);
+                            SendOption.Reliable);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
                         RPCProcedure.swapperAnimate();
                     }
@@ -793,26 +811,20 @@ internal class MeetingHudPatch
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.BloopAVoteIcon))]
     private class MeetingHudBloopAVoteIconPatch
     {
-        public static bool Prefix(MeetingHud __instance, NetworkedPlayerInfo voterPlayer, int index, Transform parent) {
-            var spriteRenderer = UnityEngine.Object.Instantiate<SpriteRenderer>(__instance.PlayerVotePrefab);
-            var showVoteColors = !GameManager.Instance.LogicOptions.GetAnonymousVotes() ||
-                                 (PlayerControl.LocalPlayer.Data.IsDead && TORMapOptions.ghostsSeeVotes);
+        public static bool Prefix(MeetingHud __instance, NetworkedPlayerInfo voterPlayer, int index, Transform parent)
+        {
+            SpriteRenderer spriteRenderer = Object.Instantiate(__instance.PlayerVotePrefab);
+            bool showVoteColors = !GameManager.Instance.LogicOptions.GetAnonymousVotes() ||
+                                  (PlayerControl.LocalPlayer.Data.IsDead && ghostsSeeVotes);
             if (showVoteColors)
-            {
                 PlayerMaterial.SetColors(voterPlayer.DefaultOutfit.ColorId, spriteRenderer);
-            }
             else
-            {
                 PlayerMaterial.SetColors(Palette.DisabledGrey, spriteRenderer);
-            }
-            var transform = spriteRenderer.transform;
+            Transform transform = spriteRenderer.transform;
             transform.SetParent(parent);
             transform.localScale = Vector3.zero;
-            var component = parent.GetComponent<PlayerVoteArea>();
-            if (component != null)
-            {
-                spriteRenderer.material.SetInt(PlayerMaterial.MaskLayer, component.MaskLayer);
-            }
+            PlayerVoteArea component = parent.GetComponent<PlayerVoteArea>();
+            if (component != null) spriteRenderer.material.SetInt(PlayerMaterial.MaskLayer, component.MaskLayer);
             __instance.StartCoroutine(Effects.Bloop(index * 0.3f, transform));
             parent.GetComponent<VoteSpreader>().AddVote(spriteRenderer);
             return false;
@@ -1131,7 +1143,8 @@ internal class MeetingHudPatch
     {
         private static void Postfix(MeetingHud __instance)
         {
-            if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 2 && CustomOptionHolder.polusRandomSpawn.getBool())
+            if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 2 &&
+                CustomOptionHolder.polusRandomSpawn.getBool())
                 if (AmongUsClient.Instance.AmHost)
                     foreach (PlayerControl player in PlayerControl.AllPlayerControls)
                     {
@@ -1139,7 +1152,7 @@ internal class MeetingHudPatch
                         int randVal = rand.Next(0, 6);
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                             PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RandomSpawn,
-                            SendOption.Reliable, -1);
+                            SendOption.Reliable);
                         writer.Write(player.Data.PlayerId);
                         writer.Write((byte)randVal);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);

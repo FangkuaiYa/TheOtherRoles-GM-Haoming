@@ -207,7 +207,7 @@ public class Fox : RoleBase<Fox>
                 }
 
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FoxStealth, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FoxStealth, SendOption.Reliable);
                 writer.Write(PlayerControl.LocalPlayer.PlayerId);
                 writer.Write(true);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -238,7 +238,7 @@ public class Fox : RoleBase<Fox>
             {
                 foxButton.Timer = foxButton.MaxTimer = stealthCooldown;
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FoxStealth, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FoxStealth, SendOption.Reliable);
                 writer.Write(PlayerControl.LocalPlayer.PlayerId);
                 writer.Write(false);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -264,7 +264,7 @@ public class Fox : RoleBase<Fox>
                     {
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                             PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EngineerFixLights,
-                            SendOption.Reliable, -1);
+                            SendOption.Reliable);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
                         RPCProcedure.engineerFixLights();
                     }
@@ -320,7 +320,7 @@ public class Fox : RoleBase<Fox>
             {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                     PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FoxCreatesImmoralist,
-                    SendOption.Reliable, -1);
+                    SendOption.Reliable);
                 writer.Write(currentTarget.PlayerId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCProcedure.foxCreatesImmoralist(currentTarget.PlayerId);
@@ -331,10 +331,7 @@ public class Fox : RoleBase<Fox>
                        PlayerControl.LocalPlayer.isRole(RoleType.Fox) &&
                        PlayerControl.LocalPlayer.isAlive();
             },
-            () =>
-            {
-                return canCreateImmoralist && currentTarget != null && PlayerControl.LocalPlayer.CanMove;
-            },
+            () => { return canCreateImmoralist && currentTarget != null && PlayerControl.LocalPlayer.CanMove; },
             () => { foxImmoralistButton.Timer = foxImmoralistButton.MaxTimer = 20f; },
             getImmoralistButtonSprite(),
             CustomButton.ButtonPositions.upperRowCenter,
@@ -469,12 +466,14 @@ public class Fox : RoleBase<Fox>
                 else
                     opacity = Math.Max(opacity, stealthFade(fox));
 
-                var color = Color.Lerp(Palette.ClearWhite, Palette.White, opacity);
+                Color color = Color.Lerp(Palette.ClearWhite, Palette.White, opacity);
                 try
                 {
                     Helpers.setInvisible(fox, color, opacity);
                 }
-                catch { }
+                catch
+                {
+                }
             }
         }
     }

@@ -6,7 +6,7 @@ namespace TheOtherRoles;
 public static class EnumHelper
 {
     /// <summary>
-    /// enumのすべての値を取得します
+    ///     enumのすべての値を取得します
     /// </summary>
     /// <typeparam name="T">取得したいenumの型</typeparam>
     /// <returns>Tのすべての値</returns>
@@ -16,7 +16,7 @@ public static class EnumHelper
     }
 
     /// <summary>
-    /// enumのすべての名前を取得します
+    ///     enumのすべての名前を取得します
     /// </summary>
     /// <typeparam name="T">取得したいenumの型</typeparam>
     /// <returns>Tのすべての値の名前</returns>

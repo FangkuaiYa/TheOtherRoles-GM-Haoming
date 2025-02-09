@@ -15,7 +15,8 @@ public class SpecimenVital
     public static void moveVital()
     {
         if (flag) return;
-        if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 2 && CustomOptionHolder.specimenVital.getBool())
+        if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 2 &&
+            CustomOptionHolder.specimenVital.getBool())
         {
             GameObject panel = GameObject.Find("panel_vitals");
             if (panel != null)

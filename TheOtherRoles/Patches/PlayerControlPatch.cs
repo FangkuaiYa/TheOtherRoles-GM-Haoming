@@ -310,7 +310,7 @@ public static class PlayerControlFixedUpdatePatch
             (Jackal.jackal == null || Jackal.jackal.Data.Disconnected))
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SidekickPromotes, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SidekickPromotes, SendOption.Reliable);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.sidekickPromotes();
         }
@@ -594,22 +594,25 @@ public static class PlayerControlFixedUpdatePatch
                 }
 
                 // Set the position every time bc it sometimes ends up in the wrong place due to camoflauge
-                playerInfo.transform.localPosition = p.cosmetics.nameText.transform.localPosition + (Vector3.up * 0.225f);
+                playerInfo.transform.localPosition =
+                    p.cosmetics.nameText.transform.localPosition + (Vector3.up * 0.225f);
                 // Colorblind Text in Meeting
-                PlayerVoteArea playerVoteArea = MeetingHud.Instance?.playerStates?.FirstOrDefault(x => x.TargetPlayerId == p.PlayerId);
+                PlayerVoteArea playerVoteArea =
+                    MeetingHud.Instance?.playerStates?.FirstOrDefault(x => x.TargetPlayerId == p.PlayerId);
                 if (playerVoteArea != null && playerVoteArea.ColorBlindName.gameObject.active)
                 {
-                    playerVoteArea.ColorBlindName.transform.localPosition = colorBlindTextMeetingInitialLocalPos + new Vector3(0f, 0.4f, 0f);
+                    playerVoteArea.ColorBlindName.transform.localPosition =
+                        colorBlindTextMeetingInitialLocalPos + new Vector3(0f, 0.4f, 0f);
                     playerVoteArea.ColorBlindName.transform.localScale = colorBlindTextMeetingInitialLocalScale * 0.8f;
                 }
 
                 // Colorblind Text During the round
-                if (p.cosmetics.colorBlindText != null && p.cosmetics.showColorBlindText && p.cosmetics.colorBlindText.gameObject.active)
-                {
+                if (p.cosmetics.colorBlindText != null && p.cosmetics.showColorBlindText &&
+                    p.cosmetics.colorBlindText.gameObject.active)
                     p.cosmetics.colorBlindText.transform.localPosition = new Vector3(0, -1f, 0f);
-                }
 
-                p.cosmetics.nameText.transform.parent.SetLocalZ(-0.0001f);  // This moves both the name AND the colorblindtext behind objects (if the player is behind the object), like the rock on polus
+                p.cosmetics.nameText.transform.parent
+                    .SetLocalZ(-0.0001f); // This moves both the name AND the colorblindtext behind objects (if the player is behind the object), like the rock on polus
 
                 Transform meetingInfoTransform = playerVoteArea != null
                     ? playerVoteArea.NameText.transform.parent.FindChild("Info")
@@ -677,8 +680,8 @@ public static class PlayerControlFixedUpdatePatch
                     meetingInfoText = playerInfoText;
                 }
                 else if (TORMapOptions.ghostsSeeRoles || (Lawyer.lawyerKnowsRole &&
-                                                       PlayerControl.LocalPlayer == Lawyer.lawyer &&
-                                                       p == Lawyer.target))
+                                                          PlayerControl.LocalPlayer == Lawyer.lawyer &&
+                                                          p == Lawyer.target))
                 {
                     playerInfoText = $"{roleNames}";
                     meetingInfoText = playerInfoText;
@@ -764,11 +767,11 @@ public static class PlayerControlFixedUpdatePatch
 
         if (numberOfTasks <= Snitch.taskCountForReveal &&
             (PlayerControl.LocalPlayer.Data.Role.IsImpostor || (Snitch.includeTeamJackal &&
-                                                                             (PlayerControl.LocalPlayer ==
-                                                                              Jackal.jackal ||
-                                                                              PlayerControl
-                                                                                  .LocalPlayer ==
-                                                                              Sidekick.sidekick))))
+                                                                (PlayerControl.LocalPlayer ==
+                                                                 Jackal.jackal ||
+                                                                 PlayerControl
+                                                                     .LocalPlayer ==
+                                                                 Sidekick.sidekick))))
         {
             if (Snitch.localArrows.Count == 0) Snitch.localArrows.Add(new Arrow(Color.blue));
             if (Snitch.localArrows.Count != 0 && Snitch.localArrows[0] != null)
@@ -851,13 +854,14 @@ public static class PlayerControlFixedUpdatePatch
             if (BountyHunter.bounty == null) return;
 
             // Show poolable player
-            if (FastDestroyableSingleton<HudManager>.Instance != null && FastDestroyableSingleton<HudManager>.Instance.UseButton != null)
+            if (FastDestroyableSingleton<HudManager>.Instance != null &&
+                FastDestroyableSingleton<HudManager>.Instance.UseButton != null)
             {
                 foreach (PoolablePlayer p in TORMapOptions.playerIcons.Values)
-                {
-                    if (p != null && p.gameObject != null) p.gameObject.SetActive(false);
-                }
-                if (TORMapOptions.playerIcons.ContainsKey(BountyHunter.bounty.PlayerId) && TORMapOptions.playerIcons[BountyHunter.bounty.PlayerId].gameObject != null)
+                    if (p != null && p.gameObject != null)
+                        p.gameObject.SetActive(false);
+                if (TORMapOptions.playerIcons.ContainsKey(BountyHunter.bounty.PlayerId) &&
+                    TORMapOptions.playerIcons[BountyHunter.bounty.PlayerId].gameObject != null)
                 {
                     TORMapOptions.playerIcons[BountyHunter.bounty.PlayerId].gameObject.SetActive(true);
                     TORMapOptions.playerIcons[BountyHunter.bounty.PlayerId].transform.localScale = Vector3.one * 0.4f;
@@ -866,14 +870,16 @@ public static class PlayerControlFixedUpdatePatch
         }
 
         // Hide in meeting
-        if (MeetingHud.Instance && TORMapOptions.playerIcons.ContainsKey(BountyHunter.bounty.PlayerId) && TORMapOptions.playerIcons[BountyHunter.bounty.PlayerId].gameObject != null)
+        if (MeetingHud.Instance && TORMapOptions.playerIcons.ContainsKey(BountyHunter.bounty.PlayerId) &&
+            TORMapOptions.playerIcons[BountyHunter.bounty.PlayerId].gameObject != null)
             TORMapOptions.playerIcons[BountyHunter.bounty.PlayerId].gameObject.SetActive(false);
 
         // Update Cooldown Text
         if (BountyHunter.cooldownText != null)
         {
-            BountyHunter.cooldownText.text = Mathf.CeilToInt(Mathf.Clamp(BountyHunter.bountyUpdateTimer, 0, BountyHunter.bountyDuration)).ToString();
-            BountyHunter.cooldownText.gameObject.SetActive(!MeetingHud.Instance);  // Show if not in meeting
+            BountyHunter.cooldownText.text = Mathf
+                .CeilToInt(Mathf.Clamp(BountyHunter.bountyUpdateTimer, 0, BountyHunter.bountyDuration)).ToString();
+            BountyHunter.cooldownText.gameObject.SetActive(!MeetingHud.Instance); // Show if not in meeting
         }
 
         // Update Arrow
@@ -885,6 +891,7 @@ public static class PlayerControlFixedUpdatePatch
                 BountyHunter.arrow.Update(BountyHunter.bounty.transform.position);
                 BountyHunter.arrowUpdateTimer = BountyHunter.arrowUpdateInterval;
             }
+
             BountyHunter.arrow.Update();
         }
     }
@@ -926,7 +933,7 @@ public static class PlayerControlFixedUpdatePatch
 
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                     PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedCmdReportDeadBody,
-                    SendOption.Reliable, -1);
+                    SendOption.Reliable);
                 writer.Write(reporter);
                 writer.Write(Bait.bait.PlayerId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -1053,7 +1060,8 @@ public static class PlayerControlFixedUpdatePatch
             HudManager.Instance.TaskPanel.background.enabled = false;
             HudManager.Instance.TaskPanel.tab.enabled = false;
             HudManager.Instance.TaskPanel.taskText.enabled = false;
-            HudManager.Instance.TaskPanel.tab.transform.FindChild("TabText_TMP").GetComponent<TextMeshPro>().SetText("");
+            HudManager.Instance.TaskPanel.tab.transform.FindChild("TabText_TMP").GetComponent<TextMeshPro>()
+                .SetText("");
             //HudManager.Instance.TaskPanel.transform.localPosition = Vector3.negativeInfinityVector;
         }
     }
@@ -1063,10 +1071,12 @@ public static class PlayerControlFixedUpdatePatch
         if (Lawyer.lawyer == null || Lawyer.lawyer != PlayerControl.LocalPlayer) return;
 
         // Meeting win
-        if (Lawyer.winsAfterMeetings && Lawyer.neededMeetings == Lawyer.meetings && Lawyer.target != null && !Lawyer.target.Data.IsDead)
+        if (Lawyer.winsAfterMeetings && Lawyer.neededMeetings == Lawyer.meetings && Lawyer.target != null &&
+            !Lawyer.target.Data.IsDead)
         {
             Lawyer.winsAfterMeetings = false; // Avoid sending mutliple RPCs until the host finshes the game
-            MessageWriter winWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.LawyerWin, Hazel.SendOption.Reliable, -1);
+            MessageWriter winWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                (byte)CustomRPC.LawyerWin, SendOption.Reliable);
             AmongUsClient.Instance.FinishRpcImmediately(winWriter);
             RPCProcedure.lawyerWin();
             return;
@@ -1075,10 +1085,10 @@ public static class PlayerControlFixedUpdatePatch
         // Promote to Pursuer
         if (Lawyer.target != null && Lawyer.target.Data.Disconnected && !Lawyer.lawyer.Data.IsDead)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.LawyerPromotesToPursuer, Hazel.SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                (byte)CustomRPC.LawyerPromotesToPursuer, SendOption.Reliable);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.lawyerPromotesToPursuer();
-            return;
         }
     }
 
@@ -1136,7 +1146,8 @@ public static class PlayerControlFixedUpdatePatch
             LogHelper.Info($"Visible Status Change to {__instance.Visible} for {__instance.getNameWithRole()}",
                 "BodySprite");
         lastVisible[__instance.PlayerId] = __instance.Visible;
-        if (AmongUsClient.Instance.GameState != InnerNetClient.GameStates.Started || GameOptionsManager.Instance.currentGameOptions.GameMode == AmongUs.GameOptions.GameModes.HideNSeek) return;
+        if (AmongUsClient.Instance.GameState != InnerNetClient.GameStates.Started ||
+            GameOptionsManager.Instance.currentGameOptions.GameMode == GameModes.HideNSeek) return;
 
         // Mini and Morphling shrink
         playerSizeUpdate(__instance);
@@ -1358,7 +1369,7 @@ public static class MurderPlayerPatch
             target == Jackal.jackal && Jackal.jackal == PlayerControl.LocalPlayer)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SidekickPromotes, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SidekickPromotes, SendOption.Reliable);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.sidekickPromotes();
         }
@@ -1368,7 +1379,7 @@ public static class MurderPlayerPatch
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                 PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.LawyerPromotesToPursuer,
-                SendOption.Reliable, -1);
+                SendOption.Reliable);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.lawyerPromotesToPursuer();
         }
@@ -1414,7 +1425,8 @@ public static class MurderPlayerPatch
             PlayerControl.LocalPlayer == __instance)
         {
             float multiplier = Mini.isGrownUp(PlayerControl.LocalPlayer) ? 0.66f : 2f;
-            PlayerControl.LocalPlayer.SetKillTimer(GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown * multiplier);
+            PlayerControl.LocalPlayer.SetKillTimer(GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown *
+                                                   multiplier);
         }
 
         // Set bountyHunter cooldown
@@ -1427,8 +1439,9 @@ public static class MurderPlayerPatch
                 BountyHunter.bountyUpdateTimer = 0f; // Force bounty update
             }
             else
-                BountyHunter.bountyHunter.SetKillTimer(GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown +
-                                                       BountyHunter.punishmentTime);
+                BountyHunter.bountyHunter.SetKillTimer(
+                    GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown +
+                    BountyHunter.punishmentTime);
         }
 
         // Update arsonist status
@@ -1445,8 +1458,7 @@ public static class MurderPlayerPatch
         // 人形使いのダミー死亡処理
         if (target == Puppeteer.dummy)
         {
-            // 蘇生する
-            target.ModRevive();
+            Helpers.checkMuderAttempt(__instance, target);
             // 死体を消す
             DeadBody[] array = Object.FindObjectsOfType<DeadBody>();
             for (int i = 0; i < array.Length; i++)
@@ -1462,30 +1474,17 @@ public static class MurderPlayerPatch
     }
 }
 
-// From https://github.com/dabao40/TheOtherRolesGMIA/
-/*[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Revive))]
-class RevivePatch
+// Assign Role 分配职业
+[HarmonyPatch(typeof(RoleManager), nameof(RoleManager.AssignRoleOnDeath))]
+public static class AssignRolePatch
 {
-    public static bool Prefix(PlayerControl __instance)
+    public static bool Prefix([HarmonyArgument(0)] PlayerControl player, bool specialRolesAllowed)
     {
-        __instance.Data.IsDead = false;
-        __instance.gameObject.layer = LayerMask.NameToLayer("Players");
-        __instance.MyPhysics.ResetMoveState(true);
-        __instance.clickKillCollider.enabled = true;
-        __instance.cosmetics.SetPetSource(__instance);
-        __instance.cosmetics.SetNameMask(true);
-        if (__instance.AmOwner)
-        {
-            DestroyableSingleton<HudManager>.Instance.ShadowQuad.gameObject.SetActive(true);
-            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
-            DestroyableSingleton<HudManager>.Instance.Chat.ForceClosed();
-            DestroyableSingleton<HudManager>.Instance.Chat.SetVisible(false);
-        }
-        DeadPlayer deadPlayerEntry = deadPlayers.Where(x => x.player.PlayerId == __instance.PlayerId).FirstOrDefault();
-        if (deadPlayerEntry != null) deadPlayers.Remove(deadPlayerEntry);
-        return false;
+        SchrodingersCat.AssignRoleOnDeath(player);
+        Puppeteer.AssignRoleOnDeath(player); // 看是不是伪人[doge]是伪人就给职业[doge]
+        return true;
     }
-}*/
+}
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetKillTimer))]
 internal static class PlayerControlSetCoolDownPatch
@@ -1504,7 +1503,9 @@ internal static class PlayerControlSetCoolDownPatch
         if (PlayerControl.LocalPlayer.isRole(RoleType.Ninja) &&
             Ninja.isPenalized(PlayerControl.LocalPlayer)) addition = Ninja.killPenalty;
 
-        float max = Mathf.Max((GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown * multiplier) + addition, __instance.killTimer);
+        float max = Mathf.Max(
+            (GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown * multiplier) + addition,
+            __instance.killTimer);
         __instance.SetKillTimerUnchecked(Mathf.Clamp(time, 0f, max), max);
         return false;
     }
@@ -1574,7 +1575,7 @@ public static class ExilePlayerPatch
             __instance == Jackal.jackal && Jackal.jackal == PlayerControl.LocalPlayer)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SidekickPromotes, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SidekickPromotes, SendOption.Reliable);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.sidekickPromotes();
         }
@@ -1584,7 +1585,7 @@ public static class ExilePlayerPatch
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                 PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.LawyerPromotesToPursuer,
-                SendOption.Reliable, -1);
+                SendOption.Reliable);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.lawyerPromotesToPursuer();
         }

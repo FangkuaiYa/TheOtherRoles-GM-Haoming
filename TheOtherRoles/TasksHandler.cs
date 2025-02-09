@@ -86,7 +86,8 @@ public static class TasksHandler
     {
         public static void Postfix(AirshipUploadTask __instance)
         {
-            if (TORMapOptions.hideTaskArrows) __instance.Arrows?.DoIf(x => x != null, x => x.gameObject?.SetActive(false));
+            if (TORMapOptions.hideTaskArrows)
+                __instance.Arrows?.DoIf(x => x != null, x => x.gameObject?.SetActive(false));
         }
     }
 

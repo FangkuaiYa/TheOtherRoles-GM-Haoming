@@ -80,9 +80,9 @@ public static class ClientOptionsPatch
                     TheOtherRolesPlugin.TransparentMap.Value = !TheOtherRolesPlugin.TransparentMap.Value,
                 TheOtherRolesPlugin.TransparentMap.Value),
             new("showChatNotifications",
-            () => TORMapOptions.ShowChatNotifications =
-            TheOtherRolesPlugin.ShowChatNotifications.Value = !TheOtherRolesPlugin.ShowChatNotifications.Value,
-            TheOtherRolesPlugin.ShowChatNotifications.Value)
+                () => TORMapOptions.ShowChatNotifications =
+                    TheOtherRolesPlugin.ShowChatNotifications.Value = !TheOtherRolesPlugin.ShowChatNotifications.Value,
+                TheOtherRolesPlugin.ShowChatNotifications.Value)
         };
     }
 
@@ -91,8 +91,8 @@ public static class ClientOptionsPatch
     public static void MainMenuManager_StartPostfix(MainMenuManager __instance)
     {
         // Prefab for the title
-        var go = new GameObject("TitleTextTOR");
-        var tmp = go.AddComponent<TextMeshPro>();
+        GameObject go = new("TitleTextTOR");
+        TextMeshPro tmp = go.AddComponent<TextMeshPro>();
         tmp.fontSize = 4;
         tmp.alignment = TextAlignmentOptions.Center;
         tmp.transform.localPosition += Vector3.left * 0.2f;
@@ -125,8 +125,8 @@ public static class ClientOptionsPatch
     {
         popUp = Object.Instantiate(prefab.gameObject);
         Object.DontDestroyOnLoad(popUp);
-        var transform = popUp.transform;
-        var pos = transform.localPosition;
+        Transform transform = popUp.transform;
+        Vector3 pos = transform.localPosition;
         pos.z = -810f;
         transform.localPosition = pos;
 

@@ -16,7 +16,7 @@ public static class CredentialsPatch
     {
         private static void Postfix(PingTracker __instance)
         {
-            var position = __instance.GetComponent<AspectPosition>();
+            AspectPosition position = __instance.GetComponent<AspectPosition>();
             if (AmongUsClient.Instance.GameState == InnerNetClient.GameStates.Started)
             {
                 __instance.text.alignment = TextAlignmentOptions.Top;
@@ -38,18 +38,21 @@ public static class CredentialsPatch
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
     public static class LogoPatch
     {
-        static void Postfix(PingTracker __instance) {
-            var torLogo = new GameObject("bannerLogo_TOR");
+        private static void Postfix(PingTracker __instance)
+        {
+            GameObject torLogo = new("bannerLogo_TOR");
             torLogo.transform.SetParent(GameObject.Find("RightPanel").transform, false);
             torLogo.transform.localPosition = new Vector3(-0.4f, 1f, 5f);
-            torLogo.AddComponent<SpriteRenderer>().sprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.Banner.png", 300f);
+            torLogo.AddComponent<SpriteRenderer>().sprite =
+                Helpers.loadSpriteFromResources("TheOtherRoles.Resources.Banner.png", 300f);
 
-            var credentialObject = new GameObject("credentialsTOR");
-            var credentials = credentialObject.AddComponent<TextMeshPro>();
-            var versionText = string.Format(ModTranslation.getString("creditsVersion"),
+            GameObject credentialObject = new("credentialsTOR");
+            TextMeshPro credentials = credentialObject.AddComponent<TextMeshPro>();
+            string versionText = string.Format(ModTranslation.getString("creditsVersion"),
                 TheOtherRolesPlugin.Version.ToString());
-            credentials.SetText($"<size=80%>{versionText}\n{ModTranslation.getString("creditsMain")}\n{ModTranslation.getString("newUpdateCredentials")}\n{ModTranslation.getString("contributorsCredentials")}");
-            credentials.alignment = TMPro.TextAlignmentOptions.Center;
+            credentials.SetText(
+                $"<size=80%>{versionText}\n{ModTranslation.getString("creditsMain")}\n{ModTranslation.getString("newUpdateCredentials")}\n{ModTranslation.getString("contributorsCredentials")}");
+            credentials.alignment = TextAlignmentOptions.Center;
             credentials.fontSize *= 0.05f;
 
             credentials.transform.SetParent(torLogo.transform);

@@ -41,7 +41,8 @@ public class AdditionalVents
         System.Console.WriteLine("AddAdditionalVents");
 
         // Polusにベントを追加する
-        if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 2 && CustomOptionHolder.additionalVents.getBool())
+        if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 2 &&
+            CustomOptionHolder.additionalVents.getBool())
         {
             AdditionalVents vents1 = new(new Vector3(36.54f, -21.77f,
                 PlayerControl.LocalPlayer.transform.position.z + 1f)); // Specimen

@@ -7,9 +7,9 @@ using TheOtherRoles.Objects;
 using TheOtherRoles.Patches;
 using TMPro;
 using UnityEngine;
-using static TheOtherRoles.TheOtherRoles;
 using static TheOtherRoles.GameHistory;
 using static TheOtherRoles.Patches.PlayerControlFixedUpdatePatch;
+using static TheOtherRoles.TheOtherRoles;
 
 namespace TheOtherRoles;
 
@@ -71,7 +71,7 @@ public class Cupid : RoleBase<Cupid>
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                         PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CupidSuicide,
-                        SendOption.Reliable, -1);
+                        SendOption.Reliable);
                     writer.Write(player.PlayerId);
                     writer.Write(false);
                     writer.Write(false);
@@ -93,7 +93,7 @@ public class Cupid : RoleBase<Cupid>
         cupids.ForEach(x =>
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CupidSuicide, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CupidSuicide, SendOption.Reliable);
             writer.Write(x.player.PlayerId);
             writer.Write(true);
             writer.Write(false);
@@ -172,7 +172,7 @@ public class Cupid : RoleBase<Cupid>
             () =>
             {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCupidShield, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCupidShield, SendOption.Reliable);
                 writer.Write(local.player.PlayerId);
                 writer.Write(local.shieldTarget.PlayerId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -208,7 +208,7 @@ public class Cupid : RoleBase<Cupid>
     public static void createLovers()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-            (byte)CustomRPC.SetCupidLovers, SendOption.Reliable, -1);
+            (byte)CustomRPC.SetCupidLovers, SendOption.Reliable);
         writer.Write(local.lovers1.PlayerId);
         writer.Write(local.lovers2.PlayerId);
         writer.Write(local.player.PlayerId);
@@ -316,7 +316,7 @@ public class Cupid : RoleBase<Cupid>
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                         PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CupidSuicide,
-                        SendOption.Reliable, -1);
+                        SendOption.Reliable);
                     writer.Write(cupid.player.PlayerId);
                     writer.Write(false);
                     writer.Write(false);
@@ -327,7 +327,7 @@ public class Cupid : RoleBase<Cupid>
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                         PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CupidSuicide,
-                        SendOption.Reliable, -1);
+                        SendOption.Reliable);
                     writer.Write(cupid.player.PlayerId);
                     writer.Write(false);
                     writer.Write(true);

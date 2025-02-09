@@ -242,10 +242,7 @@ public class CustomColors
         {
             public static bool Prefix(ChatNotification __instance, PlayerControl sender, string text)
             {
-                if (ShipStatus.Instance && !TORMapOptions.ShowChatNotifications)
-                {
-                    return false;
-                }
+                if (ShipStatus.Instance && !TORMapOptions.ShowChatNotifications) return false;
                 __instance.timeOnScreen = 5f;
                 __instance.gameObject.SetActive(true);
                 __instance.SetCosmetics(sender.Data);
@@ -264,8 +261,12 @@ public class CustomColors
                     color = c.r + c.g + c.b > 180 ? Palette.Black : Palette.White;
                     TheOtherRolesPlugin.Logger.LogMessage($"{c.r}, {c.g}, {c.b}");
                 }
+
                 __instance.playerColorText.text = __instance.player.ColorBlindName;
-                __instance.playerNameText.text = "<color=#" + str + ">" + (string.IsNullOrEmpty(sender.Data.PlayerName) ? "..." : sender.Data.PlayerName);
+                __instance.playerNameText.text = "<color=#" + str + ">" +
+                                                 (string.IsNullOrEmpty(sender.Data.PlayerName)
+                                                     ? "..."
+                                                     : sender.Data.PlayerName);
                 __instance.playerNameText.outlineColor = color;
                 __instance.chatText.text = text;
                 return false;

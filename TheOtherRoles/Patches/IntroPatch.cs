@@ -6,6 +6,7 @@ using Hazel;
 using Il2CppInterop.Runtime;
 using Il2CppSystem.Collections;
 using Il2CppSystem.Collections.Generic;
+using TheOtherRoles.Modules;
 using TheOtherRoles.Objects;
 using TMPro;
 using UnityEngine;
@@ -21,6 +22,7 @@ internal class IntroCutsceneOnDestroyPatch
 {
     public static PoolablePlayer playerPrefab;
     public static Vector3 bottomLeft;
+
     public static void Prefix(IntroCutscene __instance)
     {
         int playerCounter = 0;
@@ -29,14 +31,15 @@ internal class IntroCutsceneOnDestroyPatch
         {
             float aspect = Camera.main.aspect;
             float safeOrthographicSize = CameraSafeArea.GetSafeOrthographicSize(Camera.main);
-            float xpos = 1.75f - safeOrthographicSize * aspect * 1.70f;
-            float ypos = 0.15f - safeOrthographicSize * 1.7f;
-            bottomLeft = new Vector3(xpos / 2, ypos/2, -61f);
+            float xpos = 1.75f - (safeOrthographicSize * aspect * 1.70f);
+            float ypos = 0.15f - (safeOrthographicSize * 1.7f);
+            bottomLeft = new Vector3(xpos / 2, ypos / 2, -61f);
 
             foreach (PlayerControl p in PlayerControl.AllPlayerControls)
             {
                 NetworkedPlayerInfo data = p.Data;
-                PoolablePlayer player = UnityEngine.Object.Instantiate<PoolablePlayer>(__instance.PlayerPrefab, FastDestroyableSingleton<HudManager>.Instance.transform);
+                PoolablePlayer player = Object.Instantiate(__instance.PlayerPrefab,
+                    FastDestroyableSingleton<HudManager>.Instance.transform);
                 playerPrefab = __instance.PlayerPrefab;
                 p.SetPlayerMaterialColors(player.cosmetics.currentBodySprite.BodySprite);
                 player.SetSkin(data.DefaultOutfit.SkinId, data.DefaultOutfit.ColorId);
@@ -50,13 +53,15 @@ internal class IntroCutsceneOnDestroyPatch
 
                 if (PlayerControl.LocalPlayer == Arsonist.arsonist && p != Arsonist.arsonist)
                 {
-                    player.transform.localPosition = bottomLeft + new Vector3(-0.25f, -0.25f, 0) + Vector3.right * playerCounter++ * 0.35f;
+                    player.transform.localPosition = bottomLeft + new Vector3(-0.25f, -0.25f, 0) +
+                                                     (Vector3.right * playerCounter++ * 0.35f);
                     player.transform.localScale = Vector3.one * 0.2f;
                     player.setSemiTransparent(true);
                     player.gameObject.SetActive(true);
                 }
                 else
-                {   //  This can be done for all players not just for the bounty hunter as it was before. Allows the thief to have the correct position and scaling
+                {
+                    //  This can be done for all players not just for the bounty hunter as it was before. Allows the thief to have the correct position and scaling
                     player.transform.localPosition = bottomLeft;
                     player.transform.localScale = Vector3.one * 0.4f;
                     player.gameObject.SetActive(false);
@@ -105,7 +110,8 @@ internal class IntroCutsceneOnDestroyPatch
         }
 
         // インポスター視界の場合に昇降機右の影を無効化
-        if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4 && CustomOptionHolder.airshipOptimizeMap.getBool() &&
+        if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4 &&
+            CustomOptionHolder.airshipOptimizeMap.getBool() &&
             Helpers.hasImpostorVision(PlayerControl.LocalPlayer))
         {
             GameObject obj = ShipStatus.Instance.FastRooms[SystemTypes.GapRoom].gameObject;
@@ -121,7 +127,8 @@ internal class IntroCutsceneOnDestroyPatch
         SpecimenVital.moveVital();
 
         // アーカイブのアドミンを消す
-        if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4 && CustomOptionHolder.airshipOldAdmin.getBool())
+        if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4 &&
+            CustomOptionHolder.airshipOldAdmin.getBool())
         {
             GameObject records = ShipStatus.Instance.FastRooms[SystemTypes.Records].gameObject;
             records.GetComponentsInChildren<MapConsole>().Where(x => x.name == "records_admin_map").FirstOrDefault()
@@ -132,7 +139,8 @@ internal class IntroCutsceneOnDestroyPatch
         {
             GameObject gapRoom = ShipStatus.Instance.FastRooms[SystemTypes.GapRoom].gameObject;
             // GapRoomの配電盤を消す
-            if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4 && CustomOptionHolder.airshipDisableGapSwitchBoard.getBool())
+            if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4 &&
+                CustomOptionHolder.airshipDisableGapSwitchBoard.getBool())
             {
                 GameObject sabo = gapRoom.GetComponentsInChildren<Console>()
                     .Where(x => x.name == "task_lightssabotage (gap)").FirstOrDefault()?.gameObject;
@@ -142,7 +150,8 @@ internal class IntroCutsceneOnDestroyPatch
             }
 
             // ぬ～んを消す
-            if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4 && CustomOptionHolder.airshipDisableMovingPlatform.getBool())
+            if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4 &&
+                CustomOptionHolder.airshipDisableMovingPlatform.getBool())
             {
                 gapRoom.GetComponentInChildren<MovingPlatformBehaviour>().gameObject.SetActive(false);
                 gapRoom.GetComponentsInChildren<PlatformConsole>().ForEach(x => x.gameObject.SetActive(false));
@@ -150,7 +159,8 @@ internal class IntroCutsceneOnDestroyPatch
         }
 
         //タスクバグ修正
-        if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4 && CustomOptionHolder.airshipEnableWallCheck.getBool())
+        if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4 &&
+            CustomOptionHolder.airshipEnableWallCheck.getBool())
         {
             System.Collections.Generic.List<Console> objects = GameObject.FindObjectsOfType<Console>().ToList();
             objects.Find(x => x.name == "task_garbage1").checkWalls = true;
@@ -177,7 +187,7 @@ internal class IntroCutsceneOnDestroyPatch
         {
             byte playerId = (byte)GameData.Instance.GetAvailableId();
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpawnDummy, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpawnDummy, SendOption.Reliable);
             writer.Write(playerId);
             writer.Write(PlayerControl.LocalPlayer.transform.position.x);
             writer.Write(PlayerControl.LocalPlayer.transform.position.y);
@@ -335,7 +345,8 @@ internal class IntroPatch
                         pc.Data.PlayerName.PadRightV2(20), pc.getPlatform().Replace("Standalone", "")), "Settings");
             LogHelper.Info("---------Game Settings----------", "Settings");
             TheOtherRolesPlugin.optionsPage = 0;
-            string[] tmp = GameOptionsManager.Instance.currentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10)
+            string[] tmp = GameOptionsManager.Instance.currentGameOptions
+                .ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10)
                 .Split("\r\n");
             foreach (string t in tmp[1..(tmp.Length - 2)])
                 LogHelper.Info(t, "Settings");

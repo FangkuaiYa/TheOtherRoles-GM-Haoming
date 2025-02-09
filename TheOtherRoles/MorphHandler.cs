@@ -25,7 +25,6 @@ public static class MorphHandler
 
         if (pc.cosmetics.currentPet) Object.Destroy(pc.cosmetics.currentPet.gameObject);
         if (!pc.Data.IsDead)
-        {
             //pc.cosmetics.currentPet = Object.Instantiate(FastDestroyableSingleton<HatManager>.Instance
             //    .GetPetById(outfit.PetId));
             //pc.cosmetics.currentPet.transform.position = pc.transform.position;
@@ -33,7 +32,6 @@ public static class MorphHandler
             //pc.cosmetics.currentPet.Visible = visible;
             //pc.SetPlayerMaterialColors(pc.cosmetics.currentPet.rend);
             pc.RawSetPet(outfit.PetId, outfit.ColorId);
-        }
     }
 
     public static void resetMorph(this PlayerControl pc)

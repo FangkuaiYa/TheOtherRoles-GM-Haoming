@@ -11,9 +11,14 @@ public class CustomOptionHolder
     public static string[] rates = new[]
         { "0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%" };
 
-    public static string[] presets = new string[] { "preset1", "preset2", "randomPresetSkeld", "randomPresetMair", "randomPresetPolus", "randomPresetAir", "randomPresetSub" };
+    public static string[] presets = new[]
+    {
+        "preset1", "preset2", "randomPresetSkeld", "randomPresetMair", "randomPresetPolus", "randomPresetAir",
+        "randomPresetSub"
+    };
 
     public static CustomOption presetSelection;
+
     //public static CustomOption activateRoles;
     public static CustomOption crewmateRolesCountMin;
     public static CustomOption crewmateRolesCountMax;
@@ -379,7 +384,9 @@ public class CustomOptionHolder
     public static CustomOption refundVotesOnDeath;
 
     public static CustomOption uselessOptions;
+
     public static CustomOption playerColorRandom;
+
     //public static CustomOption playerNameDupes; // 允许玩家姓名相同暂时被移除
     public static CustomOption disableVents;
 
@@ -523,7 +530,8 @@ public class CustomOptionHolder
 
         // Using new id's for the options to not break compatibility with older versions
         crewmateRolesCountMin = Create(300, CustomOptionType.General,
-            cs(new Color(204f / 255f, 204f / 255f, 0, 1f), "crewmateRolesCountMin"), 0f, 0f, 15f, 1f, null, true, heading: "rolesCountHeading");
+            cs(new Color(204f / 255f, 204f / 255f, 0, 1f), "crewmateRolesCountMin"), 0f, 0f, 15f, 1f, null, true,
+            heading: "rolesCountHeading");
         crewmateRolesCountMax = Create(301, CustomOptionType.General,
             cs(new Color(204f / 255f, 204f / 255f, 0, 1f), "crewmateRolesCountMax"), 0f, 0f, 15f, 1f);
         neutralRolesCountMin = Create(302, CustomOptionType.General,
@@ -1166,61 +1174,60 @@ public class CustomOptionHolder
         randomWireTask = Create(9909, CustomOptionType.General, "randomWireTask", false, null, true);
         additionalWireTask = Create(9914, CustomOptionType.General, "additionalWireTask", false, randomWireTask);
         numWireTask = Create(9913, CustomOptionType.General, "numWireTask", 3f, 1f, 10f, 1f, randomWireTask);
-        enableSenrigan = Create(9920, CustomOptionType.General, "enableSenrigan", true, null, true, heading: "gameplaySettings");
+        enableSenrigan = Create(9920, CustomOptionType.General, "enableSenrigan", true, null, true,
+            heading: "gameplaySettings");
         canWinByTaskWithoutLivingPlayer = Create(9932, CustomOptionType.General, "canWinByTaskWithoutLivingPlayer",
-            true, null);
-        deadImpostorCanSeeKillColdown = Create(9933, CustomOptionType.General, "deadImpostorCanSeeKillCooldown", true,
-            null);
-        impostorCanIgnoreComms = Create(9936, CustomOptionType.General, "impostorCanIgnoreComms", false, null);
-        disableVentAnimation = Create(9910, CustomOptionType.General, "disableVentAnimation", false, null);
-        exceptOnTask = Create(9931, CustomOptionType.General, "exceptOnTask", false, null);
+            true);
+        deadImpostorCanSeeKillColdown = Create(9933, CustomOptionType.General, "deadImpostorCanSeeKillCooldown", true);
+        impostorCanIgnoreComms = Create(9936, CustomOptionType.General, "impostorCanIgnoreComms", false);
+        disableVentAnimation = Create(9910, CustomOptionType.General, "disableVentAnimation", false);
+        exceptOnTask = Create(9931, CustomOptionType.General, "exceptOnTask", false);
         additionalEmergencyCooldown = Create(9934, CustomOptionType.General, "additionalEmergencyCooldown", 0f, 0f, 15f,
-            1f, null, format: "unitPlayers");
+            1f, format: "unitPlayers");
         additionalEmergencyCooldownTime = Create(9935, CustomOptionType.General, "additionalEmergencyCooldownTime", 10f,
             0f, 60f, 1f, additionalEmergencyCooldown, format: "unitSeconds");
 
-        delayBeforeMeeting = Create(9921, CustomOptionType.General, "delayBeforeMeeting", 0f, 0f, 10f, 0.25f,
-            null);
-        additionalVents = Create(9905, CustomOptionType.General, "additionalVents", false, null);
+        delayBeforeMeeting = Create(9921, CustomOptionType.General, "delayBeforeMeeting", 0f, 0f, 10f, 0.25f);
+        additionalVents = Create(9905, CustomOptionType.General, "additionalVents", false);
 
-        specimenVital = Create(9906, CustomOptionType.General, "specimenVital", false, null);
-        polusRandomSpawn = Create(9907, CustomOptionType.General, "polusRandomSpawn", false, null);
+        specimenVital = Create(9906, CustomOptionType.General, "specimenVital", false);
+        polusRandomSpawn = Create(9907, CustomOptionType.General, "polusRandomSpawn", false);
 
-        airshipOptimizeMap = Create(9922, CustomOptionType.General, "airshipOptimizeMap", true, null);
-        airshipEnableWallCheck = Create(9908, CustomOptionType.General, "airshipEnableWallCheck", true, null);
+        airshipOptimizeMap = Create(9922, CustomOptionType.General, "airshipOptimizeMap", true);
+        airshipEnableWallCheck = Create(9908, CustomOptionType.General, "airshipEnableWallCheck", true);
         airshipReactorDuration = Create(9999, CustomOptionType.General, "airshipReactorDuration", 60f, 0f, 600f, 1f,
-            null, format: "unitSeconds");
-        airshipRandomSpawn = Create(9916, CustomOptionType.General, "airshipRandomSpawn", false, null);
-        airshipAdditionalSpawn = Create(9917, CustomOptionType.General, "airshipAdditionalSpawn", false, null);
+            format: "unitSeconds");
+        airshipRandomSpawn = Create(9916, CustomOptionType.General, "airshipRandomSpawn", false);
+        airshipAdditionalSpawn = Create(9917, CustomOptionType.General, "airshipAdditionalSpawn", false);
         airshipSynchronizedSpawning =
-            Create(97918, CustomOptionType.General, "airshipSynchronizedSpawning", false, null);
+            Create(97918, CustomOptionType.General, "airshipSynchronizedSpawning", false);
         airshipSetOriginalCooldown =
-            Create(9919, CustomOptionType.General, "airshipSetOriginalCooldown", false, null);
+            Create(9919, CustomOptionType.General, "airshipSetOriginalCooldown", false);
         airshipInitialDoorCooldown = Create(9923, CustomOptionType.General, "airshipInitialDoorCooldown", 0f, 0f, 60f,
-            1f, null);
+            1f);
         airshipInitialSabotageCooldown = Create(9924, CustomOptionType.General, "airshipInitialSabotageCooldown", 15f,
-            0f, 60f, 1f, null);
-        airshipOldAdmin = Create(9925, CustomOptionType.General, "airshipOldAdmin", false, null);
-        airshipRestrictedAdmin = Create(9926, CustomOptionType.General, "airshipRestrictedAdmin", false, null);
+            0f, 60f, 1f);
+        airshipOldAdmin = Create(9925, CustomOptionType.General, "airshipOldAdmin", false);
+        airshipRestrictedAdmin = Create(9926, CustomOptionType.General, "airshipRestrictedAdmin", false);
         airshipDisableGapSwitchBoard =
-            Create(9927, CustomOptionType.General, "airshipDisableGapSwitchBoard", false, null);
+            Create(9927, CustomOptionType.General, "airshipDisableGapSwitchBoard", false);
         airshipDisableMovingPlatform =
-            Create(9928, CustomOptionType.General, "airshipDisableMovingPlatform", false, null);
-        airshipAdditionalLadder = Create(9929, CustomOptionType.General, "airshipAdditionalLadder", false, null);
-        airshipOneWayLadder = Create(9930, CustomOptionType.General, "airshipOneWayLadder", false, null);
-        airshipReplaceSafeTask = Create(9937, CustomOptionType.General, "airshipReplaceSafeTask", false, null);
+            Create(9928, CustomOptionType.General, "airshipDisableMovingPlatform", false);
+        airshipAdditionalLadder = Create(9929, CustomOptionType.General, "airshipAdditionalLadder", false);
+        airshipOneWayLadder = Create(9930, CustomOptionType.General, "airshipOneWayLadder", false);
+        airshipReplaceSafeTask = Create(9937, CustomOptionType.General, "airshipReplaceSafeTask", false);
 
-        maxNumberOfMeetings = Create(3, CustomOptionType.General, "maxNumberOfMeetings", 10, 0, 15, 1, null);
+        maxNumberOfMeetings = Create(3, CustomOptionType.General, "maxNumberOfMeetings", 10, 0, 15, 1);
         blockSkippingInEmergencyMeetings = Create(4, CustomOptionType.General, "blockSkippingInEmergencyMeetings",
-            false, null);
-        noVoteIsSelfVote = Create(5, CustomOptionType.General, "noVoteIsSelfVote", false, null);
-        hideOutOfSightNametags = Create(550, CustomOptionType.General, "hideOutOfSightNametags", false, null);
-        refundVotesOnDeath = Create(551, CustomOptionType.General, "refundVotesOnDeath", true, null);
-        allowParallelMedBayScans = Create(540, CustomOptionType.General, "parallelMedbayScans", false, null);
-        hideSettings = Create(520, CustomOptionType.General, "hideSettings", false, null);
+            false);
+        noVoteIsSelfVote = Create(5, CustomOptionType.General, "noVoteIsSelfVote", false);
+        hideOutOfSightNametags = Create(550, CustomOptionType.General, "hideOutOfSightNametags", false);
+        refundVotesOnDeath = Create(551, CustomOptionType.General, "refundVotesOnDeath", true);
+        allowParallelMedBayScans = Create(540, CustomOptionType.General, "parallelMedbayScans", false);
+        hideSettings = Create(520, CustomOptionType.General, "hideSettings", false);
 
         restrictDevices = Create(510, CustomOptionType.General, "restrictDevices",
-            new[] { "optionOff", "restrictPerTurn", "restrictPerGame" }, null);
+            new[] { "optionOff", "restrictPerTurn", "restrictPerGame" });
         restrictAdmin = Create(501, CustomOptionType.General, "disableAdmin", true, restrictDevices);
         restrictAdminTime = Create(502, CustomOptionType.General, "disableAdminTime", 30f, 0f, 600f, 1f, restrictAdmin,
             format: "unitSeconds");
@@ -1234,20 +1241,23 @@ public class CustomOptionHolder
             restrictVitals, format: "unitSeconds");
         restrictVitalsText = Create(511, CustomOptionType.General, "restrictVitalsText", true, restrictVitals);
 
-        uselessOptions = Create(530, CustomOptionType.General, "uselessOptions", false, null);
+        uselessOptions = Create(530, CustomOptionType.General, "uselessOptions", false);
         dynamicMap = Create(8, CustomOptionType.General, "playRandomMaps", false, uselessOptions);
         dynamicMapEnableSkeld = Create(531, CustomOptionType.General, "dynamicMapEnableSkeld", true, dynamicMap);
         dynamicMapEnableMira = Create(532, CustomOptionType.General, "dynamicMapEnableMira", true, dynamicMap);
         dynamicMapEnablePolus = Create(533, CustomOptionType.General, "dynamicMapEnablePolus", true, dynamicMap);
         dynamicMapEnableAirShip = Create(534, CustomOptionType.General, "dynamicMapEnableAirShip", true, dynamicMap);
-        dynamicMapEnableFungle = Create(537, CustomOptionType.General, "dynamicMapEnableFungle", rates, dynamicMap, false);
-        dynamicMapEnableSubmerged = Create(535, CustomOptionType.General, "dynamicMapEnableSubmerged", true, dynamicMap);
-        dynamicMapSeparateSettings = Create(536, CustomOptionType.General, "dynamicMapSeparateSettings", true, dynamicMap, false);
+        dynamicMapEnableFungle = Create(537, CustomOptionType.General, "dynamicMapEnableFungle", rates, dynamicMap);
+        dynamicMapEnableSubmerged =
+            Create(535, CustomOptionType.General, "dynamicMapEnableSubmerged", true, dynamicMap);
+        dynamicMapSeparateSettings =
+            Create(536, CustomOptionType.General, "dynamicMapSeparateSettings", true, dynamicMap);
 
         //specialOptions = new CustomOptionBlank(null);
         //enabledHorseMode = Create(552, CustomOptionType.General, "enableHorseMode", false, null, true);
 
-        lastImpostorEnable = Create(9900, CustomOptionType.General, "lastImpostorEnable", true, null, true, heading: "lastImpostorSettings");
+        lastImpostorEnable = Create(9900, CustomOptionType.General, "lastImpostorEnable", true, null, true,
+            heading: "lastImpostorSettings");
         lastImpostorFunctions = Create(9901, CustomOptionType.General, "lastImpostorFunctions",
             new[] { ModTranslation.getString("lastImpostorDivine"), ModTranslation.getString("lastImpostorGuesser") },
             lastImpostorEnable);

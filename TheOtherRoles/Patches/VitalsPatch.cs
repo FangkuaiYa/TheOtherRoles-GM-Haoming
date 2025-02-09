@@ -31,11 +31,12 @@ public class VitalsPatch
     private static void UseVitalsTime()
     {
         // Don't waste network traffic if we're out of time.
-        if (TORMapOptions.restrictDevices > 0 && TORMapOptions.restrictVitals && TORMapOptions.restrictVitalsTime > 0f &&
+        if (TORMapOptions.restrictDevices > 0 && TORMapOptions.restrictVitals &&
+            TORMapOptions.restrictVitalsTime > 0f &&
             PlayerControl.LocalPlayer.isAlive())
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UseVitalsTime, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UseVitalsTime, SendOption.Reliable);
             writer.Write(vitalsTimer);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.useVitalsTime(vitalsTimer);

@@ -141,7 +141,7 @@ public class Akujo : RoleBase<Akujo>
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                         PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AkujoSuicide,
-                        SendOption.Reliable, -1);
+                        SendOption.Reliable);
                     writer.Write(player.PlayerId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.akujoSuicide(player.PlayerId);
@@ -213,7 +213,7 @@ public class Akujo : RoleBase<Akujo>
             () =>
             {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AkujoSetHonmei, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AkujoSetHonmei, SendOption.Reliable);
                 writer.Write(local.player.PlayerId);
                 writer.Write(local.currentTarget.PlayerId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -252,7 +252,7 @@ public class Akujo : RoleBase<Akujo>
             () =>
             {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AkujoSetKeep, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AkujoSetKeep, SendOption.Reliable);
                 writer.Write(local.player.PlayerId);
                 writer.Write(local.currentTarget.PlayerId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);

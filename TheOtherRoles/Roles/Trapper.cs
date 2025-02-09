@@ -64,43 +64,43 @@ public class Trapper : RoleBase<Trapper>
                 !Trap.hasTrappedPlayer() && !meetingFlag)
                 // トラップを踏んだプレイヤーを動けなくする
                 foreach (PlayerControl p in PlayerControl.AllPlayerControls.GetFastEnumerator())
-                    foreach (KeyValuePair<byte, Trap> trap in Trap.traps)
+                foreach (KeyValuePair<byte, Trap> trap in Trap.traps)
+                {
+                    if (DateTime.UtcNow.Subtract(trap.Value.placedTime).TotalSeconds < extensionTime) continue;
+                    if (trap.Value.isActive || p.isDead() || p.inVent || meetingFlag) continue;
+                    Vector3 p1 = p.transform.localPosition;
+                    Dictionary<GameObject, byte> listActivate = new();
+                    Vector3 p2 = trap.Value.trap.transform.localPosition;
+                    float distance = Vector3.Distance(p1, p2);
+                    if (distance < trapRange)
                     {
-                        if (DateTime.UtcNow.Subtract(trap.Value.placedTime).TotalSeconds < extensionTime) continue;
-                        if (trap.Value.isActive || p.isDead() || p.inVent || meetingFlag) continue;
-                        Vector3 p1 = p.transform.localPosition;
-                        Dictionary<GameObject, byte> listActivate = new();
-                        Vector3 p2 = trap.Value.trap.transform.localPosition;
-                        float distance = Vector3.Distance(p1, p2);
-                        if (distance < trapRange)
-                        {
-                            TMP_Text text;
-                            RoomTracker roomTracker = FastDestroyableSingleton<HudManager>.Instance?.roomTracker;
-                            GameObject gameObject = Object.Instantiate(roomTracker.gameObject);
-                            Object.DestroyImmediate(gameObject.GetComponent<RoomTracker>());
-                            gameObject.transform.SetParent(FastDestroyableSingleton<HudManager>.Instance.transform);
-                            gameObject.transform.localPosition =
-                                new Vector3(0, -1.8f, gameObject.transform.localPosition.z);
-                            gameObject.transform.localScale = Vector3.one * 2f;
-                            text = gameObject.GetComponent<TMP_Text>();
-                            text.text = string.Format(ModTranslation.getString("trapperGetTrapped"), p.name);
-                            FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(3f,
-                                new Action<float>(p =>
-                                {
-                                    if (p == 1f && text != null && text.gameObject != null) Object.Destroy(text.gameObject);
-                                })));
-                            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ActivateTrap,
-                                SendOption.Reliable, -1);
-                            writer.Write(trap.Key);
-                            writer.Write(PlayerControl.LocalPlayer.PlayerId);
-                            writer.Write(p.PlayerId);
-                            AmongUsClient.Instance.FinishRpcImmediately(writer);
-                            RPCProcedure.activateTrap(trap.Key, PlayerControl.LocalPlayer.PlayerId,
-                                p.PlayerId);
-                            break;
-                        }
+                        TMP_Text text;
+                        RoomTracker roomTracker = FastDestroyableSingleton<HudManager>.Instance?.roomTracker;
+                        GameObject gameObject = Object.Instantiate(roomTracker.gameObject);
+                        Object.DestroyImmediate(gameObject.GetComponent<RoomTracker>());
+                        gameObject.transform.SetParent(FastDestroyableSingleton<HudManager>.Instance.transform);
+                        gameObject.transform.localPosition =
+                            new Vector3(0, -1.8f, gameObject.transform.localPosition.z);
+                        gameObject.transform.localScale = Vector3.one * 2f;
+                        text = gameObject.GetComponent<TMP_Text>();
+                        text.text = string.Format(ModTranslation.getString("trapperGetTrapped"), p.name);
+                        FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(3f,
+                            new Action<float>(p =>
+                            {
+                                if (p == 1f && text != null && text.gameObject != null) Object.Destroy(text.gameObject);
+                            })));
+                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
+                            PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ActivateTrap,
+                            SendOption.Reliable);
+                        writer.Write(trap.Key);
+                        writer.Write(PlayerControl.LocalPlayer.PlayerId);
+                        writer.Write(p.PlayerId);
+                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                        RPCProcedure.activateTrap(trap.Key, PlayerControl.LocalPlayer.PlayerId,
+                            p.PlayerId);
+                        break;
                     }
+                }
 
             if (PlayerControl.LocalPlayer.isRole(RoleType.Trapper) && Trap.hasTrappedPlayer() &&
                 !meetingFlag)
@@ -119,7 +119,7 @@ public class Trapper : RoleBase<Trapper>
                         {
                             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                                 PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DisableTrap,
-                                SendOption.Reliable, -1);
+                                SendOption.Reliable);
                             writer.Write(trap.Key);
                             AmongUsClient.Instance.FinishRpcImmediately(writer);
                             RPCProcedure.disableTrap(trap.Key);
@@ -161,7 +161,7 @@ public class Trapper : RoleBase<Trapper>
             {
                 MessageWriter writer;
                 writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                    (byte)CustomRPC.ClearTrap, SendOption.Reliable, -1);
+                    (byte)CustomRPC.ClearTrap, SendOption.Reliable);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCProcedure.clearTrap();
             }
@@ -267,7 +267,7 @@ public class Trapper : RoleBase<Trapper>
         {
             // トラップ中にミーティングが来たら直後に死亡する
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.TrapperMeetingFlag, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.TrapperMeetingFlag, SendOption.Reliable);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.trapperMeetingFlag();
         }

@@ -103,7 +103,7 @@ public static class ButtonsGM
                 if (!target.Data.IsDead)
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GMKill, SendOption.Reliable, -1);
+                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GMKill, SendOption.Reliable);
                     writer.Write(index);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.GMKill(index);
@@ -111,7 +111,7 @@ public static class ButtonsGM
                 else
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GMRevive, SendOption.Reliable, -1);
+                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GMRevive, SendOption.Reliable);
                     writer.Write(index);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.GMRevive(index);

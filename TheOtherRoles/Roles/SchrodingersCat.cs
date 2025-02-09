@@ -119,6 +119,14 @@ public class SchrodingersCat : RoleBase<SchrodingersCat>
             player.SetKillTimerUnchecked(killCooldown);
     }
 
+    public override void OnFinishShipStatusBegin()
+    {
+    }
+
+    public override void HandleDisconnect(PlayerControl player, DisconnectReasons reason)
+    {
+    }
+
     public override void OnDeath(PlayerControl killer = null)
     {
         player.clearAllTasks();
@@ -139,7 +147,7 @@ public class SchrodingersCat : RoleBase<SchrodingersCat>
                 int rndVal = rnd.Next(0, candidates.Count);
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                     PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SchrodingersCatSetTeam,
-                    SendOption.Reliable, -1);
+                    SendOption.Reliable);
                 writer.Write((byte)candidates[rndVal]);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCProcedure.schrodingersCatSetTeam((byte)candidates[rndVal]);
@@ -168,9 +176,7 @@ public class SchrodingersCat : RoleBase<SchrodingersCat>
             if (killsKiller && !isCrewOrSchrodingersCat)
                 SchrodingersCat.killer = killer;
 
-
-            // 蘇生する
-            player.ModRevive();
+            Helpers.checkMuderAttempt(killer, player);
             // 死体を消す
             DeadBody[] array = Object.FindObjectsOfType<DeadBody>();
             for (int i = 0; i < array.Length; i++)
@@ -203,7 +209,7 @@ public class SchrodingersCat : RoleBase<SchrodingersCat>
                                 {
                                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                                         PlayerControl.LocalPlayer.NetId,
-                                        (byte)CustomRPC.SchrodingersCatSuicide, SendOption.Reliable, -1);
+                                        (byte)CustomRPC.SchrodingersCatSuicide, SendOption.Reliable);
                                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                                     RPCProcedure.schrodingersCatSuicide();
                                     SchrodingersCat.killer = null;
@@ -216,12 +222,11 @@ public class SchrodingersCat : RoleBase<SchrodingersCat>
         }
     }
 
-    public override void OnFinishShipStatusBegin()
+    public static bool AssignRoleOnDeath(PlayerControl player)
     {
-    }
-
-    public override void HandleDisconnect(PlayerControl player, DisconnectReasons reason)
-    {
+        if (player.isRole(RoleType.SchrodingersCat) && !hasTeam())
+            return false;
+        return true;
     }
 
     public static void MakeButtons(HudManager hm)
@@ -414,7 +419,7 @@ public class SchrodingersCat : RoleBase<SchrodingersCat>
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                         PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SchrodingersCatSetTeam,
-                        SendOption.Reliable, -1);
+                        SendOption.Reliable);
                     writer.Write((byte)Team.Impostor);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.schrodingersCatSetTeam((byte)Team.Impostor);
@@ -427,7 +432,7 @@ public class SchrodingersCat : RoleBase<SchrodingersCat>
                     {
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                             PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SchrodingersCatSetTeam,
-                            SendOption.Reliable, -1);
+                            SendOption.Reliable);
                         writer.Write((byte)Team.Jackal);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
                         RPCProcedure.schrodingersCatSetTeam((byte)Team.Jackal);
@@ -442,7 +447,7 @@ public class SchrodingersCat : RoleBase<SchrodingersCat>
                     {
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                             PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SchrodingersCatSetTeam,
-                            SendOption.Reliable, -1);
+                            SendOption.Reliable);
                         writer.Write((byte)Team.Moriarty);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
                         RPCProcedure.schrodingersCatSetTeam((byte)Team.Moriarty);
@@ -457,7 +462,7 @@ public class SchrodingersCat : RoleBase<SchrodingersCat>
                     {
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                             PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SchrodingersCatSetTeam,
-                            SendOption.Reliable, -1);
+                            SendOption.Reliable);
                         writer.Write((byte)Team.JekyllAndHyde);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
                         RPCProcedure.schrodingersCatSetTeam((byte)Team.JekyllAndHyde);
@@ -470,7 +475,7 @@ public class SchrodingersCat : RoleBase<SchrodingersCat>
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                         PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SchrodingersCatSetTeam,
-                        SendOption.Reliable, -1);
+                        SendOption.Reliable);
                     writer.Write((byte)Team.Crew);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.schrodingersCatSetTeam((byte)Team.Crew);
@@ -534,7 +539,7 @@ public class SchrodingersCat : RoleBase<SchrodingersCat>
             {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                     PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SchrodingersCatSuicide,
-                    SendOption.Reliable, -1);
+                    SendOption.Reliable);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCProcedure.schrodingersCatSuicide();
                 killer = null;

@@ -79,12 +79,13 @@ public class AdminPatch
     {
         // Don't waste network traffic if we're out of time.
         if (!isEvilHackerAdmin)
-            if (TORMapOptions.restrictDevices > 0 && TORMapOptions.restrictAdmin && TORMapOptions.restrictAdminTime > 0f &&
+            if (TORMapOptions.restrictDevices > 0 && TORMapOptions.restrictAdmin &&
+                TORMapOptions.restrictAdminTime > 0f &&
                 PlayerControl.LocalPlayer.isAlive() &&
                 !PlayerControl.LocalPlayer.isRole(RoleType.MimicA))
             {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UseAdminTime, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UseAdminTime, SendOption.Reliable);
                 writer.Write(adminTimer);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCProcedure.useAdminTime(adminTimer);
@@ -128,7 +129,8 @@ public class AdminPatch
 
             // アドミンの画像を差し替える
             if (!PlayerControl.LocalPlayer.isRole(RoleType.EvilHacker) && !EvilHacker.isInherited() &&
-                GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4 && CustomOptionHolder.airshipRestrictedAdmin.getBool() &&
+                GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4 &&
+                CustomOptionHolder.airshipRestrictedAdmin.getBool() &&
                 (room.name == "Cockpit" || room.name == "Records"))
             {
                 if (room.name == "Cockpit" && !adminCockpitSprite)

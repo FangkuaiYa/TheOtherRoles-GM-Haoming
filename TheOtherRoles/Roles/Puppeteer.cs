@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using AmongUs.Data;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using HarmonyLib;
 using Hazel;
@@ -66,7 +67,9 @@ public class Puppeteer : RoleBase<Puppeteer>
                          PlayerControl.LocalPlayer.isRole(RoleType.JekyllAndHyde) ||
                          PlayerControl.LocalPlayer.isRole(RoleType.Moriarty)))
         {
-            string msg = AmongUs.Data.DataManager.Settings.Language.CurrentLanguage == SupportedLangs.SChinese ? $"木偶单位数 {counter}/{numKills}" : $"Number of people {counter}/{numKills}";
+            string msg = DataManager.Settings.Language.CurrentLanguage == SupportedLangs.SChinese
+                ? $"木偶单位数 {counter}/{numKills}"
+                : $"Number of people {counter}/{numKills}";
             if (AmongUsClient.Instance.AmClient && FastDestroyableSingleton<HudManager>.Instance)
                 FastDestroyableSingleton<HudManager>.Instance.Chat.AddChat(PlayerControl.LocalPlayer, msg);
         }
@@ -107,6 +110,13 @@ public class Puppeteer : RoleBase<Puppeteer>
 
     public override void HandleDisconnect(PlayerControl player, DisconnectReasons reason)
     {
+    }
+
+    public static bool AssignRoleOnDeath(PlayerControl player)
+    {
+        if (player == dummy)
+            return false;
+        return true;
     }
 
     public static Sprite getSampleButtonSprite()
@@ -268,7 +278,7 @@ public class Puppeteer : RoleBase<Puppeteer>
         {
             byte playerId = (byte)GameData.Instance.GetAvailableId();
             writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                (byte)CustomRPC.SpawnDummy, SendOption.Reliable, -1);
+                (byte)CustomRPC.SpawnDummy, SendOption.Reliable);
             writer.Write(playerId);
             writer.Write(PlayerControl.LocalPlayer.transform.position.x);
             writer.Write(PlayerControl.LocalPlayer.transform.position.y);
@@ -278,7 +288,7 @@ public class Puppeteer : RoleBase<Puppeteer>
         }
 
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-            (byte)CustomRPC.MoveDummy, SendOption.Reliable, -1);
+            (byte)CustomRPC.MoveDummy, SendOption.Reliable);
         writer.Write(PlayerControl.LocalPlayer.transform.position.x);
         writer.Write(PlayerControl.LocalPlayer.transform.position.y);
         writer.Write(PlayerControl.LocalPlayer.transform.position.z);
@@ -292,7 +302,7 @@ public class Puppeteer : RoleBase<Puppeteer>
         if (target != null)
         {
             writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                (byte)CustomRPC.PuppeteerMorph, SendOption.Reliable, -1);
+                (byte)CustomRPC.PuppeteerMorph, SendOption.Reliable);
             writer.Write(target.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.puppeteerMorph(target.PlayerId);
@@ -330,7 +340,7 @@ public class Puppeteer : RoleBase<Puppeteer>
         if (!flag)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PuppeteerStealth, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PuppeteerStealth, SendOption.Reliable);
             writer.Write(false);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.puppeteerStealth(false);
@@ -347,7 +357,7 @@ public class Puppeteer : RoleBase<Puppeteer>
         {
             // 常に自身の位置から人形をスタートさせる
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.MoveDummy, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.MoveDummy, SendOption.Reliable);
             writer.Write(PlayerControl.LocalPlayer.transform.position.x);
             writer.Write(PlayerControl.LocalPlayer.transform.position.y);
             writer.Write(PlayerControl.LocalPlayer.transform.position.z);
@@ -356,7 +366,7 @@ public class Puppeteer : RoleBase<Puppeteer>
             RPCProcedure.moveDummy(PlayerControl.LocalPlayer.transform.position);
 
             writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                (byte)CustomRPC.PuppeteerStealth, SendOption.Reliable, -1);
+                (byte)CustomRPC.PuppeteerStealth, SendOption.Reliable);
             writer.Write(true);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.puppeteerStealth(true);
@@ -399,7 +409,7 @@ public class Puppeteer : RoleBase<Puppeteer>
         if (counter >= numKills && PlayerControl.LocalPlayer.isRole(RoleType.Puppeteer))
         {
             MessageWriter winWriter = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PuppeteerWin, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PuppeteerWin, SendOption.Reliable);
             AmongUsClient.Instance.FinishRpcImmediately(winWriter);
             RPCProcedure.puppeteerWin();
         }
@@ -423,7 +433,7 @@ public class Puppeteer : RoleBase<Puppeteer>
         if (counter >= numKills)
         {
             MessageWriter winWriter = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PuppeteerWin, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PuppeteerWin, SendOption.Reliable);
             AmongUsClient.Instance.FinishRpcImmediately(winWriter);
             RPCProcedure.puppeteerWin();
         }
@@ -432,7 +442,7 @@ public class Puppeteer : RoleBase<Puppeteer>
         if (target.isAlive() && isAlive && !killer.isCrew())
         {
             MessageWriter killWriter = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PuppeteerKill, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PuppeteerKill, SendOption.Reliable);
             killWriter.Write(killer.PlayerId);
             killWriter.Write(target.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(killWriter);
@@ -441,7 +451,7 @@ public class Puppeteer : RoleBase<Puppeteer>
         else if (isAlive && killer.isCrew()) // ダミーをクルーがキルした場合は人形遣いが死亡する
         {
             MessageWriter killWriter = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PuppeteerKill, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PuppeteerKill, SendOption.Reliable);
             killWriter.Write(killer.PlayerId);
             killWriter.Write(PlayerControl.LocalPlayer.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(killWriter);
@@ -517,7 +527,7 @@ public class Puppeteer : RoleBase<Puppeteer>
             if (dummy != null)
             {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.MoveDummy, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.MoveDummy, SendOption.Reliable);
                 writer.Write(dummy.transform.position.x);
                 writer.Write(dummy.transform.position.y);
                 writer.Write(dummy.transform.position.z);
@@ -532,12 +542,14 @@ public class Puppeteer : RoleBase<Puppeteer>
 
     public static void setOpacity(PlayerControl player, float opacity)
     {
-        var color = Color.Lerp(Palette.ClearWhite, Palette.White, opacity);
+        Color color = Color.Lerp(Palette.ClearWhite, Palette.White, opacity);
         try
         {
             Helpers.setInvisible(player, color, opacity);
         }
-        catch { }
+        catch
+        {
+        }
     }
 
     [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.FixedUpdate))]
@@ -672,7 +684,8 @@ public class Puppeteer : RoleBase<Puppeteer>
                         }
                         else
                         {
-                            FastDestroyableSingleton<ShipStatus>.Instance.RpcUpdateSystem(SystemTypes.Doors, (Byte)(t.Id | 64));
+                            FastDestroyableSingleton<ShipStatus>.Instance.RpcUpdateSystem(SystemTypes.Doors,
+                                (byte)(t.Id | 64));
                             t.SetDoorway(true);
                         }
                     }
@@ -697,7 +710,7 @@ public class Puppeteer : RoleBase<Puppeteer>
                         {
                             MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(
                                 PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PuppeteerClimbRadder,
-                                SendOption.Reliable, -1);
+                                SendOption.Reliable);
                             messageWriter.Write(dummy.PlayerId);
                             messageWriter.Write(target.Id);
                             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
@@ -720,7 +733,7 @@ public class Puppeteer : RoleBase<Puppeteer>
                             {
                                 MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(
                                     PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PuppeteerUsePlatform,
-                                    SendOption.Reliable, -1);
+                                    SendOption.Reliable);
                                 messageWriter.Write(dummy.PlayerId);
                                 AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
                                 RPCProcedure.puppeteerUsePlatform(dummy.PlayerId);
@@ -734,7 +747,7 @@ public class Puppeteer : RoleBase<Puppeteer>
                                         {
                                             messageWriter = AmongUsClient.Instance.StartRpcImmediately(
                                                 PlayerControl.LocalPlayer.NetId,
-                                                (byte)CustomRPC.PuppeteerUsePlatform, SendOption.Reliable, -1);
+                                                (byte)CustomRPC.PuppeteerUsePlatform, SendOption.Reliable);
                                             messageWriter.Write(dummy.PlayerId);
                                             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
                                             RPCProcedure.puppeteerUsePlatform(dummy.PlayerId);
@@ -808,7 +821,7 @@ public class Puppeteer : RoleBase<Puppeteer>
                     {
                         writer = AmongUsClient.Instance.StartRpcImmediately(
                             PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.WalkDummy,
-                            SendOption.Reliable, -1);
+                            SendOption.Reliable);
                         writer.Write(offset.x);
                         writer.Write(offset.y);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -819,7 +832,7 @@ public class Puppeteer : RoleBase<Puppeteer>
                     {
                         writer = AmongUsClient.Instance.StartRpcImmediately(
                             PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.MoveDummy,
-                            SendOption.Reliable, -1);
+                            SendOption.Reliable);
                         writer.Write(dummy.transform.position.x);
                         writer.Write(dummy.transform.position.y);
                         writer.Write(dummy.transform.position.z);

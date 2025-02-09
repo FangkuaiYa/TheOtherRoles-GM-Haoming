@@ -29,7 +29,7 @@ internal class ExileControllerBeginPatch
         {
             // We need to send the RPC from the host here, to make sure that the order of shifting and setting the shield is correct(for that reason the futureShifted and futureShielded are being synced)
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.MedicSetShielded, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.MedicSetShielded, SendOption.Reliable);
             writer.Write(Medic.futureShielded.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.medicSetShielded(Medic.futureShielded.PlayerId);
@@ -51,7 +51,7 @@ internal class ExileControllerBeginPatch
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                     PlayerControl.LocalPlayer.NetId,
                     (byte)CustomRPC.UncheckedExilePlayer,
-                    SendOption.Reliable, -1);
+                    SendOption.Reliable);
                 writer.Write(target.PlayerId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCProcedure.uncheckedExilePlayer(target.PlayerId);
@@ -63,7 +63,7 @@ internal class ExileControllerBeginPatch
         {
             // We need to send the RPC from the host here, to make sure that the order of shifting and erasing is correct (for that reason the futureShifted and futureErased are being synced)
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShifterShift, SendOption.Reliable, -1);
+                PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShifterShift, SendOption.Reliable);
             writer.Write(Shifter.futureShift.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.shifterShift(Shifter.futureShift.PlayerId);
@@ -79,7 +79,7 @@ internal class ExileControllerBeginPatch
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                         PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ErasePlayerRoles,
-                        SendOption.Reliable, -1);
+                        SendOption.Reliable);
                     writer.Write(target.PlayerId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.erasePlayerRoles(target.PlayerId);
@@ -105,7 +105,7 @@ internal class ExileControllerBeginPatch
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                         PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.WitchSpellCast,
-                        SendOption.Reliable, -1);
+                        SendOption.Reliable);
                     writer.Write(target.PlayerId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.witchSpellCast(target.PlayerId);
@@ -129,13 +129,17 @@ internal class ExileControllerBeginPatch
         {
             SpriteAnim animator = vent.GetComponent<SpriteAnim>();
             vent.EnterVentAnim = vent.ExitVentAnim = null;
-            Sprite newSprite = animator == null ? SecurityGuard.getStaticVentSealedSprite() : SecurityGuard.getAnimatedVentSealedSprite();
+            Sprite newSprite = animator == null
+                ? SecurityGuard.getStaticVentSealedSprite()
+                : SecurityGuard.getAnimatedVentSealedSprite();
             SpriteRenderer rend = vent.myRend;
-            if (Helpers.isFungle()) {
+            if (Helpers.isFungle())
+            {
                 newSprite = SecurityGuard.getFungleVentSealedSprite();
                 rend = vent.transform.GetChild(3).GetComponent<SpriteRenderer>();
-                animator = vent.transform.GetChild(3).GetComponent<PowerTools.SpriteAnim>();
+                animator = vent.transform.GetChild(3).GetComponent<SpriteAnim>();
             }
+
             animator?.Stop();
             rend.sprite = newSprite;
             if (SubmergedCompatibility.isSubmerged() && vent.Id == 0)
@@ -197,7 +201,8 @@ internal class ExileControllerWrapUpPatch
     public static void Prefix(GameObject obj)
     {
         if (!SubmergedCompatibility.isSubmerged()) return;
-        if (obj != null && obj.name.Contains("ExileCutscene")) WrapUpPostfix(obj.GetComponent<ExileController>().initData.networkedPlayer?.Object);
+        if (obj != null && obj.name.Contains("ExileCutscene"))
+            WrapUpPostfix(obj.GetComponent<ExileController>().initData.networkedPlayer?.Object);
     }
 
     private static void WrapUpPostfix(PlayerControl exiled)
@@ -228,7 +233,7 @@ internal class ExileControllerWrapUpPatch
         public static void Postfix(ExileController __instance)
         {
             NetworkedPlayerInfo networkedPlayer = __instance.initData.networkedPlayer;
-            WrapUpPostfix((networkedPlayer != null) ? networkedPlayer.Object : null);
+            WrapUpPostfix(networkedPlayer != null ? networkedPlayer.Object : null);
         }
     }
 
@@ -238,7 +243,7 @@ internal class ExileControllerWrapUpPatch
         public static void Postfix(AirshipExileController __instance)
         {
             NetworkedPlayerInfo networkedPlayer = __instance.initData.networkedPlayer;
-            WrapUpPostfix((networkedPlayer != null) ? networkedPlayer.Object : null);
+            WrapUpPostfix(networkedPlayer != null ? networkedPlayer.Object : null);
         }
     }
 }
@@ -267,7 +272,8 @@ internal class ExileControllerReEnableGameplayPatch
             PlayerControl.LocalPlayer.Data.Role.IsImpostor)
         {
             float multiplier = Mini.isGrownUp(PlayerControl.LocalPlayer) ? 0.66f : 2f;
-            PlayerControl.LocalPlayer.SetKillTimer(GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown * multiplier);
+            PlayerControl.LocalPlayer.SetKillTimer(GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown *
+                                                   multiplier);
         }
 
         // Seer spawn souls

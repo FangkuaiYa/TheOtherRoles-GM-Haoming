@@ -115,7 +115,7 @@ public class FortuneTeller : RoleBase<FortuneTeller>
         Vector3 fortuneTellerCalcPos(byte index)
         {
             int adjIndex = index < PlayerControl.LocalPlayer.PlayerId ? index : index - 1;
-            return new Vector3(0.95f, -0.15f, -61f) + Vector3.right * adjIndex * 0.55f;
+            return new Vector3(0.95f, -0.15f, -61f) + (Vector3.right * adjIndex * 0.55f);
         }
 
         Action fortuneTellerButtonOnClick(byte index)
@@ -361,7 +361,7 @@ public class FortuneTeller : RoleBase<FortuneTeller>
 
         // 占いを実行したことで発火される処理を他クライアントに通知
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-            (byte)CustomRPC.FortuneTellerUsedDivine, SendOption.Reliable, -1);
+            (byte)CustomRPC.FortuneTellerUsedDivine, SendOption.Reliable);
         writer.Write(PlayerControl.LocalPlayer.PlayerId);
         writer.Write(p.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

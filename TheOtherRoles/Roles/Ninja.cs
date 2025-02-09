@@ -50,7 +50,8 @@ public class Ninja : RoleBase<Ninja>
         if (player == PlayerControl.LocalPlayer)
         {
             if (penalized)
-                player.SetKillTimerUnchecked(GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown + killPenalty);
+                player.SetKillTimerUnchecked(GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown +
+                                             killPenalty);
             else
                 player.SetKillTimer(GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown);
         }
@@ -154,7 +155,7 @@ public class Ninja : RoleBase<Ninja>
                 }
 
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NinjaStealth, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NinjaStealth, SendOption.Reliable);
                 writer.Write(PlayerControl.LocalPlayer.PlayerId);
                 writer.Write(true);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -186,7 +187,7 @@ public class Ninja : RoleBase<Ninja>
                 ninjaButton.Timer = ninjaButton.MaxTimer = stealthCooldown;
 
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NinjaStealth, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NinjaStealth, SendOption.Reliable);
                 writer.Write(PlayerControl.LocalPlayer.PlayerId);
                 writer.Write(false);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -214,12 +215,14 @@ public class Ninja : RoleBase<Ninja>
 
     public static void setOpacity(PlayerControl player, float opacity)
     {
-        var color = Color.Lerp(Palette.ClearWhite, Palette.White, opacity);
+        Color color = Color.Lerp(Palette.ClearWhite, Palette.White, opacity);
         try
         {
             Helpers.setInvisible(player, color, opacity);
         }
-        catch { }
+        catch
+        {
+        }
     }
 
     [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.FixedUpdate))]

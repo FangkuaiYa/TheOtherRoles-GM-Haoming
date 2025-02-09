@@ -130,6 +130,7 @@ public class ShipStatusCheckTaskCompletionPatch
 public static class OnGameEndPatch
 {
     public static GameOverReason gameOverReason = GameOverReason.HumansByTask;
+
     public static void Prefix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
     {
         Camouflager.resetCamouflage();
@@ -278,51 +279,42 @@ public static class OnGameEndPatch
         {
             EndGameResult.CachedWinners = new Il2CppSystem.Collections.Generic.List<CachedPlayerData>();
             foreach (PlayerControl p in PlayerControl.AllPlayerControls)
-            {
                 if (p.isImpostor() || p.hasModifier(ModifierType.Madmate) || p.hasModifier(ModifierType.CreatedMadmate))
                 {
                     CachedPlayerData wpd = new(p.Data);
                     EndGameResult.CachedWinners.Add(wpd);
                 }
                 else if (p.isRole(RoleType.SchrodingersCat))
-                {
                     if (SchrodingersCat.team == SchrodingersCat.Team.Impostor)
                     {
                         CachedPlayerData wpd = new(p.Data);
                         EndGameResult.CachedWinners.Add(wpd);
                     }
-                }
-            }
         }
         else if (crewWin)
         {
             EndGameResult.CachedWinners = new Il2CppSystem.Collections.Generic.List<CachedPlayerData>();
             foreach (PlayerControl p in PlayerControl.AllPlayerControls)
-            {
                 if (p.isCrew() && !p.hasModifier(ModifierType.Madmate) && !p.hasModifier(ModifierType.CreatedMadmate))
                 {
                     CachedPlayerData wpd = new(p.Data);
                     EndGameResult.CachedWinners.Add(wpd);
                 }
                 else if (p.isRole(RoleType.SchrodingersCat))
-                {
                     if (SchrodingersCat.team == SchrodingersCat.Team.Crew ||
                         (SchrodingersCat.team == SchrodingersCat.Team.None && SchrodingersCat.canWinAsCrewmate))
                     {
                         CachedPlayerData wpd = new(p.Data);
                         EndGameResult.CachedWinners.Add(wpd);
                     }
-                }
-            }
         }
 
         // 勝利画面から不要なキャラを追放する
         List<CachedPlayerData> winnersToRemove = new();
         foreach (CachedPlayerData winner in EndGameResult.CachedWinners.GetFastEnumerator())
-        {
-            if (notWinners.Any(x => x.Data.PlayerName == winner.PlayerName)) winnersToRemove.Add(winner);
-        }
-        foreach (var winner in winnersToRemove) EndGameResult.CachedWinners.Remove(winner);
+            if (notWinners.Any(x => x.Data.PlayerName == winner.PlayerName))
+                winnersToRemove.Add(winner);
+        foreach (CachedPlayerData winner in winnersToRemove) EndGameResult.CachedWinners.Remove(winner);
 
         // Mini lose
         if (miniLose)
@@ -459,7 +451,8 @@ public static class OnGameEndPatch
         else if (loversWin)
         {
             // Double win for lovers, crewmates also win
-            if (GameManager.Instance.DidHumansWin(gameOverReason) && !Lovers.separateTeam && Lovers.anyNonKillingCouples())
+            if (GameManager.Instance.DidHumansWin(gameOverReason) && !Lovers.separateTeam &&
+                Lovers.anyNonKillingCouples())
             {
                 AdditionalTempData.winCondition = WinCondition.LoversTeamWin;
                 AdditionalTempData.additionalWinConditions.Add(WinCondition.LoversTeamWin);
@@ -659,11 +652,12 @@ public static class OnGameEndPatch
                 foreach (PoolablePlayer pb in __instance.transform.GetComponentsInChildren<PoolablePlayer>())
                     Object.Destroy(pb.gameObject);
                 int num = Mathf.CeilToInt(7.5f);
-                List<CachedPlayerData> list = EndGameResult.CachedWinners.ToArray().ToList().OrderBy(delegate(CachedPlayerData b)
-                {
-                    if (!b.IsYou) return 0;
-                    return -1;
-                }).ToList();
+                List<CachedPlayerData> list = EndGameResult.CachedWinners.ToArray().ToList().OrderBy(
+                    delegate(CachedPlayerData b)
+                    {
+                        if (!b.IsYou) return 0;
+                        return -1;
+                    }).ToList();
                 for (int i = 0; i < list.Count; i++)
                 {
                     CachedPlayerData cachedPlaterData2 = list[i];
@@ -685,7 +679,9 @@ public static class OnGameEndPatch
                     }
                     else
                         poolablePlayer.SetFlipX(i % 2 == 0);
-                    poolablePlayer.UpdateFromPlayerOutfit(cachedPlaterData2.Outfit, PlayerMaterial.MaskType.None, cachedPlaterData2.IsDead, true);
+
+                    poolablePlayer.UpdateFromPlayerOutfit(cachedPlaterData2.Outfit, PlayerMaterial.MaskType.None,
+                        cachedPlaterData2.IsDead, true);
                     poolablePlayer.cosmetics.nameText.color = Color.white;
                     poolablePlayer.cosmetics.nameText.lineSpacing *= 0.7f;
                     poolablePlayer.cosmetics.nameText.transform.localScale =
@@ -828,8 +824,7 @@ public static class OnGameEndPatch
                     textRenderer.color = Palette.ImpostorRed;
                 }
                 else if (AdditionalTempData.winCondition == WinCondition.Default)
-                {
-                    switch (OnGameEndPatch.gameOverReason)
+                    switch (gameOverReason)
                     {
                         case GameOverReason.ImpostorDisconnect:
                             bonusText = ModTranslation.getString("impostorDisconnect");
@@ -860,7 +855,6 @@ public static class OnGameEndPatch
                             textRenderer.color = Color.white;
                             break;
                     }
-                }
 
                 string extraText = "";
                 foreach (WinCondition w in AdditionalTempData.additionalWinConditions)
@@ -981,9 +975,10 @@ public static class OnGameEndPatch
                                               string.Format("{0:D2}", data.TasksTotal);
                             string aliveDead = ModTranslation.getString("roleSummary" + data.Status, "-");
                             string result = "";
-                            result += EndGameResult.CachedWinners.ToArray().Count(x => x.PlayerName == data.PlayerName) != 0
-                                ? ":crown: | "
-                                : ":skull: | ";
+                            result +=
+                                EndGameResult.CachedWinners.ToArray().Count(x => x.PlayerName == data.PlayerName) != 0
+                                    ? ":crown: | "
+                                    : ":skull: | ";
                             result += string.Format("{0,-6} | {1,-2} | {2}", taskInfo, aliveDead, data.RoleString);
                             if (plagueExists && !data.Roles.Contains(RoleInfo.plagueDoctor))
                             {
@@ -1027,7 +1022,7 @@ public static class OnGameEndPatch
                     return true; // InstanceExists | Don't check Custom Criteria when in Tutorial
                 if (FastDestroyableSingleton<HudManager>.Instance.IsIntroDisplayed) return false;
 
-                var statistics = new PlayerStatistics(__instance);
+                PlayerStatistics statistics = new(__instance);
                 if (CheckAndEndGameForMiniLose(__instance)) return false;
                 if (CheckAndEndGameForJesterWin(__instance)) return false;
                 if (CheckAndEndGameForLawyerMeetingWin(__instance)) return false;
@@ -1169,7 +1164,9 @@ public static class OnGameEndPatch
             private static bool CheckAndEndGameForSabotageWin(ShipStatus __instance)
             {
                 if (MapUtilities.Systems == null) return false;
-                var systemType = MapUtilities.Systems.ContainsKey(SystemTypes.LifeSupp) ? MapUtilities.Systems[SystemTypes.LifeSupp] : null;
+                Il2CppSystem.Object systemType = MapUtilities.Systems.ContainsKey(SystemTypes.LifeSupp)
+                    ? MapUtilities.Systems[SystemTypes.LifeSupp]
+                    : null;
                 if (systemType != null)
                 {
                     LifeSuppSystemType lifeSuppSystemType = systemType.TryCast<LifeSuppSystemType>();
@@ -1180,11 +1177,14 @@ public static class OnGameEndPatch
                         return true;
                     }
                 }
-                var systemType2 = MapUtilities.Systems.ContainsKey(SystemTypes.Reactor) ? MapUtilities.Systems[SystemTypes.Reactor] : null;
+
+                Il2CppSystem.Object systemType2 = MapUtilities.Systems.ContainsKey(SystemTypes.Reactor)
+                    ? MapUtilities.Systems[SystemTypes.Reactor]
+                    : null;
                 if (systemType2 == null)
-                {
-                    systemType2 = MapUtilities.Systems.ContainsKey(SystemTypes.Laboratory) ? MapUtilities.Systems[SystemTypes.Laboratory] : null;
-                }
+                    systemType2 = MapUtilities.Systems.ContainsKey(SystemTypes.Laboratory)
+                        ? MapUtilities.Systems[SystemTypes.Laboratory]
+                        : null;
                 if (systemType2 != null)
                 {
                     ICriticalSabotage criticalSystem = systemType2.TryCast<ICriticalSabotage>();
@@ -1195,6 +1195,7 @@ public static class OnGameEndPatch
                         return true;
                     }
                 }
+
                 return false;
             }
 
@@ -1309,7 +1310,6 @@ public static class OnGameEndPatch
             private static void EndGameForSabotage(ShipStatus __instance)
             {
                 UncheckedEndGame(GameOverReason.ImpostorBySabotage);
-                return;
             }
 
             private static void UncheckedEndGame(GameOverReason reason)

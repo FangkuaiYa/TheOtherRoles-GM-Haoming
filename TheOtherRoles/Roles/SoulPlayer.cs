@@ -50,7 +50,7 @@ public class SoulPlayer
             {
                 timer = 0;
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncKillTimer, SendOption.Reliable, -1);
+                    PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncKillTimer, SendOption.Reliable);
                 writer.Write(PlayerControl.LocalPlayer.PlayerId);
                 writer.Write(PlayerControl.LocalPlayer.killTimer);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);

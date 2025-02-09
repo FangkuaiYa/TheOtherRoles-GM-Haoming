@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using TheOtherRoles.Objects;
+using TheOtherRoles.Patches;
 using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -331,16 +332,23 @@ public static class TheOtherRoles
         public static Sprite getButtonSprite()
         {
             if (buttonSprite) return buttonSprite;
-            // buttonSprite = FastDestroyableSingleton<TranslationController>.Instance.GetImage(ImageNames.AirshipAdminButton);
-            // return buttonSprite;
             byte mapId = GameOptionsManager.Instance.currentNormalGameOptions.MapId;
             UseButtonSettings button =
                 FastDestroyableSingleton<HudManager>.Instance.UseButton
                     .fastUseSettings[ImageNames.PolusAdminButton]; // Polus
-            if (Helpers.isSkeld() || mapId == 3) button = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[ImageNames.AdminMapButton]; // Skeld || Dleks
-            else if (Helpers.isMira()) button = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[ImageNames.MIRAAdminButton]; // Mira HQ
-            else if (Helpers.isAirship()) button = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[ImageNames.AirshipAdminButton]; // Airship
-            else if (Helpers.isFungle()) button = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[ImageNames.AdminMapButton];  // Hacker can Access the Admin panel on Fungle
+            if (Helpers.isSkeld() || mapId == 3)
+                button =
+                    FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings
+                        [ImageNames.AdminMapButton]; // Skeld || Dleks
+            else if (Helpers.isMira())
+                button = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[
+                    ImageNames.MIRAAdminButton]; // Mira HQ
+            else if (Helpers.isAirship())
+                button = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[
+                    ImageNames.AirshipAdminButton]; // Airship
+            else if (Helpers.isFungle())
+                button =
+                    FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[ImageNames.AdminMapButton];
             buttonSprite = button.Image;
             return buttonSprite;
         }
@@ -742,7 +750,8 @@ public static class TheOtherRoles
         public static Sprite getPlaceBoxButtonSprite()
         {
             if (placeBoxButtonSprite) return placeBoxButtonSprite;
-            placeBoxButtonSprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.PlaceJackInTheBoxButton.png", 115f);
+            placeBoxButtonSprite =
+                Helpers.loadSpriteFromResources("TheOtherRoles.Resources.PlaceJackInTheBoxButton.png", 115f);
             return placeBoxButtonSprite;
         }
 
@@ -756,7 +765,8 @@ public static class TheOtherRoles
         public static Sprite getTricksterVentButtonSprite()
         {
             if (tricksterVentButtonSprite) return tricksterVentButtonSprite;
-            tricksterVentButtonSprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.TricksterVentButton.png", 115f);
+            tricksterVentButtonSprite =
+                Helpers.loadSpriteFromResources("TheOtherRoles.Resources.TricksterVentButton.png", 115f);
             return tricksterVentButtonSprite;
         }
 
@@ -813,14 +823,15 @@ public static class TheOtherRoles
         public static Sprite getCurseButtonSprite()
         {
             if (curseButtonSprite) return curseButtonSprite;
-            curseButtonSprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.CurseButton.png", 115f);              
+            curseButtonSprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.CurseButton.png", 115f);
             return curseButtonSprite;
         }
 
         public static Sprite getCurseKillButtonSprite()
         {
             if (curseKillButtonSprite) return curseKillButtonSprite;
-            curseKillButtonSprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.CurseKillButton.png.png", 115f);
+            curseKillButtonSprite =
+                Helpers.loadSpriteFromResources("TheOtherRoles.Resources.CurseKillButton.png.png", 115f);
             return curseKillButtonSprite;
         }
 
@@ -881,17 +892,21 @@ public static class TheOtherRoles
 
         private static Sprite logSprite;
 
+        private static Sprite fungleVentSealedSprite;
+
         public static Sprite getCloseVentButtonSprite()
         {
             if (closeVentButtonSprite) return closeVentButtonSprite;
-            closeVentButtonSprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.CloseVentButton.png", 115f);
+            closeVentButtonSprite =
+                Helpers.loadSpriteFromResources("TheOtherRoles.Resources.CloseVentButton.png", 115f);
             return closeVentButtonSprite;
         }
 
         public static Sprite getPlaceCameraButtonSprite()
         {
             if (placeCameraButtonSprite) return placeCameraButtonSprite;
-            placeCameraButtonSprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.PlaceCameraButton.png", 115f);
+            placeCameraButtonSprite =
+                Helpers.loadSpriteFromResources("TheOtherRoles.Resources.PlaceCameraButton.png", 115f);
             return placeCameraButtonSprite;
         }
 
@@ -919,10 +934,11 @@ public static class TheOtherRoles
             return staticVentSealedSprite;
         }
 
-        private static Sprite fungleVentSealedSprite;
-        public static Sprite getFungleVentSealedSprite() {
+        public static Sprite getFungleVentSealedSprite()
+        {
             if (fungleVentSealedSprite) return fungleVentSealedSprite;
-            fungleVentSealedSprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.FungleVentSealed.png", 160f);
+            fungleVentSealedSprite =
+                Helpers.loadSpriteFromResources("TheOtherRoles.Resources.FungleVentSealed.png", 160f);
             return fungleVentSealedSprite;
         }
 
@@ -1042,7 +1058,8 @@ public static class TheOtherRoles
                     else
                     {
                         TORMapOptions.playerIcons[p.PlayerId].gameObject.SetActive(true);
-                        TORMapOptions.playerIcons[p.PlayerId].transform.localPosition = Patches.IntroCutsceneOnDestroyPatch.bottomLeft + new Vector3(0f, -0.35f, -62f);
+                        TORMapOptions.playerIcons[p.PlayerId].transform.localPosition =
+                            IntroCutsceneOnDestroyPatch.bottomLeft + new Vector3(0f, -0.35f, -62f);
                         TORMapOptions.playerIcons[p.PlayerId].transform.localScale = Vector3.one * 0.4f;
                         visibleCounter++;
                     }

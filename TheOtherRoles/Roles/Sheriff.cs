@@ -110,7 +110,7 @@ public class Sheriff : RoleBase<Sheriff>
                     // Mad sheriff always misfires.
                     if (local.player.hasModifier(ModifierType.Madmate)) misfire = true;
                     MessageWriter killWriter = AmongUsClient.Instance.StartRpcImmediately(
-                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SheriffKill, SendOption.Reliable, -1);
+                        PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SheriffKill, SendOption.Reliable);
                     killWriter.Write(PlayerControl.LocalPlayer.Data.PlayerId);
                     killWriter.Write(targetId);
                     killWriter.Write(misfire);

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Il2CppInterop.Runtime;
@@ -57,6 +56,7 @@ public static class AssetLoader
     {
         return assetBundle.LoadAsset(name, Il2CppType.Of<T>())?.Cast<T>();
     }
+
     public static T DontUnload<T>(this T obj) where T : Object
     {
         obj.hideFlags |= HideFlags.DontUnloadUnusedAsset;
