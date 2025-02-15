@@ -11,6 +11,8 @@ using TheOtherRoles.Objects;
 using TheOtherRoles.Patches;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static Rewired.Data.UserDataStore_PlayerPrefs.ControllerAssignmentSaveInfo;
 using static TheOtherRoles.GameHistory;
 using static TheOtherRoles.HudManagerStartPatch;
 using static TheOtherRoles.TheOtherRoles;
@@ -42,6 +44,8 @@ internal enum CustomRPC
     UncheckedSetTasks,
     DynamicMapOption,
     FinishShipStatusBegin,
+    StopStart,
+    SetGameStarting,
 
     // Role functionality
 
@@ -138,7 +142,10 @@ internal enum CustomRPC
     SetBrainwash,
     MoriartyKill,
     CupidSuicide,
-    SetCupidShield
+    SetCupidShield,
+    PelicanKill,
+    RedemptorRevive,
+    RedemptorPrayer,
 }
 
 public static class RPCProcedure
@@ -207,6 +214,18 @@ public static class RPCProcedure
             LogHelper.Error("Error while deserializing options: " + e.Message);
         }
     }
+    public static void stopStart(byte playerId)
+    {
+        if (AmongUsClient.Instance.AmHost && CustomOptionHolder.anyPlayerCanStopStart.getBool())
+        {
+            GameStartManager.Instance.ResetStartState();
+            PlayerControl.LocalPlayer.RpcSendChat(string.Format(ModTranslation.getString("playerStopGameStartText"), Helpers.playerById(playerId).Data.PlayerName));
+        }
+    }
+    public static void setGameStarting()
+    {
+        GameStartManagerPatch.GameStartManagerUpdatePatch.startingTimer = 5f;
+    }
 
     public static void workaroundSetRoles(byte numberOfRoles, MessageReader reader)
     {
@@ -230,7 +249,7 @@ public static class RPCProcedure
         LogHelper.Info(
             $"{GameData.Instance.GetPlayerById(playerId).PlayerName}({playerId}): {Enum.GetName(typeof(RoleType), roleId)}",
             "setRole");
-        PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray().DoIf(
+        PlayerControl.AllPlayerControls.ToArray().DoIf(
             x => x.PlayerId == playerId,
             x => x.setRole((RoleType)roleId)
         );
@@ -243,7 +262,7 @@ public static class RPCProcedure
 
     public static void addModifier(byte modId, byte playerId)
     {
-        PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray().DoIf(
+        PlayerControl.AllPlayerControls.ToArray().DoIf(
             x => x.PlayerId == playerId,
             x => x.addModifier((ModifierType)modId)
         );
@@ -382,10 +401,10 @@ public static class RPCProcedure
 
     public static void cleanBody(byte playerId)
     {
-        DeadBody[] array = Object.FindObjectsOfType<DeadBody>();
+        DeadBody[] array = UnityEngine.Object.FindObjectsOfType<DeadBody>();
         for (int i = 0; i < array.Length; i++)
             if (GameData.Instance.GetPlayerById(array[i].ParentId).PlayerId == playerId)
-                Object.Destroy(array[i].gameObject);
+                UnityEngine.Object.Destroy(array[i].gameObject);
     }
 
     public static void sheriffKill(byte sheriffId, byte targetId, bool misfire)
@@ -729,7 +748,7 @@ public static class RPCProcedure
 
     public static void placeCamera(byte[] buff, byte roomId)
     {
-        SurvCamera referenceCamera = Object.FindObjectOfType<SurvCamera>();
+        SurvCamera referenceCamera = UnityEngine.Object.FindObjectOfType<SurvCamera>();
         if (referenceCamera == null) return; // Mira HQ
 
         SecurityGuard.remainingScrews -= SecurityGuard.camPrice;
@@ -741,7 +760,7 @@ public static class RPCProcedure
 
         SystemTypes roomType = (SystemTypes)roomId;
 
-        SurvCamera camera = Object.Instantiate(referenceCamera);
+        SurvCamera camera = UnityEngine.Object.Instantiate(referenceCamera);
         camera.transform.position = new Vector3(position.x, position.y, referenceCamera.transform.position.z - 1f);
         camera.CamName = $"Security Camera {SecurityGuard.placedCameras}";
         camera.Offset = new Vector3(0f, 0f, camera.Offset.z);
@@ -850,7 +869,7 @@ public static class RPCProcedure
     public static void arsonistWin()
     {
         Arsonist.triggerArsonistWin = true;
-        IEnumerable<PlayerControl> livingPlayers = PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray()
+        IEnumerable<PlayerControl> livingPlayers = PlayerControl.AllPlayerControls.ToArray()
             .Where(p => !p.isRole(RoleType.Arsonist) && p.isAlive());
         foreach (PlayerControl p in livingPlayers)
         {
@@ -1107,7 +1126,7 @@ public static class RPCProcedure
     public static void plagueDoctorWin()
     {
         PlagueDoctor.triggerPlagueDoctorWin = true;
-        IEnumerable<PlayerControl> livingPlayers = PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray()
+        IEnumerable<PlayerControl> livingPlayers = PlayerControl.AllPlayerControls.ToArray()
             .Where(p => !p.isRole(RoleType.PlagueDoctor) && p.isAlive());
         foreach (PlayerControl p in livingPlayers)
         {
@@ -1316,41 +1335,40 @@ public static class RPCProcedure
         BomberA.bomberButton.Timer = BomberA.bomberButton.MaxTimer;
         BomberB.bomberButton.Timer = BomberB.bomberButton.MaxTimer;
     }
-
     public static void spawnDummy(byte playerId, Vector3 pos)
     {
-        PlayerControl playerControl = Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
-        byte i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
+        var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
+        playerControl.PlayerId = playerId;
 
+        Puppeteer.dummy = playerControl;
+        var playerInfo = GameData.Instance.AddDummy(playerControl);
+        AmongUsClient.Instance.Spawn(playerControl, -2, SpawnFlags.IsClientCharacter);
+
+        playerControl.transform.position = pos;
+        playerControl.GetComponent<DummyBehaviour>().enabled = false;
         playerControl.isDummy = true;
-
-        NetworkedPlayerInfo playerInfo = GameData.Instance.AddDummy(playerControl);
-
-        playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
-        playerControl.GetComponent<DummyBehaviour>().enabled = true;
-        playerControl.isDummy = true;
+        playerControl.NetTransform.enabled = true;
+        playerControl.NetTransform.Halt();
+        playerControl.Visible = false;
         playerControl.SetName(AccountManager.Instance.GetRandomName());
-        playerControl.SetColor(i);
-        playerControl.SetHat(CosmeticsLayer.EMPTY_HAT_ID, i);
-        playerControl.SetVisor(CosmeticsLayer.EMPTY_VISOR_ID, i);
-        playerControl.SetSkin(CosmeticsLayer.EMPTY_SKIN_ID, i);
-        playerControl.SetPet(CosmeticsLayer.EMPTY_PET_ID, i);
-
-        AmongUsClient.Instance.Spawn(playerControl);
+        playerControl.SetColor(playerId);
+        playerControl.SetHat(CosmeticsLayer.EMPTY_HAT_ID, playerId);
+        playerControl.SetVisor(CosmeticsLayer.EMPTY_VISOR_ID, playerId);
+        playerControl.SetSkin(CosmeticsLayer.EMPTY_SKIN_ID, playerId);
+        playerControl.SetPet(CosmeticsLayer.EMPTY_PET_ID, playerId);
         playerInfo.RpcSetTasks(new byte[0]);
     }
-
     public static void walkDummy(Vector3 direction)
     {
         if (Puppeteer.dummy == null) return;
-        PlayerControl dummy = Puppeteer.dummy;
-        dummy.NetTransform.lastPosition = dummy.transform.position + direction;
+        var dummy = Puppeteer.dummy;
+        dummy.MyPhysics.body.velocity = direction * dummy.MyPhysics.TrueSpeed;
     }
 
     public static void moveDummy(Vector3 pos, bool spawn = false)
     {
         if (Puppeteer.dummy == null) return;
-        PlayerControl dummy = Puppeteer.dummy;
+        var dummy = Puppeteer.dummy;
         if (SubmergedCompatibility.isSubmerged() && spawn)
         {
             bool toUpper = pos.y > -7;
@@ -1359,13 +1377,11 @@ public static class RPCProcedure
             // MonoBehaviour _floorHandler = ((Component)SubmergedPatch.GetFloorHandlerMethod.Invoke(null, new object[] { dummy })).TryCast(SubmergedPatch.FloorHandlerType) as MonoBehaviour;
             // SubmergedPatch.RpcRequestChangeFloorMethod.Invoke(_floorHandler, new object[] { toUpper });
         }
-
         dummy.transform.position = pos;
         dummy.NetTransform.Halt();
         dummy.Visible = true;
         dummy.moveable = true;
     }
-
     public static void puppeteerStealth(bool stealthed)
     {
         Puppeteer.setStealthed(stealthed);
@@ -1383,7 +1399,7 @@ public static class RPCProcedure
     public static void puppeteerWin()
     {
         Puppeteer.triggerPuppeteerWin = true;
-        IEnumerable<PlayerControl> livingPlayers = PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray()
+        IEnumerable<PlayerControl> livingPlayers = PlayerControl.AllPlayerControls.ToArray()
             .Where(p => !p.isRole(RoleType.Puppeteer) && p.isAlive());
         foreach (PlayerControl p in livingPlayers)
             // p.Exiled();
@@ -1547,6 +1563,12 @@ public static class RPCProcedure
                     break;
                 case CustomRPC.FinishShipStatusBegin:
                     finishShipStatusBegin();
+                    break;
+                case CustomRPC.StopStart:
+                    stopStart(reader.ReadByte());
+                    break;
+                case CustomRPC.SetGameStarting:
+                    setGameStarting();
                     break;
                 case CustomRPC.ShareOptions:
                     HandleShareOptions(reader.ReadByte(), reader);
@@ -1939,8 +1961,10 @@ public static class RPCProcedure
                 case CustomRPC.WorkaroundSetRoles:
                     workaroundSetRoles(reader.ReadByte(), reader);
                     break;
+                case CustomRPC.PelicanKill:
+                    Pelican.PelicanKill(reader.ReadByte());
+                    break;
             }
-
             return false;
         }
     }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking.Types;
 using static TheOtherRoles.TheOtherRoles;
 using static TheOtherRoles.TheOtherRolesGM;
 
@@ -101,6 +102,7 @@ public class RoleInfo
     public static RoleInfo moriarty;
     public static RoleInfo sherlock;
     public static RoleInfo cupid;
+    public static RoleInfo pelican;
 #if DEV
         public static RoleInfo nmk;
         public static RoleInfo plt;
@@ -200,6 +202,7 @@ public class RoleInfo
         moriarty = new RoleInfo("moriarty", Moriarty.color, CustomOptionHolder.moriartySpawnRate, RoleType.Moriarty);
         sherlock = new RoleInfo("sherlock", Sherlock.color, CustomOptionHolder.sherlockSpawnRate, RoleType.Sherlock);
         cupid = new RoleInfo("cupid", Cupid.color, CustomOptionHolder.cupidSpawnRate, RoleType.Cupid);
+        pelican  = new("pelican", Pelican.color, CustomOptionHolder.pelicanSpawnRate, RoleType.Pelican);
 #if DEV
             nmk = new RoleInfo("nmk", NMK.color, CustomOptionHolder.nmkSpawnRate, RoleType.NMK);
             plt = new RoleInfo("PLT", PLT.color, CustomOptionHolder.pltSpawnRate, RoleType.PLT);
@@ -275,6 +278,7 @@ public class RoleInfo
             moriarty,
             sherlock,
             cupid,
+            pelican,
 #if DEV
                 nmk,
                 plt,
@@ -386,6 +390,7 @@ public class RoleInfo
         if (p.isRole(RoleType.Moriarty)) infos.Add(moriarty);
         if (p.isRole(RoleType.Sherlock)) infos.Add(sherlock);
         if (p.isRole(RoleType.Cupid)) infos.Add(cupid);
+        if (p.isRole(RoleType.Pelican)) infos.Add(pelican);
 #if DEV
             if (p.isRole(RoleType.NMK)) infos.Add(nmk);
             if (p.isRole(RoleType.PLT)) infos.Add(plt);

@@ -557,7 +557,7 @@ internal static class HudManagerStartPatch
                 hackerButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
             },
             Hacker.getButtonSprite(),
-            CustomButton.ButtonPositions.upperRowLeft,
+            CustomButton.ButtonPositions.upperRowCenter,
             __instance,
             __instance.UseButton,
             KeyCode.F,

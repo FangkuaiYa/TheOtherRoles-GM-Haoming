@@ -235,10 +235,10 @@ internal class RoleAssignmentPatch
         private static RoleAssignmentData getRoleAssignmentData()
         {
             // Get the players that we want to assign the roles to. Crewmate and Neutral roles are assigned to natural crewmates. Impostor roles to impostors.
-            List<PlayerControl> crewmates = PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray().ToList()
+            List<PlayerControl> crewmates = PlayerControl.AllPlayerControls.ToArray().ToList()
                 .OrderBy(x => Guid.NewGuid()).ToList();
             crewmates.RemoveAll(x => x.Data.Role.IsImpostor);
-            List<PlayerControl> impostors = PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray().ToList()
+            List<PlayerControl> impostors = PlayerControl.AllPlayerControls.ToArray().ToList()
                 .OrderBy(x => Guid.NewGuid()).ToList();
             impostors.RemoveAll(x => !x.Data.Role.IsImpostor);
 
@@ -300,6 +300,7 @@ internal class RoleAssignmentPatch
             neutralSettings.Add((byte)RoleType.Akujo, CustomOptionHolder.akujoSpawnRate.data);
             neutralSettings.Add((byte)RoleType.Moriarty, CustomOptionHolder.moriartySpawnRate.data);
             neutralSettings.Add((byte)RoleType.Cupid, CustomOptionHolder.cupidSpawnRate.data);
+            neutralSettings.Add((byte)RoleType.Pelican, CustomOptionHolder.pelicanSpawnRate.data);
 
 
             crewSettings.Add((byte)RoleType.FortuneTeller, CustomOptionHolder.fortuneTellerSpawnRate.data);
@@ -355,7 +356,7 @@ internal class RoleAssignmentPatch
                 else
                     gmID = setRoleToRandomPlayer((byte)RoleType.GM, data.crewmates);
 
-                PlayerControl p = PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray().ToList()
+                PlayerControl p = PlayerControl.AllPlayerControls.ToArray().ToList()
                     .Find(x => x.PlayerId == gmID);
 
                 if (p != null && CustomOptionHolder.gmDiesAtStart.getBool()) p.Exiled();

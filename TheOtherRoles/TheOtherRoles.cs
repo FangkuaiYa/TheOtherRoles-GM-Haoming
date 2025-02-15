@@ -80,6 +80,7 @@ public static class TheOtherRoles
         public static bool triggerJesterWin;
         public static bool canCallEmergency = true;
         public static bool canSabotage = true;
+        public static bool canUseVent = true;
         public static bool hasImpostorVision;
 
         public static void clearAndReload()
@@ -87,6 +88,7 @@ public static class TheOtherRoles
             jester = null;
             triggerJesterWin = false;
             canCallEmergency = CustomOptionHolder.jesterCanCallEmergency.getBool();
+            canUseVent = CustomOptionHolder.jesterCanUseVent.getBool();
             canSabotage = CustomOptionHolder.jesterCanSabotage.getBool();
             hasImpostorVision = CustomOptionHolder.jesterHasImpostorVision.getBool();
         }
@@ -582,7 +584,8 @@ public static class TheOtherRoles
         public static List<Arrow> localArrows = new();
         public static int taskCountForReveal = 1;
         public static bool includeTeamJackal;
-        public static bool teamJackalUseDifferentArrowColor = true;
+        public static bool includePelican;
+        public static bool useDifferentArrowColor;
 
 
         public static void clearAndReload()
@@ -594,7 +597,8 @@ public static class TheOtherRoles
             localArrows = new List<Arrow>();
             taskCountForReveal = Mathf.RoundToInt(CustomOptionHolder.snitchLeftTasksForReveal.getFloat());
             includeTeamJackal = CustomOptionHolder.snitchIncludeTeamJackal.getBool();
-            teamJackalUseDifferentArrowColor = CustomOptionHolder.snitchTeamJackalUseDifferentArrowColor.getBool();
+            includePelican = CustomOptionHolder.snitchIncludePelican.getBool();
+            useDifferentArrowColor = CustomOptionHolder.snitchUseDifferentArrowColor.getBool();
             snitch = null;
         }
     }
@@ -1027,7 +1031,7 @@ public static class TheOtherRoles
 
         public static bool dousedEveryoneAlive()
         {
-            return PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray().All(x =>
+            return PlayerControl.AllPlayerControls.ToArray().All(x =>
             {
                 return x == arsonist || x.Data.IsDead || x.Data.Disconnected || x.isGM() ||
                        dousedPlayers.Any(y => y.PlayerId == x.PlayerId);
@@ -1217,6 +1221,7 @@ public static class TheOtherRoles
         public static bool highlightAllVents;
         public static float reportDelay;
         public static bool showKillFlash = true;
+        public static bool canBeGuessed = true;
 
         public static bool reported;
 
@@ -1227,6 +1232,7 @@ public static class TheOtherRoles
             highlightAllVents = CustomOptionHolder.baitHighlightAllVents.getBool();
             reportDelay = CustomOptionHolder.baitReportDelay.getFloat();
             showKillFlash = CustomOptionHolder.baitShowKillFlash.getBool();
+            canBeGuessed = CustomOptionHolder.baitCanBeGuessed.getBool();
         }
     }
 }

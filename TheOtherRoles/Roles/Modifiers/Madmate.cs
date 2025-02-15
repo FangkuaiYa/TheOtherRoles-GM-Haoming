@@ -78,7 +78,7 @@ public class Madmate : ModifierBase<Madmate>
             List<PlayerControl> crewNoRole = new();
             List<PlayerControl> validCrewmates = new();
 
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray()
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.ToArray()
                          .Where(x => x.isCrew() && !hasModifier(x)).ToList())
             {
                 List<RoleInfo> info = RoleInfo.getRoleInfoForPlayer(player);

@@ -28,7 +28,8 @@ internal enum CustomGameOverReason
     JekyllAndHydeWin = 20,
     AkujoWin = 21,
     ForceEnd = 22,
-    MoriartyWin = 23
+    MoriartyWin = 23,
+    PelicanWin,
 }
 
 internal enum WinCondition
@@ -53,7 +54,8 @@ internal enum WinCondition
     JekyllAndHydeWin,
     AkujoWin,
     ForceEnd,
-    MoriartyWin
+    MoriartyWin,
+    PelicanWin,
 }
 
 internal enum FinalStatus
@@ -230,6 +232,7 @@ public static class OnGameEndPatch
         notWinners.AddRange(AkujoHonmei.allPlayers);
         notWinners.AddRange(Moriarty.allPlayers);
         notWinners.AddRange(Cupid.allPlayers);
+        notWinners.AddRange(Pelican.allPlayers);
         if (Puppeteer.dummy != null) notWinners.Add(Puppeteer.dummy);
         // if (SchrodingersCat.team != SchrodingersCat.Team.Crew && !(SchrodingersCat.team == SchrodingersCat.Team.None && SchrodingersCat.canWinAsCrewmate)) notWinners.AddRange(SchrodingersCat.allPlayers);
 
@@ -272,7 +275,7 @@ public static class OnGameEndPatch
         bool everyoneDead = AdditionalTempData.playerRoles.All(x => x.Status != FinalStatus.Alive);
         bool akujoWin = Akujo.numAlive > 0 && gameOverReason != GameOverReason.HumansByTask;
         bool forceEnd = gameOverReason == (GameOverReason)CustomGameOverReason.ForceEnd;
-
+        var pelicanWin = gameOverReason == (GameOverReason)CustomGameOverReason.PelicanWin;
 
         // 勝利画面が正常にでないことがあるのでインポスター・クルーの勝利者追加処理をここに移動
         if (impostorWin)
@@ -311,7 +314,7 @@ public static class OnGameEndPatch
 
         // 勝利画面から不要なキャラを追放する
         List<CachedPlayerData> winnersToRemove = new();
-        foreach (CachedPlayerData winner in EndGameResult.CachedWinners.GetFastEnumerator())
+        foreach (CachedPlayerData winner in EndGameResult.CachedWinners)
             if (notWinners.Any(x => x.Data.PlayerName == winner.PlayerName))
                 winnersToRemove.Add(winner);
         foreach (CachedPlayerData winner in winnersToRemove) EndGameResult.CachedWinners.Remove(winner);
@@ -540,6 +543,20 @@ public static class OnGameEndPatch
             }
 
             AdditionalTempData.winCondition = WinCondition.FoxWin;
+        }
+        else if (pelicanWin)
+        {
+            AdditionalTempData.winCondition = WinCondition.PelicanWin;
+            EndGameResult.CachedWinners = new Il2CppSystem.Collections.Generic.List<CachedPlayerData>();
+            foreach (Pelican pelican in Pelican.players)
+            {
+                if (pelican.player.isAlive())
+                {
+                    var wpd = new CachedPlayerData(pelican.player.Data);
+                    wpd.IsImpostor = false;
+                    EndGameResult.CachedWinners.Add(wpd);
+                }
+            }
         }
 
 
@@ -811,6 +828,12 @@ public static class OnGameEndPatch
                     textRenderer.color = Mini.color;
                     __instance.BackgroundBar.material.SetColor("_Color", Palette.DisabledGrey);
                 }
+                else if (AdditionalTempData.winCondition == WinCondition.PelicanWin)
+                {
+                    bonusText = "pelicanWin";
+                    textRenderer.color = Pelican.color;
+                    __instance.BackgroundBar.material.SetColor("_Color", Pelican.color);
+                }
                 else if (AdditionalTempData.gameOverReason is GameOverReason.HumansByTask
                          or GameOverReason.HumansByVote)
                 {
@@ -1037,6 +1060,7 @@ public static class OnGameEndPatch
                 if (CheckAndEndGameForLoverWin(__instance, statistics)) return false;
                 if (CheckAndEndGameForAkujoWin(__instance, statistics)) return false;
                 if (CheckAndEndGameForJackalWin(__instance, statistics)) return false;
+                if (CheckAndEndGameForPelicanWin(__instance, statistics)) return false;
                 if (CheckAndEndGameForImpostorWin(__instance, statistics)) return false;
                 if (CheckAndEndGameForCrewmateWin(__instance, statistics)) return false;
                 return false;
@@ -1131,6 +1155,7 @@ public static class OnGameEndPatch
                     statistics.TotalAlive - statistics.JekyllAndHydeAlive - statistics.FoxAlive &&
                     statistics.TeamImpostorsAlive == 0 && statistics.TeamJackalAlive == 0 &&
                     statistics.MoriartyAlive == 0 &&
+                    statistics.TeamPelicanAlive == 0 &&
                     (statistics.JekyllAndHydeLovers == 0 ||
                      statistics.JekyllAndHydeLovers >= statistics.CouplesAlive * 2)
                    )
@@ -1215,7 +1240,7 @@ public static class OnGameEndPatch
                     bool isFoxAlive = Fox.isFoxAlive();
                     bool isFoxCompletedtasks = Fox.isFoxCompletedTasks();
                     int numDeadPlayerUncompletedTasks = 0;
-                    foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                    foreach (PlayerControl player in PlayerControl.AllPlayerControls)
                     foreach (NetworkedPlayerInfo.TaskInfo task in player.Data.Tasks)
                         if (player.Data.IsDead && player.isCrew() && !player.hasModifier(ModifierType.Madmate) &&
                             !player.hasModifier(ModifierType.CreatedMadmate))
@@ -1263,6 +1288,7 @@ public static class OnGameEndPatch
                     statistics.TotalAlive - statistics.TeamJackalAlive - statistics.FoxAlive &&
                     statistics.TeamImpostorsAlive == 0 && statistics.JekyllAndHydeAlive == 0 &&
                     statistics.MoriartyAlive == 0 &&
+                    statistics.TeamPelicanAlive == 0 &&
                     (statistics.TeamJackalLovers == 0 || statistics.TeamJackalLovers >= statistics.CouplesAlive * 2)
                    )
                 {
@@ -1272,6 +1298,20 @@ public static class OnGameEndPatch
 
                 return false;
             }
+            private static bool CheckAndEndGameForPelicanWin(ShipStatus __instance, PlayerStatistics statistics)
+            {
+                if (statistics.TeamPelicanAlive >= statistics.TotalAlive - statistics.TeamPelicanAlive &&
+                    statistics.TeamImpostorsAlive == 0 &&
+                    statistics.TeamJackalAlive == 0 &&
+                    statistics.MoriartyAlive == 0 &&
+                    statistics.JekyllAndHydeAlive == 0 &&
+                    !(statistics.TeamPelicanHasAliveLover && statistics.TeamLoversAlive == 2))
+                {
+                    UncheckedEndGame(CustomGameOverReason.PelicanWin);
+                    return true;
+                }
+                return false;
+            }
 
             private static bool CheckAndEndGameForImpostorWin(ShipStatus __instance, PlayerStatistics statistics)
             {
@@ -1279,6 +1319,7 @@ public static class OnGameEndPatch
                     statistics.TotalAlive - statistics.TeamImpostorsAlive - statistics.FoxAlive &&
                     statistics.TeamJackalAlive == 0 && statistics.JekyllAndHydeAlive == 0 &&
                     statistics.MoriartyAlive == 0 &&
+                    statistics.TeamPelicanAlive == 0 &&
                     (statistics.TeamImpostorLovers == 0 || statistics.TeamImpostorLovers >= statistics.CouplesAlive * 2)
                    )
                 {
@@ -1349,6 +1390,8 @@ public static class OnGameEndPatch
             public int JekyllAndHydeAlive { get; set; }
             public int MoriartyAlive { get; set; }
             public int MoriartyLovers { get; set; }
+            public int TeamPelicanAlive { get; set; }
+            public bool TeamPelicanHasAliveLover { get; set; }
 
             private bool isLover(NetworkedPlayerInfo p)
             {
@@ -1360,6 +1403,7 @@ public static class OnGameEndPatch
 
             private void GetPlayerCounts()
             {
+                var numPelicanAlive = 0;
                 int numJackalAlive = 0;
                 int numImpostorsAlive = 0;
                 int numTotalAlive = 0;
@@ -1372,6 +1416,8 @@ public static class OnGameEndPatch
                 int numCouplesAlive = 0;
                 int impLovers = 0;
                 int jackalLovers = 0;
+
+                var pelicanLover = false;
 
 
                 foreach (NetworkedPlayerInfo playerInfo in GameData.Instance.AllPlayers)
@@ -1389,6 +1435,15 @@ public static class OnGameEndPatch
                             {
                                 numImpostorsAlive++;
                                 if (lover) impLovers++;
+                            }
+
+                            foreach (Pelican pelican in Pelican.players)
+                            {
+                                if (pelican.player != null && pelican.player.PlayerId == playerInfo.PlayerId)
+                                {
+                                    numPelicanAlive++;
+                                    if (lover) pelicanLover = true;
+                                }
                             }
 
                             if (Jackal.jackal != null && Jackal.jackal.PlayerId == playerInfo.PlayerId)
@@ -1476,6 +1531,8 @@ public static class OnGameEndPatch
                     numMoriartyAlive += 1;
                 }
 
+                TeamPelicanHasAliveLover = pelicanLover;
+                TeamPelicanAlive = numPelicanAlive;
                 TeamCrew = numCrew;
                 TeamJackalAlive = numJackalAlive;
                 TeamImpostorsAlive = numImpostorsAlive;

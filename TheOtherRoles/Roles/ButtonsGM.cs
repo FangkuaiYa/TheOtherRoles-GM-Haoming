@@ -38,6 +38,7 @@ public static class ButtonsGM
         Moriarty.SetButtonCooldowns();
         Sherlock.SetButtonCooldowns();
         Cupid.SetButtonCooldowns();
+        Pelican.SetButtonCooldowns();
         foreach (CustomButton gmButton in gmButtons) gmButton.MaxTimer = 0.0f;
         foreach (CustomButton gmButton in gmKillButtons) gmButton.MaxTimer = 0.0f;
 
@@ -70,6 +71,7 @@ public static class ButtonsGM
         Moriarty.MakeButtons(hm);
         Sherlock.MakeButtons(hm);
         Cupid.MakeButtons(hm);
+        Pelican.MakeButtons(hm);
 
         gmButtons = new List<CustomButton>();
         gmKillButtons = new List<CustomButton>();

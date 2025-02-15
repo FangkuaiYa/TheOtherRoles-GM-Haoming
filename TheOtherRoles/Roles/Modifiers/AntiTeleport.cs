@@ -21,7 +21,7 @@ public class AntiTeleport : ModifierBase<AntiTeleport>
         {
             List<PlayerControl> validPlayers = new();
 
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
                 if (!player.hasModifier(ModifierType.AntiTeleport))
                     validPlayers.Add(player);
 

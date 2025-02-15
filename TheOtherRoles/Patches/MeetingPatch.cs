@@ -11,6 +11,7 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Networking.Types;
 using static TheOtherRoles.GameHistory;
 using static TheOtherRoles.TheOtherRoles;
 using static TheOtherRoles.TheOtherRolesGM;
@@ -285,6 +286,7 @@ internal class MeetingHudPatch
                 (Guesser.onlyAvailableRoles && !roleInfo.enabled) ||
                 roleInfo == RoleInfo.bomberB)
                 continue; // Not guessable roles
+            if (roleInfo.roleType == RoleType.Bait && !Bait.canBeGuessed) continue;
             if (Guesser.guesserCantGuessSnitch && Snitch.snitch != null)
             {
                 (int playerCompleted, int playerTotal) = TasksHandler.taskInfo(Snitch.snitch.Data);

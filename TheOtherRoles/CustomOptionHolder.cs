@@ -100,6 +100,7 @@ public class CustomOptionHolder
 
     public static CustomRoleOption jesterSpawnRate;
     public static CustomOption jesterCanCallEmergency;
+    public static CustomOption jesterCanUseVent;
     public static CustomOption jesterCanSabotage;
     public static CustomOption jesterHasImpostorVision;
 
@@ -228,7 +229,8 @@ public class CustomOptionHolder
     public static CustomRoleOption snitchSpawnRate;
     public static CustomOption snitchLeftTasksForReveal;
     public static CustomOption snitchIncludeTeamJackal;
-    public static CustomOption snitchTeamJackalUseDifferentArrowColor;
+    public static CustomOption snitchIncludePelican;
+    public static CustomOption snitchUseDifferentArrowColor;
 
     public static CustomRoleOption spySpawnRate;
     public static CustomOption spyCanDieToSheriff;
@@ -260,6 +262,7 @@ public class CustomOptionHolder
 
     public static CustomRoleOption baitSpawnRate;
     public static CustomOption baitHighlightAllVents;
+    public static CustomOption baitCanBeGuessed;
     public static CustomOption baitReportDelay;
     public static CustomOption baitShowKillFlash;
 
@@ -301,6 +304,8 @@ public class CustomOptionHolder
     public static CustomOption airshipAdditionalLadder;
     public static CustomOption airshipOneWayLadder;
     public static CustomOption airshipReplaceSafeTask;
+
+    public static CustomOption anyPlayerCanStopStart;
 
     public static CustomOption maxNumberOfMeetings;
     public static CustomOption blockSkippingInEmergencyMeetings;
@@ -502,6 +507,11 @@ public class CustomOptionHolder
     public static CustomOption akujoKnowsRoles;
     public static CustomOption akujoNumKeeps;
     public static CustomOption akujoSheriffKillsHonmei;
+
+    public static CustomRoleOption pelicanSpawnRate;
+    public static CustomOption pelicanCanUseVent;
+    public static CustomOption pelicanCooldown;
+    public static CustomOption pelicanReduceCooldown;
 
     internal static Dictionary<byte, byte[]> blockedRolePairings = new();
 
@@ -823,6 +833,7 @@ public class CustomOptionHolder
 
         jesterSpawnRate = new CustomRoleOption(60, CustomOptionType.Neutral, "jester", Jester.color, 1);
         jesterCanCallEmergency = Create(61, CustomOptionType.Neutral, "jesterCanCallEmergency", true, jesterSpawnRate);
+        jesterCanUseVent = Create(64, CustomOptionType.Neutral, "jesterCanUseVent", true, jesterSpawnRate);
         jesterCanSabotage = Create(62, CustomOptionType.Neutral, "jesterCanSabotage", true, jesterSpawnRate);
         jesterHasImpostorVision =
             Create(63, CustomOptionType.Neutral, "jesterHasImpostorVision", false, jesterSpawnRate);
@@ -914,6 +925,12 @@ public class CustomOptionHolder
             format: "unitPlayers");
         akujoSheriffKillsHonmei =
             Create(1114, CustomOptionType.Neutral, "akujoSheriffKillsHonmei", true, akujoSpawnRate);
+
+        pelicanSpawnRate =
+            new CustomRoleOption(20310, CustomOptionType.Neutral, "pelican", Pelican.color, 1);
+        pelicanCanUseVent = Create(20313, CustomOptionType.Neutral, "pelicanCanUseVent", true, pelicanSpawnRate);
+        pelicanCooldown = Create(20311, CustomOptionType.Neutral, "pelicanCooldown", 25f, 2.5f, 60f, 2.5f, pelicanSpawnRate);
+        pelicanReduceCooldown = Create(20312, CustomOptionType.Neutral, "pelicanReduceCooldown", 20f, 2.5f, 60f, 2.5f, pelicanSpawnRate);
 
 
         foxSpawnRate = new CustomRoleOption(910, CustomOptionType.Neutral, "fox", Fox.color, 1);
@@ -1125,8 +1142,10 @@ public class CustomOptionHolder
             snitchSpawnRate);
         snitchIncludeTeamJackal =
             Create(212, CustomOptionType.Crewmate, "snitchIncludeTeamJackal", false, snitchSpawnRate);
-        snitchTeamJackalUseDifferentArrowColor = Create(213, CustomOptionType.Crewmate,
-            "snitchTeamJackalUseDifferentArrowColor", true, snitchIncludeTeamJackal);
+        snitchIncludePelican =
+            Create(214, CustomOptionType.Crewmate, "snitchIncludePelican", false, snitchSpawnRate);
+        snitchUseDifferentArrowColor = Create(213, CustomOptionType.Crewmate,
+            "snitchUseDifferentArrowColor", true, snitchSpawnRate);
 
         spySpawnRate = new CustomRoleOption(240, CustomOptionType.Crewmate, "spy", Spy.color, 1);
         spyCanDieToSheriff = Create(241, CustomOptionType.Crewmate, "spyCanDieToSheriff", false, spySpawnRate);
@@ -1156,6 +1175,7 @@ public class CustomOptionHolder
 
         baitSpawnRate = new CustomRoleOption(330, CustomOptionType.Crewmate, "bait", Bait.color, 1);
         baitHighlightAllVents = Create(331, CustomOptionType.Crewmate, "baitHighlightAllVents", false, baitSpawnRate);
+        baitCanBeGuessed = CustomOption.Create(334, CustomOptionType.Crewmate, "baitCanBeGuessed", true, baitSpawnRate);
         baitReportDelay = Create(332, CustomOptionType.Crewmate, "baitReportDelay", 0f, 0f, 10f, 1f, baitSpawnRate,
             format: "unitSeconds");
         baitShowKillFlash = Create(333, CustomOptionType.Crewmate, "baitShowKillFlash", true, baitSpawnRate);
@@ -1216,6 +1236,8 @@ public class CustomOptionHolder
         airshipAdditionalLadder = Create(9929, CustomOptionType.General, "airshipAdditionalLadder", false);
         airshipOneWayLadder = Create(9930, CustomOptionType.General, "airshipOneWayLadder", false);
         airshipReplaceSafeTask = Create(9937, CustomOptionType.General, "airshipReplaceSafeTask", false);
+
+        anyPlayerCanStopStart = CustomOption.Create(2, CustomOptionType.General, cs(new Color(204f / 255f, 204f / 255f, 0, 1f), "anyPlayerCanStopStart"), false, null, false);
 
         maxNumberOfMeetings = Create(3, CustomOptionType.General, "maxNumberOfMeetings", 10, 0, 15, 1);
         blockSkippingInEmergencyMeetings = Create(4, CustomOptionType.General, "blockSkippingInEmergencyMeetings",

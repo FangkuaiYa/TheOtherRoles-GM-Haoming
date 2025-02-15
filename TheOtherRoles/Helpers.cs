@@ -393,7 +393,8 @@ public static class Helpers
                 player.isRole(RoleType.Pursuer) ||
                 player.isRole(RoleType.Akujo) ||
                 player.isRole(RoleType.Cupid) ||
-                (player.isRole(RoleType.Shifter) && Shifter.isNeutral));
+                (player.isRole(RoleType.Shifter) && Shifter.isNeutral) ||
+                player.isRole(RoleType.Pelican));
     }
 
     public static bool isNeutral(this RoleType roleType)
@@ -445,7 +446,8 @@ public static class Helpers
         return (player.isNeutral() && !player.neutralHasTasks()) ||
                (player.hasModifier(ModifierType.CreatedMadmate) && !CreatedMadmate.hasTasks) ||
                (player.hasModifier(ModifierType.Madmate) && !Madmate.hasTasks) ||
-               (player.isLovers() && Lovers.separateTeam && !Lovers.tasksCount);
+               (player.isLovers() && Lovers.separateTeam && !Lovers.tasksCount) ||
+               player.isRole(RoleType.Pelican);
     }
 
     public static bool neutralHasTasks(this PlayerControl player)
@@ -688,6 +690,8 @@ public static class Helpers
             roleCouldUse = true;
         else if (Madmate.canEnterVents && player.hasModifier(ModifierType.Madmate))
             roleCouldUse = true;
+        else if (Jester.canUseVent && player == Jester.jester)
+            roleCouldUse = true;
         else if (CreatedMadmate.canEnterVents && player.hasModifier(ModifierType.CreatedMadmate))
             roleCouldUse = true;
         else if (Vulture.canUseVents && player.isRole(RoleType.Vulture))
@@ -764,7 +768,7 @@ public static class Helpers
             return MurderAttemptResult.SuppressKill; // Allow killing players in vents compared to vanilla code
 
         if ((target.isRole(RoleType.SchrodingersCat) && !target.Data.Disconnected) ||
-            (target == Puppeteer.dummy && !target.Data.Disconnected)) target.NoDeath();
+            (target == Puppeteer.dummy)) target.NoDeath();
 
         // Handle blank shot
         if (Pursuer.blankedList.Any(x => x.PlayerId == killer.PlayerId))
@@ -945,7 +949,7 @@ public static class Helpers
 
     public static PlayerControl getPlayerById(byte playerId)
     {
-        return PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray().Where(p => p.PlayerId == playerId)
+        return PlayerControl.AllPlayerControls.ToArray().Where(p => p.PlayerId == playerId)
             .FirstOrDefault();
     }
 
@@ -1072,7 +1076,7 @@ public static class Helpers
 
     public static bool isCrewmateAlive()
     {
-        foreach (PlayerControl p in PlayerControl.AllPlayerControls.GetFastEnumerator())
+        foreach (PlayerControl p in PlayerControl.AllPlayerControls)
             if (p.isCrew() && !p.isRole(RoleType.JekyllAndHyde) && !p.hasModifier(ModifierType.Madmate) && p.isAlive())
                 return true;
         return false;

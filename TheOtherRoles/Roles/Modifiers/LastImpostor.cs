@@ -241,7 +241,7 @@ public class LastImpostor : ModifierBase<LastImpostor>
         if (!isEnable) return;
 
         List<PlayerControl> impList = new();
-        foreach (PlayerControl p in PlayerControl.AllPlayerControls.GetFastEnumerator())
+        foreach (PlayerControl p in PlayerControl.AllPlayerControls)
             if (p.isImpostor() && p.isAlive())
                 impList.Add(p);
         if (impList.Count == 1)

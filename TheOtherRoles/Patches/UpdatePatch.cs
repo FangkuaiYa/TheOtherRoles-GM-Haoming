@@ -1,24 +1,32 @@
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using InnerNet;
 using TheOtherRoles.Objects;
 using UnityEngine;
+using static Il2CppSystem.Globalization.CultureInfo;
 using static TheOtherRoles.TheOtherRoles;
 using static TheOtherRoles.TheOtherRolesGM;
+using Color = UnityEngine.Color;
 
 namespace TheOtherRoles.Patches;
 
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
 internal class HudManagerUpdatePatch
 {
+    private static Dictionary<byte, (string name, Color color)> TagColorDict = new();
     private static void resetNameTagsAndColors()
     {
-        Dictionary<byte, PlayerControl> playersById = Helpers.allPlayersById();
+        var dict = TagColorDict;
+        dict.Clear();
 
-        foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+        foreach (var data in GameData.Instance.AllPlayers.GetFastEnumerator())
         {
+            var player = data.Object;
+            string text = data.PlayerName;
+
             player.cosmetics.nameText.text = Helpers.hidePlayerName(PlayerControl.LocalPlayer, player)
                 ? ""
                 : player.CurrentOutfit.PlayerName;
@@ -26,24 +34,20 @@ internal class HudManagerUpdatePatch
                 player.cosmetics.nameText.color = Palette.ImpostorRed;
             else
                 player.cosmetics.nameText.color = Color.white;
+
+            dict.Add(data.PlayerId, (text, player.cosmetics.nameText.color));
         }
 
         if (MeetingHud.Instance != null)
-            foreach (PlayerVoteArea player in MeetingHud.Instance.playerStates)
+        {
+            foreach (PlayerVoteArea playerVoteArea in MeetingHud.Instance.playerStates)
             {
-                PlayerControl playerControl = playersById.ContainsKey(player.TargetPlayerId)
-                    ? playersById[player.TargetPlayerId]
-                    : null;
-                if (playerControl != null)
-                {
-                    player.NameText.text = playerControl.Data.PlayerName;
-                    if (PlayerControl.LocalPlayer.Data.Role.IsImpostor &&
-                        playerControl.Data.Role.IsImpostor)
-                        player.NameText.color = Palette.ImpostorRed;
-                    else
-                        player.NameText.color = Color.white;
-                }
+                var data = dict[playerVoteArea.TargetPlayerId];
+                var text = playerVoteArea.NameText;
+                text.text = data.name;
+                text.color = data.color;
             }
+        }
     }
 
     private static void setPlayerNameColor(PlayerControl p, Color color)
@@ -139,7 +143,7 @@ internal class HudManagerUpdatePatch
                                 MeetingHud.Instance.state == MeetingHud.VoteStates.NotVoted ||
                                 MeetingHud.Instance.state == MeetingHud.VoteStates.Discussion);
             string suffix = Helpers.cs(Cupid.color, " ♥");
-            foreach (PlayerControl p in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (PlayerControl p in PlayerControl.AllPlayerControls)
                 if (p == cupid.lovers1 || p == cupid.lovers2)
                 {
                     p.cosmetics.nameText.text += suffix;
@@ -155,7 +159,7 @@ internal class HudManagerUpdatePatch
             setPlayerNameColor(PlayerControl.LocalPlayer, Madmate.color);
 
             if (Madmate.knowsImpostors(PlayerControl.LocalPlayer))
-                foreach (PlayerControl p in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                foreach (PlayerControl p in PlayerControl.AllPlayerControls)
                     if (p.isImpostor() || p.isRole(RoleType.Spy) || (p.isRole(RoleType.Jackal) && Jackal.wasTeamRed) ||
                         (p.isRole(RoleType.Sidekick) && Sidekick.wasTeamRed))
                         setPlayerNameColor(p, Palette.ImpostorRed);
@@ -166,7 +170,7 @@ internal class HudManagerUpdatePatch
             setPlayerNameColor(PlayerControl.LocalPlayer, Madmate.color);
 
             if (CreatedMadmate.knowsImpostors(PlayerControl.LocalPlayer))
-                foreach (PlayerControl p in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                foreach (PlayerControl p in PlayerControl.AllPlayerControls)
                     if (p.isImpostor() || p.isRole(RoleType.Spy) || (p.isRole(RoleType.Jackal) && Jackal.wasTeamRed) ||
                         (p.isRole(RoleType.Sidekick) && Sidekick.wasTeamRed))
                         setPlayerNameColor(p, Palette.ImpostorRed);
@@ -227,7 +231,7 @@ internal class HudManagerUpdatePatch
         {
             foreach (PlayerControl p in SchrodingersCat.allPlayers) setPlayerNameColor(p, Palette.ImpostorRed);
             if (player.isRole(RoleType.SchrodingersCat))
-                foreach (PlayerControl p in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                foreach (PlayerControl p in PlayerControl.AllPlayerControls)
                     if (p.isImpostor())
                         setPlayerNameColor(p, Palette.ImpostorRed);
         }

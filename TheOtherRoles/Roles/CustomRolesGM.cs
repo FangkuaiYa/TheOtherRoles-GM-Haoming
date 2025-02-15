@@ -47,6 +47,7 @@ public static class TheOtherRolesGM
         Akujo.Clear();
         Moriarty.Clear();
         Sherlock.Clear();
+        Pelican.Clear();
         Role.ClearAll();
     }
 

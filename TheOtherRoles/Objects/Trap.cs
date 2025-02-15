@@ -12,7 +12,6 @@ public class Trap
     public static Sprite trapSprite;
     public static Sprite trapActiveSprite;
     public static AudioClip place;
-    public static AudioClip activate;
     public static AudioClip disable;
     public static AudioClip countdown;
     public static AudioClip kill;

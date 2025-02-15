@@ -74,7 +74,8 @@ public class SoulPlayer
             {
                 /*ボタンが有効になる条件*/
                 return enableSenrigan && PlayerControl.LocalPlayer.isDead() &&
-                       !PlayerControl.LocalPlayer.isRole(RoleType.Puppeteer);
+                       !PlayerControl.LocalPlayer.isRole(RoleType.Puppeteer) &&
+                       PlayerControl.LocalPlayer != Pelican.local.currentTarget;
             },
             () =>
             {

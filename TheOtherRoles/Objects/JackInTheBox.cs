@@ -76,8 +76,7 @@ public class JackInTheBox
         index = Mathf.Clamp(index, 0, boxAnimationSprites.Length - 1);
         if (boxAnimationSprites[index] == null)
             boxAnimationSprites[index] =
-                Helpers.loadSpriteFromResources(
-                    $"TheOtherRoles.Resources.TricksterAnimation.trickster_box_00{index + 1:00}.png", 175f);
+                TheOtherRolesPlugin.getResources($"TricksterAnimation/trickster_box_00{index + 1:00}.png");
         return boxAnimationSprites[index];
     }
 

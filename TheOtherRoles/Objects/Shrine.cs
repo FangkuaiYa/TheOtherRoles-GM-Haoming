@@ -11,7 +11,6 @@ public class Shrine
 {
     public static List<Shrine> allShrine = new();
     public static int counter;
-    public static Sprite sprite;
 
     public static List<Tuple<SystemTypes, Vector3>> airshipLocations = new()
     {
@@ -108,7 +107,7 @@ public class Shrine
         console.TaskTypes = taskList.ToArray();
         console.ValidTasks = new Il2CppReferenceArray<TaskSet>(0);
         console.Image = shrine.AddComponent<SpriteRenderer>();
-        console.Image.sprite = sprite;
+        console.Image.sprite = FoxTask.shrine;
         console.Image.material = new Material(ShipStatus.Instance.AllConsoles[0].Image.material);
         console.onlySameRoom = false;
         console.ConsoleId = 100 + counter;

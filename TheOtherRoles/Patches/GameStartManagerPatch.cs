@@ -91,6 +91,8 @@ public class GameStartManagerPatch
     {
         private static bool update;
         private static string currentText = "";
+        private static GameObject copiedStartButton;
+        public static float startingTimer = 0;
 
         public static void Prefix(GameStartManager __instance)
         {
@@ -161,8 +163,7 @@ public class GameStartManagerPatch
                 if (blockStart)
                 {
                     __instance.GameStartText.text = message;
-                    __instance.GameStartText.transform.localPosition =
-                        __instance.StartButton.transform.localPosition + (Vector3.up * 5);
+                    __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition + Vector3.up * 5;
                     __instance.GameStartText.transform.localScale = new Vector3(2f, 2f, 1f);
                     __instance.GameStartTextParent.SetActive(true);
                 }
@@ -170,12 +171,43 @@ public class GameStartManagerPatch
                 {
                     __instance.GameStartText.transform.localPosition = Vector3.zero;
                     __instance.GameStartText.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
-                    if (!__instance.GameStartText.text.Contains(FastDestroyableSingleton<TranslationController>.Instance
-                            .GetString(StringNames.GameStarting).Replace("{0}", "")))
+                    if (!__instance.GameStartText.text.Contains(FastDestroyableSingleton<TranslationController>.Instance.GetString(StringNames.GameStarting).Replace("{0}", "")))
                     {
-                        __instance.GameStartText.text = string.Empty;
+                        __instance.GameStartText.text = String.Empty;
                         __instance.GameStartTextParent.SetActive(false);
                     }
+                }
+                if (__instance.startState != GameStartManager.StartingStates.Countdown)
+                    copiedStartButton?.Destroy();
+
+                // Make starting info available to clients:
+                if (startingTimer <= 0 && __instance.startState == GameStartManager.StartingStates.Countdown)
+                {
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetGameStarting, Hazel.SendOption.Reliable, -1);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    RPCProcedure.setGameStarting();
+
+                    // Activate Stop-Button
+                    copiedStartButton = GameObject.Instantiate(__instance.StartButton.gameObject, __instance.StartButton.gameObject.transform.parent);
+                    copiedStartButton.transform.localPosition = __instance.StartButton.transform.localPosition;
+                    copiedStartButton.SetActive(true);
+                    var startButtonText = copiedStartButton.GetComponentInChildren<TMPro.TextMeshPro>();
+                    startButtonText.text = "";
+                    startButtonText.fontSize *= 0.8f;
+                    startButtonText.fontSizeMax = startButtonText.fontSize;
+                    startButtonText.gameObject.transform.localPosition = Vector3.zero;
+                    PassiveButton startButtonPassiveButton = copiedStartButton.GetComponent<PassiveButton>();
+
+                    void StopStartFunc()
+                    {
+                        __instance.ResetStartState();
+                        copiedStartButton.Destroy();
+                        startingTimer = 0;
+                    }
+                    startButtonPassiveButton.OnClick.AddListener((Action)(() => StopStartFunc()));
+                    __instance.StartCoroutine(Effects.Lerp(.1f, new System.Action<float>((p) => {
+                        startButtonText.text = "";
+                    })));
                 }
             }
 
@@ -204,8 +236,44 @@ public class GameStartManagerPatch
                     if (__instance.startState != GameStartManager.StartingStates.Countdown)
                         __instance.GameStartText.text = string.Empty;
                 }
+                if (!__instance.GameStartText.text.Contains(FastDestroyableSingleton<TranslationController>.Instance.GetString(StringNames.GameStarting).Replace("{0}", "")) || !CustomOptionHolder.anyPlayerCanStopStart.getBool())
+                    copiedStartButton?.Destroy();
+                if (CustomOptionHolder.anyPlayerCanStopStart.getBool() && copiedStartButton == null && __instance.GameStartText.text.Contains(FastDestroyableSingleton<TranslationController>.Instance.GetString(StringNames.GameStarting).Replace("{0}", "")))
+                {
+
+                    // Activate Stop-Button
+                    copiedStartButton = GameObject.Instantiate(__instance.StartButton.gameObject, __instance.StartButton.gameObject.transform.parent);
+                    copiedStartButton.transform.localPosition = __instance.StartButton.transform.localPosition;
+                    copiedStartButton.SetActive(true);
+                    var startButtonText = copiedStartButton.GetComponentInChildren<TMPro.TextMeshPro>();
+                    startButtonText.text = "";
+                    startButtonText.fontSize *= 0.8f;
+                    startButtonText.fontSizeMax = startButtonText.fontSize;
+                    startButtonText.gameObject.transform.localPosition = Vector3.zero;
+                    PassiveButton startButtonPassiveButton = copiedStartButton.GetComponent<PassiveButton>();
+
+                    void StopStartFunc()
+                    {
+                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.StopStart, Hazel.SendOption.Reliable, AmongUsClient.Instance.HostId);
+                        writer.Write(PlayerControl.LocalPlayer.PlayerId);
+                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                        copiedStartButton.Destroy();
+                        __instance.GameStartText.text = String.Empty;
+                        startingTimer = 0;
+                    }
+                    startButtonPassiveButton.OnClick.AddListener((Action)(() => StopStartFunc()));
+                    __instance.StartCoroutine(Effects.Lerp(.1f, new System.Action<float>((p) => {
+                        startButtonText.text = "";
+                    })));
+
+                }
             }
 
+            // Start Timer
+            if (startingTimer > 0)
+            {
+                startingTimer -= Time.deltaTime;
+            }
             // Lobby code replacement
             //__instance.GameRoomName.text = TheOtherRolesPlugin.StreamerMode.Value ? $"<color={TheOtherRolesPlugin.StreamerModeReplacementColor.Value}>{TheOtherRolesPlugin.StreamerModeReplacementText.Value}</color>" : lobbyCodeText;
 

@@ -28,7 +28,7 @@ public class Mini : ModifierBase<Mini>
         {
             List<PlayerControl> validPlayers = new();
 
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
                 if (!player.hasModifier(ModifierType.Mini))
                     validPlayers.Add(player);
 

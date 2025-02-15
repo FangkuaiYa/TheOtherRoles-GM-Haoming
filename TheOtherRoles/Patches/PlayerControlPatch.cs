@@ -746,7 +746,7 @@ public static class PlayerControlFixedUpdatePatch
         if (Arsonist.arsonist == null || Arsonist.arsonist != PlayerControl.LocalPlayer) return;
         List<PlayerControl> untargetables;
         if (Arsonist.douseTarget != null)
-            untargetables = PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray()
+            untargetables = PlayerControl.AllPlayerControls.ToArray()
                 .Where(x => x.PlayerId != Arsonist.douseTarget.PlayerId).ToList();
         else
             untargetables = Arsonist.dousedPlayers;
@@ -766,12 +766,10 @@ public static class PlayerControlFixedUpdatePatch
         int numberOfTasks = playerTotal - playerCompleted;
 
         if (numberOfTasks <= Snitch.taskCountForReveal &&
-            (PlayerControl.LocalPlayer.Data.Role.IsImpostor || (Snitch.includeTeamJackal &&
-                                                                (PlayerControl.LocalPlayer ==
-                                                                 Jackal.jackal ||
-                                                                 PlayerControl
-                                                                     .LocalPlayer ==
-                                                                 Sidekick.sidekick))))
+            (PlayerControl.LocalPlayer.Data.Role.IsImpostor ||
+            (Snitch.includeTeamJackal && (PlayerControl.LocalPlayer == Jackal.jackal ||
+            PlayerControl.LocalPlayer == Sidekick.sidekick)) ||
+            (Snitch.includePelican && PlayerControl.LocalPlayer.isRole(RoleType.Pelican))))
         {
             if (Snitch.localArrows.Count == 0) Snitch.localArrows.Add(new Arrow(Color.blue));
             if (Snitch.localArrows.Count != 0 && Snitch.localArrows[0] != null)
@@ -788,14 +786,18 @@ public static class PlayerControlFixedUpdatePatch
             {
                 bool arrowForImp = p.Data.Role.IsImpostor;
                 bool arrowForTeamJackal = Snitch.includeTeamJackal && (p == Jackal.jackal || p == Sidekick.sidekick);
+                bool arrowForPelican = Snitch.includePelican && p.isRole(RoleType.Pelican);
                 bool arrowForFox = p.isRole(RoleType.Fox) || p.isRole(RoleType.Immoralist);
 
                 // Update the arrows' color every time bc things go weird when you add a sidekick or someone dies
                 Color c = Palette.ImpostorRed;
-                if (arrowForTeamJackal)
-                    c = Jackal.color;
-                else if (arrowForFox) c = Fox.color;
-                if (!p.Data.IsDead && (arrowForImp || arrowForTeamJackal || arrowForFox))
+                if (Snitch.useDifferentArrowColor)
+                {
+                    if (arrowForTeamJackal) c = Jackal.color;
+                    else if (arrowForPelican) c = Pelican.color;
+                    else if (arrowForFox) c = Fox.color;
+                }
+                if (!p.Data.IsDead && (arrowForImp || arrowForTeamJackal || arrowForFox || arrowForPelican))
                 {
                     if (arrowIndex >= Snitch.localArrows.Count) Snitch.localArrows.Add(new Arrow(c));
                     if (arrowIndex < Snitch.localArrows.Count && Snitch.localArrows[arrowIndex] != null)
@@ -804,7 +806,6 @@ public static class PlayerControlFixedUpdatePatch
                         Snitch.localArrows[arrowIndex].arrow.SetActive(true);
                         Snitch.localArrows[arrowIndex].Update(p.transform.position, c);
                     }
-
                     arrowIndex++;
                 }
             }
@@ -925,7 +926,7 @@ public static class PlayerControlFixedUpdatePatch
                 byte reporter = deadPlayer.killerIfExisting.PlayerId;
                 if (Bait.bait.hasModifier(ModifierType.Madmate))
                 {
-                    List<PlayerControl> candidates = PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray()
+                    List<PlayerControl> candidates = PlayerControl.AllPlayerControls.ToArray()
                         .Where(x => x.isAlive() && !x.isImpostor() && !x.isDummy).ToList();
                     int i = rnd.Next(0, candidates.Count);
                     reporter = candidates.Count > 0 ? candidates[i].PlayerId : deadPlayer.killerIfExisting.PlayerId;
@@ -1117,7 +1118,7 @@ public static class PlayerControlFixedUpdatePatch
         if (Witch.witch == null || Witch.witch != PlayerControl.LocalPlayer) return;
         List<PlayerControl> untargetables;
         if (Witch.spellCastingTarget != null)
-            untargetables = PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray()
+            untargetables = PlayerControl.AllPlayerControls.ToArray()
                 .Where(x => x.PlayerId != Witch.spellCastingTarget.PlayerId)
                 .ToList(); // Don't switch the target from the the one you're currently casting a spell on
         else

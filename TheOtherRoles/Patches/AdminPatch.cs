@@ -365,7 +365,7 @@ public class AdminPatch
                 List<Color> impostorColors = new();
                 List<Color> mimicKColors = new();
                 List<Color> deadBodyColors = new();
-                foreach (PlayerControl p in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                foreach (PlayerControl p in PlayerControl.AllPlayerControls)
                 {
                     // var color = p.myRend.material.GetColor("_BodyColor");
                     Color32 color = Palette.PlayerColors[p.Data.DefaultOutfit.ColorId];

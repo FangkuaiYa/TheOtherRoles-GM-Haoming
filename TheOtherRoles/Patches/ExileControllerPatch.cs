@@ -372,7 +372,7 @@ internal class ExileControllerReEnableGameplayPatch
 
         // 一定人数が死ぬまで会議時間を延ばす
         int deadPlayers = 0;
-        foreach (PlayerControl p in PlayerControl.AllPlayerControls.GetFastEnumerator())
+        foreach (PlayerControl p in PlayerControl.AllPlayerControls)
             if (p.Data.IsDead)
                 deadPlayers += 1;
         if (deadPlayers < (int)CustomOptionHolder.additionalEmergencyCooldown.getFloat())

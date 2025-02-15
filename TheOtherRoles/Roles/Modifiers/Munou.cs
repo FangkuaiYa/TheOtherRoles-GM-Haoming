@@ -65,7 +65,7 @@ public class Munou : ModifierBase<Munou>
             List<PlayerControl> crewNoRole = new();
             List<PlayerControl> validPlayers = new();
 
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
             {
                 List<RoleInfo> info = RoleInfo.getRoleInfoForPlayer(player);
                 if (info.Contains(RoleInfo.crewmate) && !player.hasModifier(ModifierType.Munou) &&
@@ -140,7 +140,7 @@ public class Munou : ModifierBase<Munou>
         int random = rnd.Next(100);
         if (random > probability) return;
 
-        IEnumerable<PlayerControl> allPlayers = PlayerControl.AllPlayerControls.GetFastEnumerator();
+        IEnumerable<PlayerControl> allPlayers = PlayerControl.AllPlayerControls.ToArray();
         List<byte> alivePlayers = new();
         List<int> tempList = new();
         foreach (PlayerControl p in allPlayers)

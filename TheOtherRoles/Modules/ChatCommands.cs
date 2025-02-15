@@ -21,7 +21,7 @@ public static class ChatCommands
                 if (text.ToLower().StartsWith("/kick "))
                 {
                     string playerName = text[6..];
-                    PlayerControl target = PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray().ToList()
+                    PlayerControl target = PlayerControl.AllPlayerControls.ToArray().ToList()
                         .FirstOrDefault(x => x.Data.PlayerName.Equals(playerName));
                     if (target != null && AmongUsClient.Instance != null && AmongUsClient.Instance.CanBan())
                     {
@@ -36,7 +36,7 @@ public static class ChatCommands
                 else if (text.ToLower().StartsWith("/ban "))
                 {
                     string playerName = text[5..];
-                    PlayerControl target = PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray().ToList()
+                    PlayerControl target = PlayerControl.AllPlayerControls.ToArray().ToList()
                         .FirstOrDefault(x => x.Data.PlayerName.Equals(playerName));
                     if (target != null && AmongUsClient.Instance != null && AmongUsClient.Instance.CanBan())
                     {
@@ -75,7 +75,7 @@ public static class ChatCommands
             if (text.ToLower().StartsWith("/tp ") && PlayerControl.LocalPlayer.Data.IsDead)
             {
                 string playerName = text[4..].ToLower();
-                PlayerControl target = PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray().ToList()
+                PlayerControl target = PlayerControl.AllPlayerControls.ToArray().ToList()
                     .FirstOrDefault(x => x.Data.PlayerName.ToLower().Equals(playerName));
                 if (target != null)
                 {
@@ -111,7 +111,7 @@ public static class ChatCommands
     {
         public static void Postfix(ChatBubble __instance, [HarmonyArgument(0)] string playerName)
         {
-            PlayerControl sourcePlayer = PlayerControl.AllPlayerControls.GetFastEnumerator().ToArray().ToList()
+            PlayerControl sourcePlayer = PlayerControl.AllPlayerControls.ToArray().ToList()
                 .FirstOrDefault(x => x.Data.PlayerName.Equals(playerName));
             if (sourcePlayer != null && PlayerControl.LocalPlayer != null &&
                 PlayerControl.LocalPlayer.Data?.Role?.IsImpostor == true &&

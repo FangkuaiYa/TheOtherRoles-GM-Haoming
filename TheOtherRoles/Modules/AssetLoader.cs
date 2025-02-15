@@ -16,33 +16,15 @@ public static class AssetLoader
     {
         if (flag) return;
         flag = true;
-        LoadAudioAssets();
         LoadHaomingAssets();
     }
-
-    private static void LoadAudioAssets()
-    {
-        Stream resourceAudioAssetBundleStream =
-            dll.GetManifestResourceStream("TheOtherRoles.Resources.AssetBundle.audiobundle");
-        AssetBundle assetBundleBundle = AssetBundle.LoadFromMemory(resourceAudioAssetBundleStream.ReadFully());
-        Trap.activate = assetBundleBundle.LoadAsset<AudioClip>("TrapperActivate.mp3").DontUnload();
-        Trap.countdown = assetBundleBundle.LoadAsset<AudioClip>("TrapperCountdown.mp3").DontUnload();
-        Trap.disable = assetBundleBundle.LoadAsset<AudioClip>("TrapperDisable.mp3").DontUnload();
-        Trap.kill = assetBundleBundle.LoadAsset<AudioClip>("TrapperKill.mp3").DontUnload();
-        Trap.place = assetBundleBundle.LoadAsset<AudioClip>("TrapperPlace.mp3").DontUnload();
-        Puppeteer.laugh = assetBundleBundle.LoadAsset<AudioClip>("PuppeteerLaugh.mp3").DontUnload();
-    }
-
     private static void LoadHaomingAssets()
     {
         Stream resourceTestAssetBundleStream =
             dll.GetManifestResourceStream("TheOtherRoles.Resources.AssetBundle.haomingassets");
         AssetBundle assetBundleBundle = AssetBundle.LoadFromMemory(resourceTestAssetBundleStream.ReadFully());
         FoxTask.prefab = assetBundleBundle.LoadAsset<GameObject>("FoxTask.prefab").DontUnload();
-        Shrine.sprite = assetBundleBundle.LoadAsset<Sprite>("shrine2.png").DontUnload();
-        //HaomingMenu.menuPrefab = assetBundleBundle.LoadAsset<GameObject>("HaomingMenu.prefab").DontUnload();
-        //HaomingMenu.loadSettingsPrefab =
-        //    assetBundleBundle.LoadAsset<GameObject>("LoadSettingsMenu.prefab").DontUnload();
+        FoxTask.shrine = assetBundleBundle.LoadAsset<Sprite>("shrine2.png").DontUnload();
     }
 
     public static byte[] ReadFully(this Stream input)

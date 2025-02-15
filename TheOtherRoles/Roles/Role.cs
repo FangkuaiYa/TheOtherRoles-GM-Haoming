@@ -80,6 +80,7 @@ public enum RoleType
     Moriarty,
     Cupid,
     EvilHacker,
+    Pelican,
 
 
     GM = 200,
@@ -122,6 +123,7 @@ public static class RoleData
         { RoleType.Akujo, typeof(RoleBase<Akujo>) },
         { RoleType.Moriarty, typeof(RoleBase<Moriarty>) },
         { RoleType.Cupid, typeof(RoleBase<Cupid>) },
+        { RoleType.Pelican, typeof(RoleBase<Pelican>) },
 
         // Other
         { RoleType.Watcher, typeof(RoleBase<Watcher>) }
@@ -532,6 +534,7 @@ public static class RoleHelpers
         if (player.isRole(RoleType.Lawyer)) Lawyer.clearAndReload();
         if (player.isRole(RoleType.Pursuer)) Pursuer.clearAndReload();
         if (Guesser.isGuesser(player.PlayerId)) Guesser.clear(player.PlayerId);
+        if (player.isRole(RoleType.Pelican)) Pelican.PelicanDie(true);
 
 
         if (player.isRole(RoleType.Jackal))

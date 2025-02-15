@@ -10,8 +10,6 @@ namespace TheOtherRoles;
 public class SpawnCandidate
 {
 #nullable enable
-    private static Il2CppArrayBase<Object>? audioClips;
-
     public Vector2 SpawnLocation;
     public Texture2D? Texture;
     public Sprite[] Sprites;
@@ -51,30 +49,6 @@ public class SpawnCandidate
         GetTexture();
         if (Sprites.Length > 0) return Sprites[0];
         return null;
-    }
-
-    [Obsolete]
-    public AudioClip? GetAudioClip()
-    {
-        if (AudioClipName == null) return null;
-
-        if (audioClips == null) audioClips = Object.FindObjectsOfTypeAll(AudioClip?.GetIl2CppType());
-
-        if (AudioClip != null) return AudioClip;
-
-        AudioClip = audioClips?.FirstOrDefault(audio => audio && audio.name == AudioClipName)?.TryCast<AudioClip>();
-        return AudioClip;
-    }
-
-    public IEnumerator GetEnumerator(SpriteRenderer renderer)
-    {
-        GetTexture();
-        return Effects.Lerp(Sprites.Length * 0.06f, new Action<float>(t =>
-        {
-            if (!renderer) return;
-            int num = (int)(t * Sprites.Length);
-            if (num < Sprites.Length) renderer.sprite = Sprites[num];
-        }));
     }
 
     public SpawnCandidate(StringNames locationKey, Vector2 location, string textureAddress, string? audioClip)

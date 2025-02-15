@@ -959,6 +959,38 @@
         "11": "\u30b8\u30ad\u30eb\u3068\u30cf\u30a4\u30c9\u52dd\u5229",
         "13": "\u591c\u665a\u7684\u9ed1\u6697\u662f\u90a3\u4e48\u60f9\u4eba\u601c\u7231\u2026\u2026"
     },
+    "pelican": {
+        "0": "Pelican",
+        "13": "\u9e48\u9e55"
+    },
+    "pelicanCanUseVent": {
+        "0": "Pelican Can Use Vent",
+        "13": "\u9e48\u9e55\u53ef\u4ee5\u4f7f\u7528\u7ba1\u9053"
+    },
+    "pelicanCooldown": {
+        "0": "Pelican Eat Cooldown",
+        "13": "\u9e48\u9e55\u541e\u566c\u6280\u80fd\u51b7\u5374"
+    },
+    "pelicanReduceCooldown": {
+        "0": "Pelican Eat Second Cooldown",
+        "13": "\u7b2c\u4e8c\u6b21\u541e\u566c\u6280\u80fd\u51b7\u5374"
+    },
+    "pelicanWin": {
+        "0": "Pelican Win",
+        "13": "\u6211\u5403\u6211\u5403\u6211\u5403\u5403\u5403"
+    },
+    "pelicanIntroDesc": {
+        "0": "Eat All Player",
+        "13": "\u4f60\u662f\u771f\u7684\u997f\u4e86"
+    },
+    "pelicanShortDesc": {
+        "0": "Eat all player to win!",
+        "13": "\u5c06\u6240\u6709\u73a9\u5bb6\u541e\u5165\u5230\u809a\u5b50\u91cc"
+    },
+    "pelicanFullDesc": {
+        "0": "Pelican is a neutral role\nPelican has a eat ability\nPelican can eat player after meeting\nIf Pelican die after meeting target will revive",
+        "13": "\u884c\u52a8\u9636\u6bb5\u9e48\u9e55\u53ef\u4ee5\u541e\u566c\u73a9\u5bb6\uff0c\u5982\u679c\u5728\u8fdb\u5165\u4f1a\u8bae\u524d\u88ab\u5176\u4ed6\u73a9\u5bb6\u51fb\u6740\uff0c\n\u5219\u8be5\u8f6e\u88ab\u541e\u566c\u7684\u73a9\u5bb6\u4f1a\u5728\u9e48\u9e55\u4f4d\u7f6e\u590d\u6d3b\u3002\n\n\u7279\u6b8a\u80fd\u529b\uff1a\u9e48\u9e55\u6bcf\u56de\u5408\u7684\u7b2c\u4e8c\u6b21\u53ca\u4e4b\u540e\u7684\u541e\u566c\u51b7\u5374\u4f1a\u53d8\u77ed\uff0c\u8fdb\u5165\u4f1a\u8bae\u540e\u91cd\u7f6e\u3002\n\u6ce8\uff1a\u9e48\u9e55\u5403\u6389\u73a9\u5bb6\u65f6\u4ecd\u7136\u4f1a\u89e6\u53d1\u6b7b\u4ea1\u4e8b\u4ef6\u3002"
+    },
     "sheriffCanKillNoDeadBody": {
         "0": "Can Kill Without DeadBody",
         "11": "\u6bba\u4eba\u304c\u8d77\u304d\u3066\u306a\u304f\u3066\u3082\u30ad\u30eb\u3067\u304d\u308b",
@@ -1910,6 +1942,10 @@
         "11": "\u7dca\u6025\u4f1a\u8b70\u30dc\u30bf\u30f3\u3092\u62bc\u305b\u308b",
         "13": "\u5c0f\u4e11\u53ef\u4ee5\u53d1\u8d77\u7d27\u6025\u4f1a\u8bae"
     },
+    "jesterCanUseVent": {
+        "0": "Can Use Vent",
+        "13": "\u5c0f\u4e11\u53ef\u4ee5\u4f7f\u7528\u7ba1\u9053"
+    },
     "jesterCanSabotage": {
         "0": "Can Sabotage",
         "11": "\u30b5\u30dc\u30bf\u30fc\u30b8\u30e5\u3067\u304d\u308b",
@@ -2625,10 +2661,14 @@
         "11": "\u30b8\u30e3\u30c3\u30ab\u30eb\u9663\u55b6\u3082\u8868\u793a\u3055\u308c\u308b",
         "13": "\u544a\u5bc6\u8005\u4e0e\u8c7a\u72fc\u56e2\u961f\u4e5f\u53ef\u4ee5\u76f8\u4e92\u53d1\u73b0"
     },
-    "snitchTeamJackalUseDifferentArrowColor": {
-        "0": "Use Different Arrow Color For Team Jackal",
-        "11": "\u30b8\u30e3\u30c3\u30ab\u30eb\u9663\u55b6\u306e\u77e2\u5370\u304c\u9752\u3044",
-        "13": "\u5bf9\u8c7a\u72fc\u56e2\u961f\u4f7f\u7528\u4e0d\u540c\u7bad\u5934"
+    "snitchIncludePelican": {
+        "0": "Include Pelican",
+        "13": "\u544a\u5bc6\u8005\u4e0e\u9e48\u9e55\u53ef\u4ee5\u4e92\u76f8\u53d1\u73b0"
+    },
+    "snitchUseDifferentArrowColor": {
+        "0": "Use Different Arrow Color For",
+        "11": "\u30b8\u30e3\u30c3\u306e\u77e2\u5370\u304c\u9752\u3044",
+        "13": "\u4f7f\u7528\u4e0d\u540c\u989c\u8272\u7684\u7bad\u5934"
     },
     "spy": {
         "0": "Spy",
@@ -2749,6 +2789,10 @@
         "0": "Bait Report Delay",
         "11": "\u6b7b\u4ea1\u5f8c\u3001\u5831\u544a\u3055\u308c\u308b\u307e\u3067\u306e\u9593",
         "13": "\u8bf1\u9975\u88ab\u51fb\u6740\u540e\u62a5\u544a\u5ef6\u8fdf\u65f6\u95f4"
+    },
+    "baitCanBeGuessed": {
+        "0": "Bait Can Be Guessed",
+        "13": "\u8bf1\u9975\u53ef\u4ee5\u88ab\u8d4c\u602a\u731c\u6d4b"
     },
     "baitShowKillFlash": {
         "0": "Warn The Killer With A Flash",
@@ -3589,6 +3633,10 @@
         "0": "Shapeshift Into Anyone",
         "11": "\u8ab0\u306b\u3067\u3082\u5909\u8eab\u3067\u304d\u308b",
         "13": "\u53d8\u5f62\u8005\u53ef\u4ee5\u53d8\u5f62\u4e3a\u4efb\u4f55\u4eba"
+    },
+    "anyPlayerCanStopStart": {
+        "0": "Any Player Can Stop Start",
+        "13": "\u4efb\u4f55\u73a9\u5bb6\u90fd\u53ef\u4ee5\u505c\u6b62\u6e38\u620f\u5f00\u59cb"
     },
     "maxNumberOfMeetings": {
         "0": "Total Meetings (excluding Mayor's)",
@@ -4444,6 +4492,10 @@
         "0": "Akujo {0} Win",
         "11": "\u60aa\u5973{0}\u52dd\u5229",
         "13": "\u9b45\u9b54{0}\u80dc\u5229"
+    },
+    "playerStopGameStartText": {
+        "0": "{0} stop game start!",
+        "13": "{0} \u963b\u6b62\u4e86\u6e38\u620f\u5f00\u59cb\uff01"
     },
     "jesterFullDesc": {
         "0": "The Jester does not have any tasks.\nThey win the game as a solo if they get voted out during a meeting.",

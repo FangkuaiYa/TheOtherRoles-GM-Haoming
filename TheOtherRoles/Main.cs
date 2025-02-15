@@ -45,6 +45,8 @@ public class TheOtherRolesPlugin : BasePlugin
 
     private static Dictionary<string, Sprite> gmhResources = new();
 
+    private static Dictionary<string, AudioClip> gmhAudio = new();
+
     public Harmony Harmony { get; } = new(Id);
 
     public static ConfigEntry<bool> DebugMode { get; private set; }
@@ -70,7 +72,7 @@ public class TheOtherRolesPlugin : BasePlugin
     public static ConfigEntry<string> WebhookUrl { get; set; }
     public static ConfigEntry<bool> TransparentMap { get; set; }
 
-    public static void LoadResources()
+    public static void LoadREAssets()
     {
         gmhResources = new Dictionary<string, Sprite>();
         Assembly assembly = Assembly.GetExecutingAssembly();
@@ -83,14 +85,31 @@ public class TheOtherRolesPlugin : BasePlugin
             gmhResources.Add(f, assetBundle.LoadAsset<Sprite>(f).DontUnload());
         assetBundle.Unload(false);
     }
+    public static void LoadAudioAssets()
+    {
+        gmhAudio = new Dictionary<string, AudioClip>();
+        Assembly assembly = Assembly.GetExecutingAssembly();
+        string[] resourceNames = assembly.GetManifestResourceNames();
 
+        Stream resourceBundle =
+            assembly.GetManifestResourceStream("TheOtherRoles.Resources.AssetBundle.fangkuaiaudioassets");
+        AssetBundle assetBundle = AssetBundle.LoadFromMemory(resourceBundle.ReadFully());
+        foreach (string f in assetBundle.GetAllAssetNames())
+            gmhAudio.Add(f, assetBundle.LoadAsset<AudioClip>(f).DontUnload());
+        assetBundle.Unload(false);
+    }
     public static Sprite getResources(string path)
     {
         path = "assets/resources/" + path.ToLower();
         Sprite returnValue;
         return gmhResources.TryGetValue(path, out returnValue) ? returnValue : null;
     }
-
+    public static AudioClip getAudio(string path)
+    {
+        path = "assets/audio/" + path.ToLower();
+        AudioClip returnValue;
+        return gmhAudio.TryGetValue(path, out returnValue) ? returnValue : null;
+    }
 
     public static void UpdateRegions()
     {
@@ -100,7 +119,12 @@ public class TheOtherRolesPlugin : BasePlugin
             new StaticHttpRegionInfo("Custom", StringNames.NoTranslation, Ip.Value,
                     new Il2CppReferenceArray<ServerInfo>(new ServerInfo[1]
                         { new("Custom", Ip.Value, Port.Value, false) }))
+                .CastFast<IRegionInfo>(),
+                        new StaticHttpRegionInfo("fangkuai-server", StringNames.NoTranslation, "https://player.fangkuai.fun",
+                    new Il2CppReferenceArray<ServerInfo>(new ServerInfo[1]
+                        { new("fangkuai-server", "https://player.fangkuai.fun", 443, false) }))
                 .CastFast<IRegionInfo>()
+
         };
         IRegionInfo currentRegion = serverManager.CurrentRegion;
         foreach (IRegionInfo region in regions)
@@ -125,7 +149,8 @@ public class TheOtherRolesPlugin : BasePlugin
     {
         ModTranslation.Load();
         AssetLoader.LoadAsset();
-        LoadResources();
+        LoadREAssets();
+        LoadAudioAssets();
         Instance = this;
         Logger = Log;
         LogHelper.SetLogSource(Log);
@@ -160,6 +185,12 @@ public class TheOtherRolesPlugin : BasePlugin
         GameOptionsData.RecommendedImpostors = Enumerable.Repeat(3, 16).ToArray();
         GameOptionsData.MaxImpostors = Enumerable.Repeat(15, 16).ToArray(); // Max Imp = Recommended Imp = 3
         GameOptionsData.MinPlayers = Enumerable.Repeat(4, 15).ToArray(); // Min Players = 4
+
+        Trap.place = getAudio("TrapperPlace.ogg");
+        Trap.disable = getAudio("TrapperDisable.ogg");
+        Trap.countdown = getAudio("TrapperCountdown.ogg");
+        Trap.kill = getAudio("TrapperKill.ogg");
+        Puppeteer.laugh = getAudio("PuppeteerLaugh.ogg");
 
         DebugMode = Config.Bind("Custom", "Enable Debug Mode", false);
         Harmony.PatchAll();
@@ -213,6 +244,36 @@ public static class DebugManager
 
     public static void Postfix(KeyboardJoystick __instance)
     {
+#if DEBUG
+        // Spawn dummys
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            PlayerControl playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
+            var playerId = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
+
+            bots.Add(playerControl);
+            var data = GameData.Instance.AddDummy(playerControl);
+            AmongUsClient.Instance.Spawn(data);
+            AmongUsClient.Instance.Spawn(playerControl);
+            playerControl.isDummy = true;
+
+            playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
+            playerControl.GetComponent<DummyBehaviour>().enabled = true;
+            playerControl.NetTransform.enabled = false;
+
+            playerControl.SetName(RandomString(10));
+            playerControl.SetColor((byte)random.Next(Palette.PlayerColors.Length));
+            playerControl.SetHat(HatManager.Instance.allHats[random.Next(HatManager.Instance.allHats.Count)].ProdId, playerControl.Data.DefaultOutfit.ColorId);
+            playerControl.SetPet(HatManager.Instance.allPets[random.Next(HatManager.Instance.allPets.Count)].ProdId);
+            playerControl.SetSkin(HatManager.Instance.allSkins[random.Next(HatManager.Instance.allSkins.Count)].ProdId, playerControl.Data.DefaultOutfit.ColorId);
+            playerControl.SetVisor(HatManager.Instance.allVisors[random.Next(HatManager.Instance.allVisors.Count)].ProdId, playerControl.Data.DefaultOutfit.ColorId);
+            playerControl.SetNamePlate(HatManager.Instance.allNamePlates[random.Next(HatManager.Instance.allNamePlates.Count)].ProdId);
+            data.PlayerLevel = playerId;
+
+            data.RpcSetTasks(new Il2CppStructArray<byte>(0));
+        }
+#endif
+
         if (AmongUsClient.Instance.AmHost && AmongUsClient.Instance.GameState == InnerNetClient.GameStates.Started)
             //ゲーム強制終了
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.F5))

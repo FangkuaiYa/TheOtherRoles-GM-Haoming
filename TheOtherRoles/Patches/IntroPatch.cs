@@ -262,7 +262,7 @@ internal class IntroPatch
         // Add the Spy to the Impostor team (for the Impostors)
         if (Spy.spy != null && PlayerControl.LocalPlayer.Data.Role.IsImpostor)
         {
-            System.Collections.Generic.List<PlayerControl> players = PlayerControl.AllPlayerControls.GetFastEnumerator()
+            System.Collections.Generic.List<PlayerControl> players = PlayerControl.AllPlayerControls
                 .ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
             List<PlayerControl>
                 fakeImpostorTeam =
@@ -333,13 +333,13 @@ internal class IntroPatch
 
 #if DEBUG
             LogHelper.Info("----------Role Assign-----------", "Settings");
-            foreach (PlayerControl pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (PlayerControl pc in PlayerControl.AllPlayerControls)
                 LogHelper.Info(
                     string.Format("{0,-3}{1,-2}:{2}:{3}", pc.AmOwner ? "[*]" : "", pc.PlayerId,
                         pc.Data.PlayerName.PadRightV2(20), RoleInfo.GetRolesString(pc, false, joinSeparator: " + ")),
                     "Settings");
             LogHelper.Info("-----------Platforms------------", "Settings");
-            foreach (PlayerControl pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (PlayerControl pc in PlayerControl.AllPlayerControls)
                 LogHelper.Info(
                     string.Format("{0,-3}{1,-2}:{2}:{3}", pc.AmOwner ? "[*]" : "", pc.PlayerId,
                         pc.Data.PlayerName.PadRightV2(20), pc.getPlatform().Replace("Standalone", "")), "Settings");
