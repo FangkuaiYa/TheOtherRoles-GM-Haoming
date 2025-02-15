@@ -1,5 +1,5 @@
 # 联系制作者
-[![QQ群](https://wiki.connect.qq.com/wp-content/uploads/2021/01/bt_blue_76X24.png)](https://qm.qq.com/q/tLSGadft96)  [![](https://img.shields.io/discord/955423281316499517?label=Discord)](https://discord.gg/UEf7b7rNXu)  
+[![QQ群](https://wiki.connect.qq.com/wp-content/uploads/2021/01/bt_blue_76X24.png)](https://qm.qq.com/q/DroZUDz9Dk)  [![](https://img.shields.io/discord/955423281316499517?label=Discord)](https://discord.gg/UEf7b7rNXu)  
 基本上在Discord或QQ群上接受提问要求等
 
 # 导入用脚本介绍
