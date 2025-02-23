@@ -1,6 +1,10 @@
-﻿################################################################################
-# 此 .gitignore 文件已由 Microsoft(R) Visual Studio 自动创建。
-################################################################################
-
-/.vs/TheOtherRoles/CopilotIndices/17.13.430.18484
-/TheOtherRoles/obj
+.vs
+.vscode/tasks.json
+TheOtherRoles/bin/
+TheOtherRoles/libs/
+TheOtherRoles/obj/
+~$*
+*.diff
+TODO
+.DS_Store
+Strings-Dev.xlsx

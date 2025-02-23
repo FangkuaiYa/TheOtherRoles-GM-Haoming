@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35806.99 d17.13
+VisualStudioVersion = 17.12.35707.178 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheOtherRoles", "TheOtherRoles\TheOtherRoles.csproj", "{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}"
 EndProject
@@ -23,8 +23,8 @@ Global
 		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release_Dev|Any CPU.Build.0 = Release_Dev|Any CPU
 		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release_Local|Any CPU.ActiveCfg = Release_Local|Any CPU
 		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release_Local|Any CPU.Build.0 = Release_Local|Any CPU
-		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release_NoSubmerged|Any CPU.ActiveCfg = Release|Any CPU
-		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release_NoSubmerged|Any CPU.Build.0 = Release|Any CPU
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release_NoSubmerged|Any CPU.ActiveCfg = Release_Local|Any CPU
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release_NoSubmerged|Any CPU.Build.0 = Release_Local|Any CPU
 		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
