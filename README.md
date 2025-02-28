@@ -1,1 +1,1 @@
-For further updates, please go to [()](https://github.com/dabao40/TheOtherRolesGMIA)
+For further updates, please go to [TheOtherRolesGMIA](https://github.com/dabao40/TheOtherRolesGMIA)
