@@ -29,7 +29,7 @@ namespace TheOtherRoles
             BomberA.SetButtonCooldowns();
             BomberB.SetButtonCooldowns();
             EvilTracker.SetButtonCooldowns();
-            //Puppeteer.SetButtonCooldowns();
+            Puppeteer.SetButtonCooldowns();
             MimicK.SetButtonCooldowns();
             MimicA.SetButtonCooldowns();
             SoulPlayer.SetButtonCooldowns();
@@ -68,7 +68,7 @@ namespace TheOtherRoles
             BomberA.MakeButtons(hm);
             BomberB.MakeButtons(hm);
             EvilTracker.MakeButtons(hm);
-            //Puppeteer.MakeButtons(hm);
+            Puppeteer.MakeButtons(hm);
             MimicK.MakeButtons(hm);
             MimicA.MakeButtons(hm);
             JekyllAndHyde.MakeButtons(hm);

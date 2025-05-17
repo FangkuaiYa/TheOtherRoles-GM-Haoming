@@ -87,7 +87,7 @@ namespace TheOtherRoles.Patches
             {
                 __result = Enumerable.Count<NetworkedPlayerInfo>(GameData.Instance.AllPlayers.ToSystemList<NetworkedPlayerInfo>(), delegate (NetworkedPlayerInfo p)
                 {
-                    if (p != null && !p.IsDead && !p.Disconnected /*&& Helpers.playerById(p.PlayerId) != Puppeteer.dummy*/)
+                    if (p != null && !p.IsDead && !p.Disconnected && Helpers.playerById(p.PlayerId) != Puppeteer.dummy)
                     {
                         PlayerControl @object = p.Object;
                         if (@object != null)

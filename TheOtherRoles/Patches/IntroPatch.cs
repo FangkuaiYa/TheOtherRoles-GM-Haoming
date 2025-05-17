@@ -172,7 +172,7 @@ namespace TheOtherRoles.Patches
             taskPanel.transform.position = new Vector3(pos.x, pos.y, -20);
 
             // ダミー人形をスポーンさせておく
-            /*if (PlayerControl.LocalPlayer.isRole(RoleType.Puppeteer) && SubmergedCompatibility.IsSubmerged)
+            if (PlayerControl.LocalPlayer.isRole(RoleType.Puppeteer) && SubmergedCompatibility.IsSubmerged)
             {
                 var playerId = (byte)GameData.Instance.GetAvailableId();
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpawnDummy, Hazel.SendOption.Reliable, -1);
@@ -182,7 +182,7 @@ namespace TheOtherRoles.Patches
                 writer.Write(PlayerControl.LocalPlayer.transform.position.z);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCProcedure.spawnDummy(playerId, PlayerControl.LocalPlayer.transform.position);
-            }*/
+            }
 
             HudManager.Instance.ShowVanillaKeyGuide();
 

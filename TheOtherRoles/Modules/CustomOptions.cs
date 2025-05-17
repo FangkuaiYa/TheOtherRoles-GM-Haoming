@@ -1387,7 +1387,7 @@ internal class GameOptionsDataPatch
     public static bool AjdustStringForViewPanel(StringGameSetting __instance, float value, ref string __result)
     {
         if (__instance.OptionName != Int32OptionNames.KillDistance) return true;
-        __result = GameOptionsData.KillDistanceStrings[(int)value];
+        __result = LegacyGameOptions.KillDistanceStrings[(int)value];
         return false;
     }
 }

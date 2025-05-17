@@ -16,6 +16,7 @@ using AmongUs.GameOptions;
 using Object = UnityEngine.Object;
 using TMPro;
 using UnityEngine.Events;
+using AmongUs.Data;
 
 namespace TheOtherRoles.Patches
 {
@@ -928,7 +929,7 @@ namespace TheOtherRoles.Patches
             // 投票画面に人形遣いのダミーを表示させない
             // 会議に参加しないPlayerControlを持つRoleが増えたらこのListに追加
             // 特殊なplayerInfo.Role.Roleを設定することで自動的に無視できないか？もしくはフラグをplayerInfoのどこかに追加
-            var playerControlesToBeIgnored = new List<PlayerControl>() { /*Puppeteer.dummy*/ };
+            var playerControlesToBeIgnored = new List<PlayerControl>() { Puppeteer.dummy };
             playerControlesToBeIgnored.RemoveAll(x => x == null);
             var playerIdsToBeIgnored = playerControlesToBeIgnored.Select(x => x.PlayerId);
             // Generate PlayerVoteAreas
@@ -1121,10 +1122,10 @@ namespace TheOtherRoles.Patches
                         if (flag)
                         {
                             __instance.RemainingEmergencies--;
-                            StatsManager.Instance.IncrementStat(StringNames.StatsEmergenciesCalled);
+                            DataManager.Player.Stats.IncrementStat(StatID.EmergenciesCalled);
                             return false;
                         }
-                        StatsManager.Instance.IncrementStat(StringNames.StatsBodiesReported);
+                        DataManager.Player.Stats.IncrementStat(StatID.BodiesReported);
                     }
                 }
                 return false;

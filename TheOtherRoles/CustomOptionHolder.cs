@@ -441,12 +441,12 @@ namespace TheOtherRoles
         public static CustomOption evilTrackerCanSeeTargetPosition;
         public static CustomOption evilTrackerCanSetTargetOnMeeting;
 
-        /*public static CustomRoleOption puppeteerSpawnRate;
+        public static CustomRoleOption puppeteerSpawnRate;
         public static CustomOption puppeteerNumKills;
         public static CustomOption puppeteerSampleDuration;
         public static CustomOption puppeteerCanControlDummyEvenIfDead;
         public static CustomOption puppeteerPenaltyOnDeath;
-        public static CustomOption puppeteerLosesSenriganOnDeath;*/
+        public static CustomOption puppeteerLosesSenriganOnDeath;
 
         public static CustomRoleOption mimicSpawnRate;
         public static CustomOption mimicCountAsOne;
@@ -818,12 +818,12 @@ namespace TheOtherRoles
             schrodingersCatCanWinAsCrewmate = CustomOption.Create(978, CustomOptionType.Neutral, "schrodingersCatCanWinAsCrewmate", false, schrodingersCatHideRole);
             schrodingersCatCanChooseImpostor = CustomOption.Create(979, CustomOptionType.Neutral, "schrodingersCatCanChooseTeam", false, schrodingersCatHideRole);
 
-            /*puppeteerSpawnRate = new CustomRoleOption(1060, CustomOptionType.Neutral, "puppeteer", Puppeteer.color, 1);
+            puppeteerSpawnRate = new CustomRoleOption(1060, CustomOptionType.Neutral, "puppeteer", Puppeteer.color, 1);
             puppeteerNumKills = CustomOption.Create(1061, CustomOptionType.Neutral, "puppeteerNumKills", 3f, 1f, 15f, 1f, puppeteerSpawnRate);
             puppeteerSampleDuration = CustomOption.Create(1062, CustomOptionType.Neutral, "puppeteerSampleDuration", 1f, 0f, 20f, 0.25f, puppeteerSpawnRate);
             puppeteerCanControlDummyEvenIfDead = CustomOption.Create(1063, CustomOptionType.Neutral, "puppeteerCanControlDummyEvenIfDead", true, puppeteerSpawnRate);
             puppeteerPenaltyOnDeath = CustomOption.Create(1064, CustomOptionType.Neutral, "puppeteerPenaltyOnDeath", 1f, 0f, 5f, 1f, puppeteerCanControlDummyEvenIfDead);
-            puppeteerLosesSenriganOnDeath = CustomOption.Create(1065, CustomOptionType.Neutral, "puppeteerLosesSenriganOnDeath", true, puppeteerCanControlDummyEvenIfDead);*/
+            puppeteerLosesSenriganOnDeath = CustomOption.Create(1065, CustomOptionType.Neutral, "puppeteerLosesSenriganOnDeath", true, puppeteerCanControlDummyEvenIfDead);
 
             jekyllAndHydeSpawnRate = new CustomRoleOption(1100, CustomOptionType.Neutral, "jekyllAndHyde", JekyllAndHyde.color, 1);
             jekyllAndHydeNumberToWin = CustomOption.Create(1101, CustomOptionType.Neutral, "jekyllAndHydeNumberToWin", 3f, 1f, 10f, 1f, jekyllAndHydeSpawnRate);

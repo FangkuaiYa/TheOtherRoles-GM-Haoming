@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AmongUs.Data;
+using AmongUs.Data.Player;
 using AmongUs.GameOptions;
 using BepInEx;
 using BepInEx.Configuration;
@@ -124,9 +125,9 @@ namespace TheOtherRoles
 
             UpdateRegions();
 
-            GameOptionsData.RecommendedImpostors = Enumerable.Repeat(3, 16).ToArray();
-            GameOptionsData.MaxImpostors = Enumerable.Repeat(15, 16).ToArray(); // Max Imp = Recommended Imp = 3
-            GameOptionsData.MinPlayers = Enumerable.Repeat(4, 15).ToArray(); // Min Players = 4
+            LegacyGameOptions.RecommendedImpostors = Enumerable.Repeat(3, 16).ToArray();
+            LegacyGameOptions.MaxImpostors = Enumerable.Repeat(15, 16).ToArray(); // Max Imp = Recommended Imp = 3
+            LegacyGameOptions.MinPlayers = Enumerable.Repeat(4, 15).ToArray(); // Min Players = 4
 
             DebugMode = Config.Bind("Custom", "Enable Debug Mode", false);
             Instance = this;
@@ -155,8 +156,8 @@ namespace TheOtherRoles
     }
 
     // Deactivate bans, since I always leave my local testing game and ban myself
-    [HarmonyPatch(typeof(StatsManager), nameof(StatsManager.AmBanned), MethodType.Getter)]
-    public static class AmBannedPatch
+    [HarmonyPatch(typeof(PlayerBanData), nameof(PlayerBanData.IsBanned), MethodType.Getter)]
+    public static class IsBannedPatch
     {
         public static void Postfix(out bool __result)
         {

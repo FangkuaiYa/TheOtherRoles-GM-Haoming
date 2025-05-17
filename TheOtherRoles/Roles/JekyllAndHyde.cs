@@ -228,7 +228,7 @@ namespace TheOtherRoles
             {
                 var alive = PlayerControl.AllPlayerControls.ToArray().ToArray().Where(x =>
                 {
-                    return x.isAlive() /*&& x != Puppeteer.dummy*/;
+                    return x.isAlive()&& x != Puppeteer.dummy;
                 });
                 bool ret = oddIsJekyll ? isOdd(alive.Count()) : !isOdd(alive.Count());
                 return ret;

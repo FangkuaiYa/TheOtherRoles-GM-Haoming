@@ -22,7 +22,7 @@ namespace TheOtherRoles.Patches
         LawyerSoloWin = 16,
         PlagueDoctorWin = 17,
         FoxWin = 18,
-        //PuppeteerWin = 19,
+        PuppeteerWin = 19,
         JekyllAndHydeWin = 20,
         AkujoWin = 21,
         ForceEnd = 22,
@@ -47,7 +47,7 @@ namespace TheOtherRoles.Patches
         PlagueDoctorWin,
         FoxWin,
         EveryoneDied,
-        //PuppeteerWin,
+        PuppeteerWin,
         JekyllAndHydeWin,
         AkujoWin,
         ForceEnd,
@@ -82,7 +82,7 @@ namespace TheOtherRoles.Patches
         public static List<WinCondition> additionalWinConditions = new();
         public static List<PlayerRoleInfo> playerRoles = new();
         public static bool isGM = false;
-        public static GameOverReason gameOverReason = GameOverReason.HumansByTask;
+        public static GameOverReason gameOverReason = GameOverReason.CrewmatesByTask;
 
         public static Dictionary<int, PlayerControl> plagueDoctorInfected = new();
         public static Dictionary<int, float> plagueDoctorProgress = new();
@@ -134,7 +134,7 @@ namespace TheOtherRoles.Patches
             Morphling.resetMorph();
 
             AdditionalTempData.gameOverReason = endGameResult.GameOverReason;
-            if ((int)endGameResult.GameOverReason >= 10) endGameResult.GameOverReason = GameOverReason.ImpostorByKill;
+            if ((int)endGameResult.GameOverReason >= 10) endGameResult.GameOverReason = GameOverReason.ImpostorsByKill;
         }
 
         public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
@@ -148,11 +148,11 @@ namespace TheOtherRoles.Patches
             if (isFoxAlive && isFoxCompletedTasks)
             {
                 // タスク・サボタージュ勝利の場合はオプションの設定次第
-                if (gameOverReason == GameOverReason.HumansByTask && !Fox.crewWinsByTasks)
+                if (gameOverReason == GameOverReason.CrewmatesByTask && !Fox.crewWinsByTasks)
                 {
                     gameOverReason = (GameOverReason)CustomGameOverReason.FoxWin;
                 }
-                else if (gameOverReason == GameOverReason.ImpostorBySabotage && !Fox.impostorWinsBySabotage)
+                else if (gameOverReason == GameOverReason.ImpostorsBySabotage && !Fox.impostorWinsBySabotage)
                 {
                     gameOverReason = (GameOverReason)CustomGameOverReason.FoxWin;
                 }
@@ -163,10 +163,10 @@ namespace TheOtherRoles.Patches
                 not ((GameOverReason)CustomGameOverReason.JesterWin) and
                 not ((GameOverReason)CustomGameOverReason.VultureWin) and
                 not ((GameOverReason)CustomGameOverReason.AkujoWin) and
-                //not ((GameOverReason)CustomGameOverReason.PuppeteerWin) and
+                not ((GameOverReason)CustomGameOverReason.PuppeteerWin) and
                 not ((GameOverReason)CustomGameOverReason.JekyllAndHydeWin) and
-                not ((GameOverReason)GameOverReason.HumansByTask) and
-                not ((GameOverReason)GameOverReason.ImpostorBySabotage))
+                not ((GameOverReason)GameOverReason.CrewmatesByTask) and
+                not ((GameOverReason)GameOverReason.ImpostorsBySabotage))
                 {
                     gameOverReason = (GameOverReason)CustomGameOverReason.FoxWin;
                 }
@@ -184,10 +184,10 @@ namespace TheOtherRoles.Patches
                     p.Disconnected == true ? FinalStatus.Disconnected :
                     finalStatuses.ContainsKey(p.PlayerId) ? finalStatuses[p.PlayerId] :
                     p.IsDead == true ? FinalStatus.Dead :
-                    gameOverReason == GameOverReason.ImpostorBySabotage && !p.Role.IsImpostor ? FinalStatus.Sabotage :
+                    gameOverReason == GameOverReason.ImpostorsBySabotage && !p.Role.IsImpostor ? FinalStatus.Sabotage :
                     FinalStatus.Alive;
 
-                if (gameOverReason == GameOverReason.HumansByTask && p.Object.isCrew()) tasksCompleted = tasksTotal;
+                if (gameOverReason == GameOverReason.CrewmatesByTask && p.Object.isCrew()) tasksCompleted = tasksTotal;
 
                 AdditionalTempData.playerRoles.Add(new AdditionalTempData.PlayerRoleInfo()
                 {
@@ -225,13 +225,13 @@ namespace TheOtherRoles.Patches
             notWinners.AddRange(PlagueDoctor.allPlayers);
             notWinners.AddRange(Fox.allPlayers);
             notWinners.AddRange(Immoralist.allPlayers);
-            //notWinners.AddRange(Puppeteer.allPlayers);
+            notWinners.AddRange(Puppeteer.allPlayers);
             notWinners.AddRange(JekyllAndHyde.allPlayers);
             notWinners.AddRange(Akujo.allPlayers);
             notWinners.AddRange(AkujoHonmei.allPlayers);
             notWinners.AddRange(Moriarty.allPlayers);
             notWinners.AddRange(Cupid.allPlayers);
-            //if (Puppeteer.dummy != null) notWinners.Add(Puppeteer.dummy);
+            if (Puppeteer.dummy != null) notWinners.Add(Puppeteer.dummy);
             // if (SchrodingersCat.team != SchrodingersCat.Team.Crew && !(SchrodingersCat.team == SchrodingersCat.Team.None && SchrodingersCat.canWinAsCrewmate)) notWinners.AddRange(SchrodingersCat.allPlayers);
 
             // Neutral shifter can't win
@@ -249,24 +249,24 @@ namespace TheOtherRoles.Patches
                 }
             }
 
-            bool saboWin = gameOverReason == GameOverReason.ImpostorBySabotage;
-            bool impostorWin = gameOverReason == GameOverReason.ImpostorByKill || gameOverReason == GameOverReason.ImpostorByVote || gameOverReason == GameOverReason.ImpostorDisconnect;
-            bool crewWin = gameOverReason == GameOverReason.HumansByTask || gameOverReason == GameOverReason.HumansByVote || gameOverReason == GameOverReason.HumansDisconnect;
+            bool saboWin = gameOverReason == GameOverReason.ImpostorsBySabotage;
+            bool impostorWin = gameOverReason == GameOverReason.ImpostorsByKill || gameOverReason == GameOverReason.ImpostorsByVote || gameOverReason == GameOverReason.ImpostorDisconnect;
+            bool crewWin = gameOverReason == GameOverReason.CrewmatesByTask || gameOverReason == GameOverReason.CrewmatesByVote || gameOverReason == GameOverReason.CrewmateDisconnect;
 
             bool jesterWin = Jester.jester != null && gameOverReason == (GameOverReason)CustomGameOverReason.JesterWin;
             bool arsonistWin = Arsonist.arsonist != null && gameOverReason == (GameOverReason)CustomGameOverReason.ArsonistWin;
             bool miniLose = Mini.exists && gameOverReason == (GameOverReason)CustomGameOverReason.MiniLose;
-            bool loversWin = Lovers.anyAlive() && !(Lovers.separateTeam && gameOverReason == GameOverReason.HumansByTask);
+            bool loversWin = Lovers.anyAlive() && !(Lovers.separateTeam && gameOverReason == GameOverReason.CrewmatesByTask);
             bool teamJackalWin = gameOverReason == (GameOverReason)CustomGameOverReason.TeamJackalWin;
             bool vultureWin = Vulture.vulture != null && gameOverReason == (GameOverReason)CustomGameOverReason.VultureWin;
             bool lawyerSoloWin = Lawyer.lawyer != null && gameOverReason == (GameOverReason)CustomGameOverReason.LawyerSoloWin;
             bool plagueDoctorWin = PlagueDoctor.exists && gameOverReason == (GameOverReason)CustomGameOverReason.PlagueDoctorWin;
             bool foxWin = Fox.exists && gameOverReason == (GameOverReason)CustomGameOverReason.FoxWin;
-            //bool puppeteerWin = Puppeteer.exists && gameOverReason == (GameOverReason)CustomGameOverReason.PuppeteerWin;
+            bool puppeteerWin = Puppeteer.exists && gameOverReason == (GameOverReason)CustomGameOverReason.PuppeteerWin;
             bool jekyllAndHydeWin = JekyllAndHyde.exists && gameOverReason == (GameOverReason)CustomGameOverReason.JekyllAndHydeWin;
             bool moriartyWin = Moriarty.exists && gameOverReason == (GameOverReason)CustomGameOverReason.MoriartyWin;
             bool everyoneDead = AdditionalTempData.playerRoles.All(x => x.Status != FinalStatus.Alive);
-            bool akujoWin = Akujo.numAlive > 0 && gameOverReason != GameOverReason.HumansByTask;
+            bool akujoWin = Akujo.numAlive > 0 && gameOverReason != GameOverReason.CrewmatesByTask;
             bool forceEnd = gameOverReason == (GameOverReason)CustomGameOverReason.ForceEnd;
 
 
@@ -359,7 +359,7 @@ namespace TheOtherRoles.Patches
                 }
             }
             // Puppeter win
-            /*else if (puppeteerWin)
+            else if (puppeteerWin)
             {
                 EndGameResult.CachedWinners = new Il2CppSystem.Collections.Generic.List<CachedPlayerData>();
                 foreach (var puppeteer in Puppeteer.players)
@@ -368,7 +368,7 @@ namespace TheOtherRoles.Patches
                     EndGameResult.CachedWinners.Add(wpd);
                 }
                 AdditionalTempData.winCondition = WinCondition.PuppeteerWin;
-            }*/
+            }
 
             else if (jekyllAndHydeWin)
             {
@@ -761,12 +761,12 @@ namespace TheOtherRoles.Patches
                         textRenderer.color = Fox.color;
                         __instance.BackgroundBar.material.SetColor("_Color", Fox.color);
                     }
-                    /*else if (AdditionalTempData.winCondition == WinCondition.PuppeteerWin)
+                    else if (AdditionalTempData.winCondition == WinCondition.PuppeteerWin)
                     {
                         bonusText = "puppeteerWin";
                         textRenderer.color = Puppeteer.color;
                         __instance.BackgroundBar.material.SetColor("_Color", Puppeteer.color);
-                    }*/
+                    }
                     else if (AdditionalTempData.winCondition == WinCondition.JekyllAndHydeWin)
                     {
                         bonusText = "jekyllAndHydeWin";
@@ -821,12 +821,12 @@ namespace TheOtherRoles.Patches
                         textRenderer.color = Mini.color;
                         __instance.BackgroundBar.material.SetColor("_Color", Palette.DisabledGrey);
                     }
-                    else if (AdditionalTempData.gameOverReason is GameOverReason.HumansByTask or GameOverReason.HumansByVote)
+                    else if (AdditionalTempData.gameOverReason is GameOverReason.CrewmatesByTask or GameOverReason.CrewmatesByVote)
                     {
                         bonusText = "crewWin";
                         textRenderer.color = Palette.White;
                     }
-                    else if (AdditionalTempData.gameOverReason is GameOverReason.ImpostorByKill or GameOverReason.ImpostorBySabotage or GameOverReason.ImpostorByVote)
+                    else if (AdditionalTempData.gameOverReason is GameOverReason.ImpostorsByKill or GameOverReason.ImpostorsBySabotage or GameOverReason.ImpostorsByVote)
                     {
                         bonusText = "impostorWin";
                         textRenderer.color = Palette.ImpostorRed;
@@ -840,27 +840,27 @@ namespace TheOtherRoles.Patches
                                 bonusText = ModTranslation.getString("impostorDisconnect");
                                 textRenderer.color = Color.red;
                                 break;
-                            case GameOverReason.ImpostorByKill:
+                            case GameOverReason.ImpostorsByKill:
                                 bonusText = ModTranslation.getString("impostorByKill");
                                 textRenderer.color = Color.red;
                                 break;
-                            case GameOverReason.ImpostorBySabotage:
+                            case GameOverReason.ImpostorsBySabotage:
                                 bonusText = ModTranslation.getString("impostorBySabotage");
                                 textRenderer.color = Color.red;
                                 break;
-                            case GameOverReason.ImpostorByVote:
+                            case GameOverReason.ImpostorsByVote:
                                 bonusText = ModTranslation.getString("impostorByVote");
                                 textRenderer.color = Color.red;
                                 break;
-                            case GameOverReason.HumansByTask:
+                            case GameOverReason.CrewmatesByTask:
                                 bonusText = ModTranslation.getString("humansByTask");
                                 textRenderer.color = Color.white;
                                 break;
-                            case GameOverReason.HumansDisconnect:
+                            case GameOverReason.CrewmateDisconnect:
                                 bonusText = ModTranslation.getString("humansDisconnect");
                                 textRenderer.color = Color.white;
                                 break;
-                            case GameOverReason.HumansByVote:
+                            case GameOverReason.CrewmatesByVote:
                                 bonusText = ModTranslation.getString("humansByVote");
                                 textRenderer.color = Color.white;
                                 break;
@@ -1034,7 +1034,7 @@ namespace TheOtherRoles.Patches
                     if (CheckAndEndGameForArsonistWin(__instance)) return false;
                     if (CheckAndEndGameForVultureWin(__instance)) return false;
                     if (CheckAndEndGameForPlagueDoctorWin(__instance)) return false;
-                    //if (CheckAndEndGameForPuppeteerWin(__instance)) return false;
+                    if (CheckAndEndGameForPuppeteerWin(__instance)) return false;
                     if (CheckAndEndGameForJekyllAndHydeWin(__instance, statistics)) return false;
                     if (CheckAndEndGameForMoriartyWin(__instance, statistics)) return false;
                     if (CheckAndEndGameForSabotageWin(__instance)) return false;
@@ -1106,7 +1106,7 @@ namespace TheOtherRoles.Patches
                     }
                     return false;
                 }
-                /*private static bool CheckAndEndGameForPuppeteerWin(ShipStatus __instance)
+                private static bool CheckAndEndGameForPuppeteerWin(ShipStatus __instance)
                 {
                     if (Puppeteer.triggerPuppeteerWin)
                     {
@@ -1114,7 +1114,7 @@ namespace TheOtherRoles.Patches
                         return true;
                     }
                     return false;
-                }*/
+                }
                 private static bool CheckAndEndGameForJekyllAndHydeWin(ShipStatus __instance, PlayerStatistics statistics)
                 {
                     if (JekyllAndHyde.triggerWin)
@@ -1186,7 +1186,7 @@ namespace TheOtherRoles.Patches
                 {
                     if (GameData.Instance.TotalTasks > 0 && GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks)
                     {
-                        UncheckedEndGame(GameOverReason.HumansByTask);
+                        UncheckedEndGame(GameOverReason.CrewmatesByTask);
                         return true;
                     }
 
@@ -1213,7 +1213,7 @@ namespace TheOtherRoles.Patches
 
                         if (isFoxCompletedtasks && isFoxAlive && GameData.Instance.TotalTasks > 0 && GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks + numDeadPlayerUncompletedTasks)
                         {
-                            UncheckedEndGame(GameOverReason.HumansByTask);
+                            UncheckedEndGame(GameOverReason.CrewmatesByTask);
                             return true;
                         }
                     }
@@ -1264,9 +1264,9 @@ namespace TheOtherRoles.Patches
                     {
                         var endReason = GameData.LastDeathReason switch
                         {
-                            DeathReason.Exile => GameOverReason.ImpostorByVote,
-                            DeathReason.Kill => GameOverReason.ImpostorByKill,
-                            _ => GameOverReason.ImpostorByVote,
+                            DeathReason.Exile => GameOverReason.ImpostorsByVote,
+                            DeathReason.Kill => GameOverReason.ImpostorsByKill,
+                            _ => GameOverReason.ImpostorsByVote,
                         };
                         UncheckedEndGame(endReason);
                         return true;
@@ -1278,7 +1278,7 @@ namespace TheOtherRoles.Patches
                 {
                     if (statistics.TeamCrew > 0 && statistics.TeamImpostorsAlive == 0 && statistics.TeamJackalAlive == 0 && statistics.JekyllAndHydeAlive == 0 && statistics.MoriartyAlive == 0)
                     {
-                        UncheckedEndGame(GameOverReason.HumansByVote);
+                        UncheckedEndGame(GameOverReason.CrewmatesByVote);
                         return true;
                     }
                     return false;
@@ -1286,7 +1286,7 @@ namespace TheOtherRoles.Patches
 
                 private static void EndGameForSabotage(ShipStatus __instance)
                 {
-                    UncheckedEndGame(GameOverReason.ImpostorBySabotage);
+                    UncheckedEndGame(GameOverReason.ImpostorsBySabotage);
                     return;
                 }
 
@@ -1449,10 +1449,10 @@ namespace TheOtherRoles.Patches
                     }
 
                     // 人形使いのダミーはカウントしない
-                    /*if (Puppeteer.dummy != null)
+                    if (Puppeteer.dummy != null)
                     {
                         numTotalAlive--;
-                    }*/
+                    }
 
                     // モリアーティに洗脳されているユーザーはモリアーティー陣営としてカウントする
                     if (Moriarty.target != null)

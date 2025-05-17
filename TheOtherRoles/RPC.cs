@@ -16,6 +16,7 @@ using AmongUs.GameOptions;
 using Assets.CoreScripts;
 using InnerNet;
 using UnityEngine.UIElements;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TheOtherRoles
 {
@@ -118,12 +119,12 @@ namespace TheOtherRoles
         SpawnDummy,
         WalkDummy,
         MoveDummy,
-        /*PuppeteerStealth,
+        PuppeteerStealth,
         PuppeteerMorph,
         PuppeteerWin,
         PuppeteerKill,
         PuppeteerClimbRadder,
-        PuppeteerUsePlatform,*/
+        PuppeteerUsePlatform,
         mimicMorph,
         mimicResetMorph,
         Synchronize,
@@ -1217,7 +1218,7 @@ namespace TheOtherRoles
             if (target == null) return;
             if (target.isDead()) return;
             // 呪殺
-            if (target.isRole(RoleType.Fox) || target.isRole(RoleType.SchrodingersCat)/* || target.isRole(RoleType.Puppeteer)*/)
+            if (target.isRole(RoleType.Fox) || target.isRole(RoleType.SchrodingersCat) || target.isRole(RoleType.Puppeteer))
             {
                 if (!PlayerControl.LocalPlayer.isRole(RoleType.FortuneTeller))
                 {
@@ -1381,7 +1382,7 @@ namespace TheOtherRoles
             BomberB.bomberButton.Timer = BomberB.bomberButton.MaxTimer;
         }
 
-        /*public static void spawnDummy(byte playerId, Vector3 pos)
+        public static void spawnDummy(byte playerId, Vector3 pos)
         {
             var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
             playerControl.PlayerId = playerId;
@@ -1405,6 +1406,20 @@ namespace TheOtherRoles
         {
             if (Puppeteer.dummy == null) return;
             var dummy = Puppeteer.dummy;
+            dummy.MyPhysics.body.velocity = Vector2.zero;
+            if (PlayerControl.LocalPlayer.isRole(RoleType.Puppeteer))
+            {
+                PlayerControl.LocalPlayer.MyPhysics.body.velocity = Vector2.zero;
+                KillAnimation.SetMovement(PlayerControl.LocalPlayer, false);
+                KillAnimation.SetMovement(PlayerControl.LocalPlayer, true);
+            }
+            KillAnimation.SetMovement(dummy, false);
+            KillAnimation.SetMovement(dummy, true);
+            if (PlayerControl.LocalPlayer.isRole(RoleType.Puppeteer))
+            {
+                dummy.MyPhysics.body.interpolation = RigidbodyInterpolation2D.Interpolate;
+                PlayerControl.LocalPlayer.MyPhysics.body.velocity = new Vector2(0, 0);
+            }
             dummy.MyPhysics.body.velocity = direction * dummy.MyPhysics.TrueSpeed;
         }
 
@@ -1471,7 +1486,7 @@ namespace TheOtherRoles
             if (target == null) return;
             dummy.NetTransform.Halt();
             target.Use(dummy);
-        }*/
+        }
 
         public static void mimicMorph(byte mimicAId, byte mimicBId)
         {
@@ -1955,7 +1970,7 @@ namespace TheOtherRoles
                         case (byte)CustomRPC.BomberKill:
                             RPCProcedure.bomberKill(reader.ReadByte(), reader.ReadByte());
                             break;
-                        /*case (byte)CustomRPC.SpawnDummy:
+                        case (byte)CustomRPC.SpawnDummy:
                             byte newId = reader.ReadByte();
                             byte[] spawnTmp = reader.ReadBytes(4);
                             float spawnX = System.BitConverter.ToSingle(spawnTmp, 0);
@@ -1999,7 +2014,7 @@ namespace TheOtherRoles
                             break;
                         case (byte)CustomRPC.PuppeteerUsePlatform:
                             RPCProcedure.puppeteerUsePlatform(reader.ReadByte());
-                            break;*/
+                            break;
                         case (byte)CustomRPC.mimicMorph:
                             RPCProcedure.mimicMorph(reader.ReadByte(), reader.ReadByte());
                             break;

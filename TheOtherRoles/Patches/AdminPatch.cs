@@ -289,14 +289,14 @@ namespace TheOtherRoles.Patches
                                     {
                                         num2--;
                                     }
-                                    /*else if (component.isRole(RoleType.Puppeteer) && Puppeteer.stealthed)
+                                    else if (component.isRole(RoleType.Puppeteer) && Puppeteer.stealthed)
                                     {
                                         num2--;
                                     }
                                     else if (component == Puppeteer.dummy && !Puppeteer.stealthed)
                                     {
                                         num2--;
-                                    }*/
+                                    }
                                     else if (component?.cosmetics?.currentBodySprite?.BodySprite.material != null)
                                     {
                                         // Color color = component.myRend.material.GetColor("_BodyColor");

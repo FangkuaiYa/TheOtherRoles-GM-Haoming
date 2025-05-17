@@ -13,7 +13,7 @@ using static TheOtherRoles.TheOtherRoles;
 
 namespace TheOtherRoles
 {
-    /*[HarmonyPatch]
+    [HarmonyPatch]
     public class Puppeteer : RoleBase<Puppeteer>
     {
         public static Color color = Palette.Purple;
@@ -840,5 +840,5 @@ namespace TheOtherRoles
                 }
             }
         }
-    }*/
+    }
 }

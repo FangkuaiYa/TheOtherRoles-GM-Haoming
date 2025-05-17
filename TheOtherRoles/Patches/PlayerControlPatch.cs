@@ -24,10 +24,10 @@ namespace TheOtherRoles.Patches
         {
             PlayerControl result = null;
             int kd = killDistance == 3 ? GameOptionsManager.Instance.currentNormalGameOptions.KillDistance : killDistance;
-            float num = GameOptionsData.KillDistances[Mathf.Clamp(kd, 0, 2)];
+            float num = LegacyGameOptions.KillDistances[Mathf.Clamp(kd, 0, 2)];
             if (!MapUtilities.CachedShipStatus) return result;
             if (targetingPlayer == null) targetingPlayer = PlayerControl.LocalPlayer;
-            if ((targetingPlayer.Data.IsDead /*&& !targetingPlayer.isRole(RoleType.Puppeteer)*/) || targetingPlayer.inVent) return result;
+            if ((targetingPlayer.Data.IsDead && !targetingPlayer.isRole(RoleType.Puppeteer)) || targetingPlayer.inVent) return result;
             if (targetingPlayer.isGM()) return result;
 
             if (untargetablePlayers == null)
@@ -57,7 +57,7 @@ namespace TheOtherRoles.Patches
             }
 
             // 透明になっている人形使い or ダミーをターゲット不可にする
-            /*if (Puppeteer.exists)
+            if (Puppeteer.exists)
             {
                 if (Puppeteer.stealthed)
                 {
@@ -68,7 +68,7 @@ namespace TheOtherRoles.Patches
                 {
                     untargetablePlayers.Add(Puppeteer.dummy);
                 }
-            }*/
+            }
 
 
             Vector2 truePosition = targetingPlayer.GetTruePosition();
@@ -1049,6 +1049,8 @@ namespace TheOtherRoles.Patches
                 {
                     pp.setSemiTransparent(false);
                 }
+                Vector3 pos = new Vector3(-0.25f, -0.25f, 1.0f) + Vector3.right * playerID * 0.55f;
+                pp.transform.localPosition = new Vector3(-4.5f, -2.4f, -8f) + pos;
             }
 
             if (HudManager.Instance.TaskPanel != null)
@@ -1455,12 +1457,12 @@ namespace TheOtherRoles.Patches
             }
 
             // 人形使いのダミー死亡処理
-            /*if (target == Puppeteer.dummy)
+            if (target == Puppeteer.dummy)
             {
                 // 蘇生する
                 target.ReviveAndClean();
                 Puppeteer.OnDummyDeath(__instance);
-            }*/
+            }
 
             __instance.OnKill(target);
             Sherlock.recordKillLog(__instance, target);
@@ -1473,7 +1475,7 @@ namespace TheOtherRoles.Patches
     {
         public static bool Prefix([HarmonyArgument(0)] PlayerControl player, bool specialRolesAllowed)
         {
-            if ((player.isRole(RoleType.SchrodingersCat) && !SchrodingersCat.hasTeam())/* || player == Puppeteer.dummy*/)
+            if ((player.isRole(RoleType.SchrodingersCat) && !SchrodingersCat.hasTeam()) || player == Puppeteer.dummy)
                 return false;
             return true;
         }

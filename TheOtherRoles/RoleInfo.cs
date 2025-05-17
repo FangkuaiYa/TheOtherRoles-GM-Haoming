@@ -101,7 +101,7 @@ namespace TheOtherRoles
         public static RoleInfo bomberA;
         public static RoleInfo bomberB;
         public static RoleInfo evilTracker;
-        //public static RoleInfo puppeteer;
+        public static RoleInfo puppeteer;
         public static RoleInfo evilHacker;
         public static RoleInfo mimicK;
         public static RoleInfo mimicA;
@@ -178,7 +178,7 @@ namespace TheOtherRoles
             bomberA = new RoleInfo("bomber", BomberA.color, CustomOptionHolder.bomberSpawnRate, RoleType.BomberA);
             bomberB = new RoleInfo("bomber", BomberB.color, CustomOptionHolder.bomberSpawnRate, RoleType.BomberB);
             evilTracker = new RoleInfo("evilTracker", EvilTracker.color, CustomOptionHolder.evilTrackerSpawnRate, RoleType.EvilTracker);
-            //puppeteer = new RoleInfo("puppeteer", Puppeteer.color, CustomOptionHolder.puppeteerSpawnRate, RoleType.Puppeteer);
+            puppeteer = new RoleInfo("puppeteer", Puppeteer.color, CustomOptionHolder.puppeteerSpawnRate, RoleType.Puppeteer);
             evilHacker = new RoleInfo("evilHacker", EvilHacker.color, CustomOptionHolder.evilHackerSpawnRate, RoleType.EvilHacker);
             mimicK = new RoleInfo("mimicK", MimicK.color, CustomOptionHolder.mimicSpawnRate, RoleType.MimicK);
             mimicA = new RoleInfo("mimicA", MimicA.color, CustomOptionHolder.mimicSpawnRate, RoleType.MimicA);
@@ -255,7 +255,7 @@ namespace TheOtherRoles
                 bomberA,
                 bomberB,
                 evilTracker,
-                //puppeteer,
+                puppeteer,
                 mimicK,
                 mimicA,
                 jekyllAndHyde,
@@ -365,7 +365,7 @@ namespace TheOtherRoles
             if (p.isRole(RoleType.BomberA)) infos.Add(bomberA);
             if (p.isRole(RoleType.BomberB)) infos.Add(bomberB);
             if (p.isRole(RoleType.EvilTracker)) infos.Add(evilTracker);
-            //if (p.isRole(RoleType.Puppeteer)) infos.Add(puppeteer);
+            if (p.isRole(RoleType.Puppeteer)) infos.Add(puppeteer);
             if (p.isRole(RoleType.MimicK)) infos.Add(mimicK);
             if (p.isRole(RoleType.MimicA)) infos.Add(mimicA);
             if (p.isRole(RoleType.JekyllAndHyde)) infos.Add(jekyllAndHyde);
